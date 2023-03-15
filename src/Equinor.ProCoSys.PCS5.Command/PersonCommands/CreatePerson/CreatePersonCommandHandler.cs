@@ -1,0 +1,47 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Equinor.ProCoSys.Auth.Caches;
+using Equinor.ProCoSys.PCS5.Domain;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
+using MediatR;
+using ServiceResult;
+
+namespace Equinor.ProCoSys.PCS5.Command.PersonCommands.CreatePerson
+{
+    public class CreatePersonCommandHandler : IRequestHandler<CreatePersonCommand, Result<Unit>>
+    {
+        private readonly IPersonCache _personCache;
+        private readonly IPersonRepository _personRepository;
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CreatePersonCommandHandler(
+            IPersonCache personCache,
+            IPersonRepository personRepository,
+            IUnitOfWork unitOfWork)
+        {
+            _personCache = personCache;
+            _personRepository = personRepository;
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<Result<Unit>> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
+        {
+            var person = await _personRepository.GetByOidAsync(request.Oid);
+
+            if (person == null)
+            {
+                var pcsPerson = await _personCache.GetAsync(request.Oid);
+                if (pcsPerson == null)
+                {
+                    throw new Exception($"Details for user with oid {request.Oid:D} not found in ProCoSys");
+                }
+                person = new Person(request.Oid, pcsPerson.FirstName, pcsPerson.LastName, pcsPerson.UserName, pcsPerson.Email);
+                _personRepository.Add(person);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+            
+            return new SuccessResult<Unit>(Unit.Value);
+        }
+    }
+}

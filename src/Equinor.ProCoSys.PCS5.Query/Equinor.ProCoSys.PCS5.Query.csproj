@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.0.1" />
+    <PackageReference Include="ServiceResult" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Domain\Equinor.ProCoSys.PCS5.Domain.csproj" />
+    <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Infrastructure\Equinor.ProCoSys.PCS5.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
