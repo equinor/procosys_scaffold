@@ -34,9 +34,9 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations
 
             var fooHelperMock = new Mock<IFooHelper>();
             fooHelperMock.Setup(p => p.GetProjectNameAsync(_fooIdWithAccessToProject))
-                .Returns(Task.FromResult(_projectWithAccess));
+                .ReturnsAsync(_projectWithAccess);
             fooHelperMock.Setup(p => p.GetProjectNameAsync(_fooIdWithoutAccessToProject))
-                .Returns(Task.FromResult(_projectWithoutAccess));
+                .ReturnsAsync(_projectWithoutAccess);
 
             _loggerMock = new Mock<ILogger<AccessValidator>>();
 

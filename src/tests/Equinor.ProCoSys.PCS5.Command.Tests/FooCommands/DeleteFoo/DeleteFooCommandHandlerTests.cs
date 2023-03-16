@@ -29,7 +29,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.DeleteFoo
             _existingFoo.SetProtectedIdForTesting(_fooId);
             _fooRepositoryMock = new Mock<IFooRepository>();
             _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
-                .Returns(Task.FromResult(_existingFoo));
+                .ReturnsAsync(_existingFoo);
 
             _command = new DeleteFooCommand(_fooId, _rowVersion);
 

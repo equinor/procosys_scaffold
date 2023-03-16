@@ -39,7 +39,7 @@ namespace Equinor.ProCoSys.PCS5.ForeignApi.Tests.MainApi.Project
 
             _mainApiClient
                 .SetupSequence(x => x.QueryAndDeserializeAsync<List<ProCoSysProject>>(It.IsAny<string>(), null))
-                .Returns(Task.FromResult(new List<ProCoSysProject> {_proCoSysProject1, _proCoSysProject2}));
+                .ReturnsAsync(new List<ProCoSysProject> {_proCoSysProject1, _proCoSysProject2});
 
             _dut = new MainApiProjectService(_mainApiClient.Object, _mainApiOptions.Object);
         }
@@ -50,7 +50,7 @@ namespace Equinor.ProCoSys.PCS5.ForeignApi.Tests.MainApi.Project
             // Arrange
             _mainApiClient
                 .SetupSequence(x => x.TryQueryAndDeserializeAsync<ProCoSysProject>(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()))
-                .Returns(Task.FromResult(_proCoSysProject1));
+                .ReturnsAsync(_proCoSysProject1);
 
             // Act
             var result = await _dut.TryGetProjectAsync(_plant, _project1Name);
@@ -75,7 +75,7 @@ namespace Equinor.ProCoSys.PCS5.ForeignApi.Tests.MainApi.Project
         {
             _mainApiClient
                 .Setup(x => x.QueryAndDeserializeAsync<List<ProCoSysProject>>(It.IsAny<string>(), null))
-                .Returns(Task.FromResult(new List<ProCoSysProject>()));
+                .ReturnsAsync(new List<ProCoSysProject>());
 
             var result = await _dut.GetProjectsInPlantAsync(_plant);
 

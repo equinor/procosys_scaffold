@@ -50,7 +50,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo
             _projectApiServiceMock = new Mock<IProjectApiService>();
             _projectApiServiceMock
                 .Setup(x => x.TryGetProjectAsync(TestPlant, _projectName))
-                .Returns(Task.FromResult(_proCoSysProject));
+                .ReturnsAsync(_proCoSysProject);
 
             _command = new CreateFooCommand("Foo", _projectName);
 
@@ -89,9 +89,9 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo
         {
             // Arrange
             var project = new Project(TestPlant, _projectName, "");
-            int projectIdOnExisting = 10;
+            var projectIdOnExisting = 10;
             project.SetProtectedIdForTesting(projectIdOnExisting);
-            _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).Returns(Task.FromResult(project));
+            _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
             // Act
             await _dut.Handle(_command, default);
 
@@ -118,7 +118,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo
         {
             // Arrange
             var project = new Project(TestPlant, _projectName, "");
-            _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).Returns(Task.FromResult(project));
+            _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
 
             // Act
             await _dut.Handle(_command, default);

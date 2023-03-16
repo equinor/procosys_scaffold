@@ -1,12 +1,10 @@
-﻿using Equinor.ProCoSys.BlobStorage;
-using Equinor.ProCoSys.PCS5.Command.EventHandlers;
+﻿using Equinor.ProCoSys.PCS5.Command.EventHandlers;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Equinor.ProCoSys.PCS5.Command.Validators.RowVersionValidators;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.Domain.Events;
 using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
@@ -29,11 +27,10 @@ namespace Equinor.ProCoSys.PCS5.WebApi.DIModules
     {
         public static void AddApplicationModules(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<ApplicationOptions>(configuration.GetSection("Application"));
             services.Configure<MainApiOptions>(configuration.GetSection("MainApi"));
             services.Configure<CacheOptions>(configuration.GetSection("CacheOptions"));
-            services.Configure<BlobStorageOptions>(configuration.GetSection("BlobStorage"));
             services.Configure<PCS5AuthenticatorOptions>(configuration.GetSection("Authenticator"));
-            services.Configure<EmailOptions>(configuration.GetSection("Email"));
 
             services.AddDbContext<PCS5Context>(options =>
             {
@@ -63,7 +60,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.DIModules
 
             services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
             services.AddScoped<IProjectApiService, MainApiProjectService>();
-            services.AddScoped<IAzureBlobService, AzureBlobService>();
 
             services.AddScoped<IFooValidator, FooValidator>();
             services.AddScoped<IRowVersionValidator, RowVersionValidator>();

@@ -32,7 +32,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo
             _existingFoo.SetProtectedIdForTesting(_fooId);
             _fooRepositoryMock = new Mock<IFooRepository>();
             _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
-                .Returns(Task.FromResult(_existingFoo));
+                .ReturnsAsync(_existingFoo);
 
             _command = new EditFooCommand(_fooId, _newTitle, _rowVersion);
 

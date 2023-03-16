@@ -45,7 +45,7 @@ namespace Equinor.ProCoSys.PCS5.Query.Tests.GetProjectsInPlant
 
             _projectApiServiceMock
                 .Setup(x => x.GetProjectsInPlantAsync(_testPlant))
-                .Returns(Task.FromResult(_mainApiProjects));
+                .ReturnsAsync(_mainApiProjects);
 
             _query = new GetProjectsInPlantQuery();
             _dut = new GetProjectsInPlantQueryHandler(_projectApiServiceMock.Object, _plantProviderMock.Object);

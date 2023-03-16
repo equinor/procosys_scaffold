@@ -42,7 +42,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc
         public async Task EnsureValidProjectAsync_ShouldValidateOK()
         {
             // Arrange
-            _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).Returns(Task.FromResult(true));
+            _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).ReturnsAsync(true);
 
             // Act
             await _dut.EnsureValidProjectAsync(_testRequest);
@@ -52,7 +52,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc
         public async Task EnsureValidProjectAsync_ShouldThrowInvalidException_WhenProjectIsNotValid()
         {
             // Arrange
-            _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).Returns(Task.FromResult(false));
+            _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).ReturnsAsync(false);
 
             // Act
             await Assert.ThrowsExceptionAsync<InValidProjectException>(() => _dut.EnsureValidProjectAsync(_testRequest));

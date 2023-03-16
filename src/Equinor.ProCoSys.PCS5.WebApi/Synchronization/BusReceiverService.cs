@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
 using Equinor.ProCoSys.PCS5.Domain;
-using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PcsServiceBus;
 using Equinor.ProCoSys.PcsServiceBus.Receiver.Interfaces;
 using Equinor.ProCoSys.PcsServiceBus.Topics;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Equinor.ProCoSys.PCS5.WebApi.Authentication;
 using Equinor.ProCoSys.Auth.Authentication;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.Common.Telemetry;
-using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
 {
