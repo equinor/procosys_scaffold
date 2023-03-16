@@ -125,11 +125,79 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
                 HttpStatusCode.Forbidden);
         #endregion
         
+        #region Void
+        [TestMethod]
+        public async Task VoidFoo_AsAnonymous_ShouldReturnUnauthorized()
+            => await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.Anonymous, 
+                TestFactory.UnknownPlant,
+                _fooIdUnderTest,
+                TestFactory.AValidRowVersion,
+                HttpStatusCode.Unauthorized);
+
+        [TestMethod]
+        public async Task VoidFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+            => await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.NoPermissionUser,
+                TestFactory.UnknownPlant,
+                _fooIdUnderTest,
+                TestFactory.AValidRowVersion,
+                HttpStatusCode.BadRequest,
+                "is not a valid plant");
+
+        [TestMethod]
+        public async Task VoidFoo_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+            => await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.Writer,
+                TestFactory.UnknownPlant,
+                _fooIdUnderTest,
+                TestFactory.AValidRowVersion,
+                HttpStatusCode.BadRequest,
+                "is not a valid plant");
+
+        [TestMethod]
+        public async Task VoidFoo_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+            => await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.NoPermissionUser,
+                TestFactory.PlantWithoutAccess,
+                _fooIdUnderTest,
+                TestFactory.AValidRowVersion,
+                HttpStatusCode.Forbidden);
+
+        [TestMethod]
+        public async Task VoidFoo_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+            => await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.Writer,
+                TestFactory.PlantWithoutAccess,
+                _fooIdUnderTest,
+                TestFactory.AValidRowVersion,
+                HttpStatusCode.Forbidden);
+
+        [TestMethod]
+        public async Task VoidFoo_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+            => await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.Reader,
+                TestFactory.PlantWithAccess,
+                _fooIdUnderTest,
+                TestFactory.AValidRowVersion,
+                HttpStatusCode.Forbidden);
+
+        [TestMethod]
+        public async Task VoidFoo_AsWriter_ShouldReturnConflict_WhenWrongRowVersion()
+            => await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.Writer,
+                TestFactory.PlantWithAccess,
+                _fooIdUnderTest,
+                TestFactory.WrongButValidRowVersion,
+                HttpStatusCode.Conflict);
+
+        #endregion
+
         #region Update
         [TestMethod]
         public async Task UpdateFoo_AsAnonymous_ShouldReturnUnauthorized()
             => await FoosControllerTestsHelper.UpdateFooAsync(
-                UserType.Anonymous, 
+                UserType.Anonymous,
                 TestFactory.UnknownPlant,
                 _fooIdUnderTest,
                 "Foo1",
@@ -197,7 +265,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
                 Guid.NewGuid().ToString(),
                 TestFactory.WrongButValidRowVersion,
                 HttpStatusCode.Conflict);
-        
+
         #endregion
 
         #region Delete
