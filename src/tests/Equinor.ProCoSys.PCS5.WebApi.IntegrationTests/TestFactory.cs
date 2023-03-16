@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Auth.Permission;
 using Equinor.ProCoSys.Auth.Person;
+using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
@@ -25,7 +26,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
         private readonly string _writerOid = "00000000-0000-0000-0000-000000000001";
         private readonly string _readerOid = "00000000-0000-0000-0000-000000000003";
         private readonly string _noPermissionUserOid = "00000000-0000-0000-0000-000000000666";
-        private readonly string _integrationTestEnvironment = "IntegrationTests";
         private readonly string _connectionString;
         private readonly string _configPath;
         private readonly Dictionary<UserType, ITestUser> _testUsers = new();
@@ -260,7 +260,9 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
             
             var webHostBuilder = WithWebHostBuilder(builder =>
             {
-                builder.UseEnvironment(_integrationTestEnvironment);
+                // Important to set Test environment so Program.cs don't try to get 
+                // config from Azure
+                builder.UseEnvironment(EnvironmentExtensions.IntegrationTestEnvironmentName);
                 builder.ConfigureAppConfiguration((_, conf) => conf.AddJsonFile(_configPath));
             });
 
