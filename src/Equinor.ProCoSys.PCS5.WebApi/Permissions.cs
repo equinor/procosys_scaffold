@@ -4,6 +4,7 @@
     {
         public const string FOO_READ = "FOO/READ";
         public const string FOO_CREATE = "FOO/CREATE";
+        public const string FOO_DELETE = "FOO/DELETE";
         public const string FOO_WRITE = "FOO/WRITE";
     }
 }

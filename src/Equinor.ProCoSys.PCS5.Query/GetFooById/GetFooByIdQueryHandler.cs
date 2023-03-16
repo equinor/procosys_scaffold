@@ -69,6 +69,7 @@ namespace Equinor.ProCoSys.PCS5.Query.GetFooById
             }
 
             var result = new FooDto(
+                foo.Id,
                 project?.Name ?? "Project name not found",
                 foo.Title,
                 personDto,

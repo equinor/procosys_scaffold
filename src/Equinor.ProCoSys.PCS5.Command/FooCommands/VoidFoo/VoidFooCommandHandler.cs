@@ -7,35 +7,35 @@ using ServiceResult;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain;
 
-namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo
+namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo
 {
-    public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<string>>
+    // todo add unit tests
+    public class VoidFooCommandHandler : IRequestHandler<VoidFooCommand, Result<string>>
     {
         private readonly IFooRepository _fooRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<DeleteFooCommandHandler> _logger;
+        private readonly ILogger<VoidFooCommandHandler> _logger;
 
-        public DeleteFooCommandHandler(
+        public VoidFooCommandHandler(
             IFooRepository fooRepository,
             IUnitOfWork unitOfWork,
-            ILogger<DeleteFooCommandHandler> logger)
+            ILogger<VoidFooCommandHandler> logger)
         {
             _fooRepository = fooRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
-        public async Task<Result<string>> Handle(DeleteFooCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(VoidFooCommand request, CancellationToken cancellationToken)
         {
             var foo = await _fooRepository.GetByIdAsync(request.FooId);
 
+            foo.IsVoided = true;
             foo.SetRowVersion(request.RowVersion);
 
-            _fooRepository.Remove(foo);
-
-            _logger.LogInformation($"Deleting Foo '{foo.Title}'");
-
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation($"Foo '{foo.Title}' voided");
             
             return new SuccessResult<string>(foo.RowVersion.ConvertToString());
         }

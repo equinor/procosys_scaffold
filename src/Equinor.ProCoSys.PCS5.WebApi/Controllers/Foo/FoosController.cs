@@ -1,8 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Query.GetFooById;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
 using MediatR;
@@ -35,7 +38,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 
         [Authorize(Roles = Permissions.FOO_CREATE)]
         [HttpPost]
-        public async Task<ActionResult<int>> CreateFoo(
+        public async Task<ActionResult<IdAndRowVersion>> CreateFoo(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
             [Required]
             [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
@@ -59,6 +62,35 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
         {
             var result = await _mediator.Send(
                 new EditFooCommand(id, dto.Title, dto.RowVersion));
+            return this.FromResult(result);
+        }
+
+        [Authorize(Roles = Permissions.FOO_WRITE)]
+        [HttpPut("{id}/Void")]
+        public async Task<ActionResult<string>> VoidFoo(
+            [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+            [Required]
+            [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+            string plant,
+            [FromRoute] int id,
+            [FromBody] RowVersionDto dto)
+        {
+            var result = await _mediator.Send(
+                new VoidFooCommand(id, dto.RowVersion));
+            return this.FromResult(result);
+        }
+
+        [Authorize(Roles = Permissions.FOO_DELETE)]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<string>> DeleteFoo(
+            [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+            [Required]
+            [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+            string plant,
+            [FromRoute] int id,
+            [FromBody] RowVersionDto dto)
+        {
+            var result = await _mediator.Send(new DeleteFooCommand(id, dto.RowVersion));
             return this.FromResult(result);
         }
     }

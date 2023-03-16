@@ -20,10 +20,10 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate
         public Person(Guid oid, string firstName, string lastName, string userName, string email)
         {
             Oid = oid;
-            FirstName = firstName;
-            LastName = lastName;
-            UserName = userName;
-            Email = email;
+            FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
+            LastName = lastName ?? throw new ArgumentNullException(nameof(lastName));
+            UserName = userName ?? throw new ArgumentNullException(nameof(userName));
+            Email = email ?? throw new ArgumentNullException(nameof(email));
         }
 
         public Guid Oid { get; private set; }
