@@ -9,7 +9,6 @@ using Equinor.ProCoSys.PCS5.Domain;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo
 {
-    // todo add unit tests
     public class VoidFooCommandHandler : IRequestHandler<VoidFooCommand, Result<string>>
     {
         private readonly IFooRepository _fooRepository;

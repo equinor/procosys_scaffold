@@ -6,7 +6,6 @@ using FluentValidation;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo
 {
-    // todo add unit tests
     public class VoidFooCommandValidator : AbstractValidator<VoidFooCommand>
     {
         public VoidFooCommandValidator(IFooValidator fooValidator, IRowVersionValidator rowVersionValidator)

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
@@ -7,10 +7,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.DeleteFoo
+namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.VoidFoo
 {
     [TestClass]
-    public class DeleteFooCommandHandlerTests : CommandHandlerTestsBase
+    public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
     {
         private readonly int _fooId = 1;
         private readonly string _rowVersion = "AAAAAAAAABA=";
@@ -18,8 +18,8 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.DeleteFoo
         private Mock<IFooRepository> _fooRepositoryMock;
         private Foo _existingFoo;
 
-        private DeleteFooCommand _command;
-        private DeleteFooCommandHandler _dut;
+        private VoidFooCommand _command;
+        private VoidFooCommandHandler _dut;
 
         [TestInitialize]
         public void Setup()
@@ -31,22 +31,25 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.DeleteFoo
             _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
                 .ReturnsAsync(_existingFoo);
 
-            _command = new DeleteFooCommand(_fooId, _rowVersion);
+            _command = new VoidFooCommand(_fooId, _rowVersion);
 
-            _dut = new DeleteFooCommandHandler(
+            _dut = new VoidFooCommandHandler(
                 _fooRepositoryMock.Object,
                 UnitOfWorkMock.Object,
-                new Mock<ILogger<DeleteFooCommandHandler>>().Object);
+                new Mock<ILogger<VoidFooCommandHandler>>().Object);
         }
 
         [TestMethod]
-        public async Task HandlingCommand_ShouldDeleteFooFromRepository()
+        public async Task HandlingCommand_ShouldVoidFoo()
         {
+            // Arrange
+            Assert.IsFalse(_existingFoo.IsVoided);
+
             // Act
             await _dut.Handle(_command, default);
 
             // Assert
-            _fooRepositoryMock.Verify(r => r.Remove(_existingFoo), Times.Once);
+            Assert.IsTrue(_existingFoo.IsVoided);
         }
 
         [TestMethod]
