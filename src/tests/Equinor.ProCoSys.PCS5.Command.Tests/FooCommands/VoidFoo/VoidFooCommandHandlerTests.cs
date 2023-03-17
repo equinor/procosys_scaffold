@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
@@ -24,7 +25,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.VoidFoo
         [TestInitialize]
         public void Setup()
         {
-            var project = new Project(TestPlant, "P", "D");
+            var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
             _existingFoo = new Foo(TestPlant, project, "Foo");
             _existingFoo.SetProtectedIdForTesting(_fooId);
             _fooRepositoryMock = new Mock<IFooRepository>();

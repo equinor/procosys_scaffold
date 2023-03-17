@@ -39,12 +39,13 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate
 
             ProjectId = project.Id;
             Title = title;
+            ProCoSysGuid = Guid.NewGuid();
 
             AddPreSaveDomainEvent(new Events.PreSave.FooCreatedEvent(plant, ProCoSysGuid));
             AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(plant, ProCoSysGuid));
         }
 
-        public Guid ProCoSysGuid { get; set; }
+        public Guid ProCoSysGuid { get; private set; }
         public int ProjectId { get; private set; }
         public string Title { get; set; }
 

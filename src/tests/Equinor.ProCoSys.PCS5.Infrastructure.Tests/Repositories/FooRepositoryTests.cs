@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
@@ -23,7 +24,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Tests.Repositories
         [TestInitialize]
         public void Setup()
         {
-            var project = new Project(TestPlant, "ProjectName", "Description of project");
+            var project = new Project(TestPlant, Guid.NewGuid(), "ProjectName", "Description of project");
             _foo = new Foo(TestPlant, project, "Foo X");
             _foo.SetProtectedIdForTesting(_fooId);
 

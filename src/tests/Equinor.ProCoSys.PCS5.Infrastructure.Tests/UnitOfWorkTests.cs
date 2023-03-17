@@ -30,7 +30,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Tests
         [TestInitialize]
         public void Setup()
         {
-            _project = new(_plant, "Project", "Description of Project");
+            _project = new(_plant, Guid.NewGuid(), "Project", "Description of Project");
 
             _dbContextOptions = new DbContextOptionsBuilder<PCS5Context>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())

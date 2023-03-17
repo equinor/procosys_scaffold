@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
@@ -88,7 +89,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo
         public async Task HandlingCommand_ShouldAddFooToRepository_WhenProjectExists()
         {
             // Arrange
-            var project = new Project(TestPlant, _projectName, "");
+            var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
             var projectIdOnExisting = 10;
             project.SetProtectedIdForTesting(projectIdOnExisting);
             _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
@@ -117,7 +118,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo
         public async Task HandlingCommand_ShouldNotAddAnyProjectToRepository_WhenProjectAlreadyExists()
         {
             // Arrange
-            var project = new Project(TestPlant, _projectName, "");
+            var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
             _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
 
             // Act
@@ -128,13 +129,27 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo
         }
 
         [TestMethod]
-        public async Task HandlingCommand_ShouldSave()
+        public async Task HandlingCommand_ShouldSaveOnce_WhenProjectAlreadyExists()
         {
+            // Arrange
+            var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
+            _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
+
             // Act
             await _dut.Handle(_command, default);
 
             // Assert
             UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task HandlingCommand_ShouldSaveTwice_WhenProjectNotExists()
+        {
+            // Act
+            await _dut.Handle(_command, default);
+
+            // Assert
+            UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Exactly(2));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
@@ -27,7 +28,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo
         [TestInitialize]
         public void Setup()
         {
-            var project = new Project(TestPlant, "P", "D");
+            var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
             _existingFoo = new Foo(TestPlant, project, _existingTitle);
             _existingFoo.SetProtectedIdForTesting(_fooId);
             _fooRepositoryMock = new Mock<IFooRepository>();

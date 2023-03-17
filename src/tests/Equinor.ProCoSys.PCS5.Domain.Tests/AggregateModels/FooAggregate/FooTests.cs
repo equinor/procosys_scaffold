@@ -14,6 +14,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.FooAggregate
     {
         private Foo _dut;
         private readonly string _testPlant = "PlantA";
+        private static readonly Guid _projectProCoSysGuid = Guid.NewGuid();
         private readonly string _projectName = "ProjectName";
         private readonly int _projectId = 132;
         private Project _project;
@@ -22,7 +23,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.FooAggregate
         [TestInitialize]
         public void Setup()
         {
-            _project = new(_testPlant, _projectName, $"Description of {_projectName} project");
+            _project = new(_testPlant, _projectProCoSysGuid, _projectName, $"Description of {_projectName} project");
             _project.SetProtectedIdForTesting(_projectId);
             TimeService.SetProvider(new ManualTimeProvider(new DateTime(2021, 1, 1, 12, 0, 0, DateTimeKind.Utc)));
 
@@ -36,6 +37,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.FooAggregate
             Assert.AreEqual(_testPlant, _dut.Plant);
             Assert.AreEqual(_projectId, _dut.ProjectId);
             Assert.AreEqual(_title, _dut.Title);
+            Assert.AreEqual(_projectProCoSysGuid, _dut.ProCoSysGuid);
         }
 
         [TestMethod]
@@ -51,7 +53,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.FooAggregate
         [TestMethod]
         public void Constructor_ShouldThrowException_WhenProjectInOtherPlant()
             => Assert.ThrowsException<ArgumentException>(() =>
-                 new Foo(_testPlant, new Project("OtherPlant", "P", "D"), _title));
+                 new Foo(_testPlant, new Project("OtherPlant", _projectProCoSysGuid, "P", "D"), _title));
 
         [TestMethod]
         public void Constructor_ShouldAddFooCreatedPreEvent()

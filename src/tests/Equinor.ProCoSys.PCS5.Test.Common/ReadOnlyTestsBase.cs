@@ -17,6 +17,8 @@ namespace Equinor.ProCoSys.PCS5.Test.Common
         protected readonly string TestPlantA = "PCS$PlantA";
         protected readonly string ProjectNameA = "ProA";
         protected readonly string ProjectNameB = "ProB";
+        protected static readonly Guid ProjectProCoSysGuidA = Guid.NewGuid();
+        protected static readonly Guid ProjectProCoSysGuidB = Guid.NewGuid();
         protected Project _projectA;
         protected Project _projectB;
         protected Person _currentPerson;
@@ -58,8 +60,8 @@ namespace Equinor.ProCoSys.PCS5.Test.Common
                 AddPerson(context, _currentPerson);
             }
 
-            _projectA = new(TestPlantA, ProjectNameA, $"{ProjectNameA} desc");
-            _projectB = new(TestPlantA, ProjectNameB, $"{ProjectNameB} desc");
+            _projectA = new(TestPlantA, ProjectProCoSysGuidA, ProjectNameA, $"{ProjectNameA} desc");
+            _projectB = new(TestPlantA, ProjectProCoSysGuidB, ProjectNameB, $"{ProjectNameB} desc");
 
             AddProject(context, _projectA);
             AddProject(context, _projectB);
