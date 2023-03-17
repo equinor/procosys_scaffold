@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.Common.Misc;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ServiceResult;
@@ -9,7 +8,7 @@ using Equinor.ProCoSys.PCS5.Domain;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo
 {
-    public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<string>>
+    public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<Unit>>
     {
         private readonly IFooRepository _fooRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -25,7 +24,7 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo
             _logger = logger;
         }
 
-        public async Task<Result<string>> Handle(DeleteFooCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Unit>> Handle(DeleteFooCommand request, CancellationToken cancellationToken)
         {
             var foo = await _fooRepository.GetByIdAsync(request.FooId);
 
@@ -37,7 +36,7 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             
-            return new SuccessResult<string>(foo.RowVersion.ConvertToString());
+            return new SuccessResult<Unit>(Unit.Value);
         }
     }
 }

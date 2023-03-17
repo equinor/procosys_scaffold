@@ -17,6 +17,7 @@ using ServiceResult.ApiExtensions;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 {
+    [Authorize]
     [ApiController]
     [Route("Foos")]
     public class FoosController : ControllerBase
@@ -98,7 +99,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 
         [Authorize(Roles = Permissions.FOO_DELETE)]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<string>> DeleteFoo(
+        public async Task<ActionResult> DeleteFoo(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
             [Required]
             [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
