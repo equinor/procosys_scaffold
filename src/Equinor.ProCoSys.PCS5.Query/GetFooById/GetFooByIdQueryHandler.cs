@@ -73,6 +73,7 @@ namespace Equinor.ProCoSys.PCS5.Query.GetFooById
                 project?.Name ?? "Project name not found",
                 foo.Title,
                 personDto,
+                foo.IsVoided,
                 foo.RowVersion.ConvertToString());
 
             return result;

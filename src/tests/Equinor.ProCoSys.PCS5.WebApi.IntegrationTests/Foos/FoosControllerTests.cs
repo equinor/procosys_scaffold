@@ -74,6 +74,30 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         }
 
         [TestMethod]
+        public async Task VoidFoo_AsWriter_ShouldVoidFoo()
+        {
+            // Arrange
+            var idAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
+                UserType.Writer,
+                TestFactory.PlantWithAccess,
+                Guid.NewGuid().ToString(),
+                TestFactory.ProjectWithAccess);
+            var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
+            Assert.IsFalse(foo.IsVoided);
+
+            // Act
+            var currentRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
+                UserType.Writer,
+                TestFactory.PlantWithAccess,
+                idAndRowVersion.Id,
+                idAndRowVersion.RowVersion);
+
+            // Assert
+            foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
+            Assert.IsTrue(foo.IsVoided);
+        }
+
+        [TestMethod]
         public async Task DeleteFoo_AsWriter_ShouldDeleteFoo()
         {
             // Arrange

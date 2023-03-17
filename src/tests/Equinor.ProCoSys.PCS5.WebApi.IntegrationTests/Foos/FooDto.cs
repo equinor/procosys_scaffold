@@ -6,6 +6,7 @@
         public string ProjectName { get; set; }
         public string Title { get; set; }
         public PersonDto CreatedBy { get; set; }
+        public bool IsVoided { get; set; }
         public string RowVersion { get; set; }
     }
 }

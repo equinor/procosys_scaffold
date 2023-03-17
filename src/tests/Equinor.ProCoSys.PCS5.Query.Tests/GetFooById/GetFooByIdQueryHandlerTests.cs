@@ -66,6 +66,7 @@ namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFooById
         private void AssertFoo(FooDto fooDto, Foo foo)
         {
             Assert.AreEqual(foo.Title, fooDto.Title);
+            Assert.IsFalse(foo.IsVoided);
             var project = GetProjectById(foo.ProjectId);
             Assert.AreEqual(project.Name, fooDto.ProjectName);
 
