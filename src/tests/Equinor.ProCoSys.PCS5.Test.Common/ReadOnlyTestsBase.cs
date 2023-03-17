@@ -14,8 +14,11 @@ namespace Equinor.ProCoSys.PCS5.Test.Common
 {
     public abstract class ReadOnlyTestsBase
     {
-        protected readonly string TestPlant = "PCS$PlantA";
-        protected Project _project;
+        protected readonly string TestPlantA = "PCS$PlantA";
+        protected readonly string ProjectNameA = "ProA";
+        protected readonly string ProjectNameB = "ProB";
+        protected Project _projectA;
+        protected Project _projectB;
         protected Person _currentPerson;
         protected readonly Guid CurrentUserOid = new ("12345678-1234-1234-1234-123456789123");
         protected DbContextOptions<PCS5Context> _dbContextOptions;
@@ -28,9 +31,8 @@ namespace Equinor.ProCoSys.PCS5.Test.Common
         [TestInitialize]
         public void SetupBase()
         {
-            _project = new(TestPlant, "Proj", "Desc");
             _plantProviderMock = new Mock<IPlantProvider>();
-            _plantProviderMock.SetupGet(x => x.Plant).Returns(TestPlant);
+            _plantProviderMock.SetupGet(x => x.Plant).Returns(TestPlantA);
             _plantProvider = _plantProviderMock.Object;
 
             var currentUserProviderMock = new Mock<ICurrentUserProvider>();
@@ -47,16 +49,20 @@ namespace Equinor.ProCoSys.PCS5.Test.Common
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
+            using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
+            
             // ensure current user exists in db. Will be used when setting createdby / modifiedby
-            using (var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider))
+            if (context.Persons.SingleOrDefault(p => p.Oid == CurrentUserOid) == null)
             {
-                if (context.Persons.SingleOrDefault(p => p.Oid == CurrentUserOid) == null)
-                {
-                    _currentPerson = new Person(CurrentUserOid, "Ole", "Lukkøye", "ol", "ol@pcs.pcs");
-                    AddPerson(context, _currentPerson);
-                    AddProject(context, _project);
-                }
+                _currentPerson = new Person(CurrentUserOid, "Ole", "Lukkøye", "ol", "ol@pcs.pcs");
+                AddPerson(context, _currentPerson);
             }
+
+            _projectA = new(TestPlantA, ProjectNameA, $"{ProjectNameA} desc");
+            _projectB = new(TestPlantA, ProjectNameB, $"{ProjectNameB} desc");
+
+            AddProject(context, _projectA);
+            AddProject(context, _projectB);
 
             SetupNewDatabase(_dbContextOptions);
         }

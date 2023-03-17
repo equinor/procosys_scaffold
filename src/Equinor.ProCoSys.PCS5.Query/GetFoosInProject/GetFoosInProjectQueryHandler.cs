@@ -1,0 +1,41 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.Common.Misc;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using ServiceResult;
+
+namespace Equinor.ProCoSys.PCS5.Query.GetFoosInProject
+{
+    public class GetFoosInProjectQueryHandler : IRequestHandler<GetFoosInProjectQuery, Result<IEnumerable<FooDto>>>
+    {
+        private readonly IReadOnlyContext _context;
+
+        public GetFoosInProjectQueryHandler(IReadOnlyContext context) => _context = context;
+
+        public async Task<Result<IEnumerable<FooDto>>> Handle(GetFoosInProjectQuery request, CancellationToken cancellationToken)
+        {
+            var foos =
+                await (from f in _context.QuerySet<Foo>()
+                       join p in _context.QuerySet<Project>()
+                           on EF.Property<int>(f, "ProjectId") equals p.Id
+                       where p.Name == request.ProjectName
+                       select new FooDto(
+                           f.Id,
+                           p.Name,
+                           f.Title,
+                           f.IsVoided,
+                           f.RowVersion.ConvertToString())
+                )
+                .TagWith($"{nameof(GetFoosInProjectQueryHandler)}: foos")
+                .ToListAsync(cancellationToken);
+
+            return new SuccessResult<IEnumerable<FooDto>>(foos);
+        }
+    }
+}

@@ -20,7 +20,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc
             // Save to get real id on project
             context.SaveChangesAsync().Wait();
 
-            var foo = new Foo(TestPlant, _project, "Title");
+            var foo = new Foo(TestPlantA, _projectA, "Title");
             context.Foos.Add(foo);
             context.SaveChangesAsync().Wait();
             _fooId = foo.Id;
@@ -37,7 +37,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc
             var projectName = await dut.GetProjectNameAsync(_fooId);
 
             // Assert
-            Assert.AreEqual(_project.Name, projectName);
+            Assert.AreEqual(_projectA.Name, projectName);
         }
 
         [TestMethod]

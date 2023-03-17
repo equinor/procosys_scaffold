@@ -1,61 +1,67 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using ServiceResult;
-using Equinor.ProCoSys.PCS5.Query.GetFooById;
+using Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
 
-namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFooById
+namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFoosInProject
 {
     [TestClass]
-    public class GetFooByIdQueryHandlerTests : ReadOnlyTestsBase
+    public class GetFoosInProjectQueryHandlerTests : ReadOnlyTestsBase
     {
-        private Foo _foo;
-        private int _fooId;
+        private readonly string _titleA = "Foo A";
+        
+        private Foo _fooInProjectA;
+        private Foo _fooInProjectB;
+        private int _fooAId;
 
         protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
         {
             using var context = new PCS5Context(dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
-            _foo = new Foo(TestPlantA, _projectA, "Title");
+            _fooInProjectA = new Foo(TestPlantA, _projectA, _titleA);
+            _fooInProjectB = new Foo(TestPlantA, _projectB, "Title");
 
-            context.Foos.Add(_foo);
+            context.Foos.Add(_fooInProjectA);
+            context.Foos.Add(_fooInProjectB);
             context.SaveChangesAsync().Wait();
-            _fooId = _foo.Id;
+            _fooAId = _fooInProjectA.Id;
         }
 
         [TestMethod]
-        public async Task Handler_ShouldReturnNotFound_IfFooIsNotFound()
+        public async Task Handler_ShouldReturnEmptyList_IfNoneFound()
         {
             await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
-            var query = new GetFooByIdQuery(500);
-            var dut = new GetFooByIdQueryHandler(context);
-
-            var result = await dut.Handle(query, default);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(ResultType.NotFound, result.ResultType);
-            Assert.IsNull(result.Data);
-        }
-
-        [TestMethod]
-        public async Task Handler_ShouldReturnCorrectFoo()
-        {
-            await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
-            var query = new GetFooByIdQuery(_fooId);
-            var dut = new GetFooByIdQueryHandler(context);
+            var query = new GetFoosInProjectQuery("UnknownProject");
+            var dut = new GetFoosInProjectQueryHandler(context);
 
             var result = await dut.Handle(query, default);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(ResultType.Ok, result.ResultType);
+            Assert.AreEqual(0, result.Data.Count());
+        }
 
-            AssertFoo(result.Data, _foo);
+        [TestMethod]
+        public async Task Handler_ShouldReturnCorrectFoos()
+        {
+            await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
+            
+            var query = new GetFoosInProjectQuery(_projectA.Name);
+            var dut = new GetFoosInProjectQueryHandler(context);
+
+            var result = await dut.Handle(query, default);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(ResultType.Ok, result.ResultType);
+            Assert.AreEqual(1, result.Data.Count());
+
+            AssertFoo(result.Data.Single(), _fooInProjectA);
         }
 
         private void AssertFoo(FooDto fooDto, Foo foo)
@@ -64,10 +70,6 @@ namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFooById
             Assert.IsFalse(foo.IsVoided);
             var project = GetProjectById(foo.ProjectId);
             Assert.AreEqual(project.Name, fooDto.ProjectName);
-
-            var createdBy = fooDto.CreatedBy;
-            Assert.IsNotNull(createdBy);
-            Assert.AreEqual(CurrentUserOid, createdBy.AzureOid);
         }
     }
 }

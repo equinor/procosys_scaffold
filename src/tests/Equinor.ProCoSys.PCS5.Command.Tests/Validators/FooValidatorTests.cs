@@ -18,8 +18,8 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.Validators
         {
             using var context = new PCS5Context(dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
-            var foo1 = new Foo(TestPlant, _project, "Foo 1");
-            var foo2 = new Foo(TestPlant, _project, "Foo 2") { IsVoided = true };
+            var foo1 = new Foo(TestPlantA, _projectA, "Foo 1");
+            var foo2 = new Foo(TestPlantA, _projectA, "Foo 2") { IsVoided = true };
             context.Foos.Add(foo1);
             context.Foos.Add(foo2);
             context.SaveChangesAsync().Wait();
