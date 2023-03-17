@@ -20,7 +20,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task GetFoo_AsAnonymous_ShouldReturnUnauthorized()
             => await FoosControllerTestsHelper.GetFooAsync(
                 UserType.Anonymous,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 HttpStatusCode.Unauthorized);
 
@@ -28,7 +28,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task GetFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.GetFooAsync(
                 UserType.NoPermissionUser,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 HttpStatusCode.BadRequest,
                 "is not a valid plant");
@@ -37,7 +37,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task GetFoo_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.GetFooAsync(
                 UserType.Writer,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest, 
                 HttpStatusCode.BadRequest,
                 "is not a valid plant");
@@ -66,13 +66,65 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
                 9999, 
                 HttpStatusCode.NotFound);
         #endregion
-        
+
+        #region GetInProject
+        [TestMethod]
+        public async Task GetFoosInProject_AsAnonymous_ShouldReturnUnauthorized()
+            => await FoosControllerTestsHelper.GetAllFoosInProjectAsync(
+                UserType.Anonymous,
+                TestFactory.Unknown,
+                TestFactory.Unknown,
+                HttpStatusCode.Unauthorized);
+
+        [TestMethod]
+        public async Task GetFoosInProject_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+            => await FoosControllerTestsHelper.GetAllFoosInProjectAsync(
+                UserType.NoPermissionUser,
+                TestFactory.Unknown,
+                TestFactory.Unknown,
+                HttpStatusCode.BadRequest,
+                "is not a valid plant");
+
+        [TestMethod]
+        public async Task GetFoosInProject_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+            => await FoosControllerTestsHelper.GetAllFoosInProjectAsync(
+                UserType.Writer,
+                TestFactory.Unknown,
+                TestFactory.Unknown,
+                HttpStatusCode.BadRequest,
+                "is not a valid plant");
+
+        [TestMethod]
+        public async Task GetFoosInProject_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+            => await FoosControllerTestsHelper.GetAllFoosInProjectAsync(
+                UserType.NoPermissionUser,
+                TestFactory.PlantWithoutAccess,
+                TestFactory.ProjectWithoutAccess,
+                HttpStatusCode.Forbidden);
+
+        [TestMethod]
+        public async Task GetFoosInProject_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+            => await FoosControllerTestsHelper.GetAllFoosInProjectAsync(
+                UserType.Writer,
+                TestFactory.PlantWithoutAccess,
+                TestFactory.ProjectWithoutAccess,
+                HttpStatusCode.Forbidden);
+
+        [TestMethod]
+        public async Task GetFoosInProject_AsWriter_ShouldReturnForbidden_WhenNoAccessToProject()
+            => await FoosControllerTestsHelper.GetAllFoosInProjectAsync(
+                UserType.Writer,
+                TestFactory.PlantWithAccess,
+                TestFactory.ProjectWithoutAccess,
+                HttpStatusCode.Forbidden);
+        #endregion
+
         #region Create
         [TestMethod]
         public async Task CreateFoo_AsAnonymous_ShouldReturnUnauthorized()
             => await FoosControllerTestsHelper.CreateFooAsync(
                 UserType.Anonymous,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 "Foo1",
                 "Pro",
                 HttpStatusCode.Unauthorized);
@@ -81,7 +133,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task CreateFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.CreateFooAsync(
                 UserType.NoPermissionUser,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 "Foo1",
                 "Pro",
                 HttpStatusCode.BadRequest,
@@ -91,7 +143,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task CreateFoo_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.CreateFooAsync(
                 UserType.Writer,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 "Foo1",
                 "Pro",
                 HttpStatusCode.BadRequest,
@@ -130,7 +182,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task VoidFoo_AsAnonymous_ShouldReturnUnauthorized()
             => await FoosControllerTestsHelper.VoidFooAsync(
                 UserType.Anonymous, 
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 TestFactory.AValidRowVersion,
                 HttpStatusCode.Unauthorized);
@@ -139,7 +191,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task VoidFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.VoidFooAsync(
                 UserType.NoPermissionUser,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 TestFactory.AValidRowVersion,
                 HttpStatusCode.BadRequest,
@@ -149,7 +201,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task VoidFoo_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.VoidFooAsync(
                 UserType.Writer,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 TestFactory.AValidRowVersion,
                 HttpStatusCode.BadRequest,
@@ -198,7 +250,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task UpdateFoo_AsAnonymous_ShouldReturnUnauthorized()
             => await FoosControllerTestsHelper.UpdateFooAsync(
                 UserType.Anonymous,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 "Foo1",
                 TestFactory.AValidRowVersion,
@@ -208,7 +260,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task UpdateFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.UpdateFooAsync(
                 UserType.NoPermissionUser,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 "Foo1",
                 TestFactory.AValidRowVersion,
@@ -219,7 +271,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task UpdateFoo_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.UpdateFooAsync(
                 UserType.Writer,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 "Foo1",
                 TestFactory.AValidRowVersion,
@@ -273,7 +325,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task DeleteFoo_AsAnonymous_ShouldReturnUnauthorized()
             => await FoosControllerTestsHelper.DeleteFooAsync(
                 UserType.Anonymous,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 TestFactory.AValidRowVersion,
                 HttpStatusCode.Unauthorized);
@@ -281,7 +333,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         [TestMethod]
         public async Task DeleteFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.DeleteFooAsync(
-                UserType.NoPermissionUser, TestFactory.UnknownPlant,
+                UserType.NoPermissionUser, TestFactory.Unknown,
                 _fooIdUnderTest,
                 TestFactory.AValidRowVersion,
                 HttpStatusCode.BadRequest,
@@ -291,7 +343,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         public async Task DeleteFoo_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
             => await FoosControllerTestsHelper.DeleteFooAsync(
                 UserType.Writer,
-                TestFactory.UnknownPlant,
+                TestFactory.Unknown,
                 _fooIdUnderTest,
                 TestFactory.AValidRowVersion,
                 HttpStatusCode.BadRequest,

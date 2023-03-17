@@ -12,13 +12,13 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.GetFooById
 {
-    public class GetFooByIdQueryHandler : IRequestHandler<GetFooByIdQuery, Result<FooDto>>
+    public class GetFooByIdQueryHandler : IRequestHandler<GetFooByIdQuery, Result<FooDetailsDto>>
     {
         private readonly IReadOnlyContext _context;
 
         public GetFooByIdQueryHandler(IReadOnlyContext context) => _context = context;
 
-        public async Task<Result<FooDto>> Handle(GetFooByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<FooDetailsDto>> Handle(GetFooByIdQuery request, CancellationToken cancellationToken)
         {
             var fooDto =
                 await (from foo in _context.QuerySet<Foo>()
@@ -27,7 +27,7 @@ namespace Equinor.ProCoSys.PCS5.Query.GetFooById
                         join per in _context.QuerySet<Person>()
                             on EF.Property<int>(foo, "CreatedById") equals per.Id
                             where foo.Id == request.FooId
-                       select new FooDto(
+                       select new FooDetailsDto(
                             foo.Id,
                             pro.Name,
                             foo.Title,
@@ -40,10 +40,10 @@ namespace Equinor.ProCoSys.PCS5.Query.GetFooById
 
             if (fooDto == null)
             {
-                return new NotFoundResult<FooDto>(Strings.EntityNotFound(nameof(Foo), request.FooId));
+                return new NotFoundResult<FooDetailsDto>(Strings.EntityNotFound(nameof(Foo), request.FooId));
             }
 
-            return new SuccessResult<FooDto>(fooDto);
+            return new SuccessResult<FooDetailsDto>(fooDto);
         }
     }
 }

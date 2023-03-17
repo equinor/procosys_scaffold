@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,8 +10,8 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
     public static class FoosControllerTestsHelper
     {
         private const string _route = "Foos";
-        
-        public static async Task<FooDto> GetFooAsync(
+
+        public static async Task<FooDetailsDto> GetFooAsync(
             UserType userType,
             string plant,
             int id,
@@ -27,7 +28,34 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<FooDto>(content);
+            return JsonConvert.DeserializeObject<FooDetailsDto>(content);
+        }
+
+        public static async Task<List<FooDto>> GetAllFoosInProjectAsync(
+            UserType userType,
+            string plant,
+            string projectName,
+            HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+            string expectedMessageOnBadRequest = null)
+        {
+            var parameters = new ParameterCollection
+            {
+                { "projectName", projectName },
+                { "includeVoided", "true" }
+            };
+            var url = $"{_route}{parameters}";
+
+            var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync(url);
+
+            await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+            if (expectedStatusCode != HttpStatusCode.OK)
+            {
+                return null;
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<FooDto>>(content);
         }
 
         public static async Task<IdAndRowVersion> CreateFooAsync(

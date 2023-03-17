@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,10 +11,15 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
     public class FoosControllerTests : TestBase
     {
         private int _fooIdUnderTest;
+        private List<FooDto> _initialFoosInProject;
 
         [TestInitialize]
-        public void TestInitialize()
-            => _fooIdUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAId;
+        public async Task TestInitialize()
+        {
+            _fooIdUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAId;
+            _initialFoosInProject = await FoosControllerTestsHelper
+                .GetAllFoosInProjectAsync(UserType.Writer, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
+        }
 
         [TestMethod]
         public async Task CreateFoo_AsWriter_ShouldCreateFoo()
@@ -37,6 +44,10 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
             Assert.AreEqual(title, newFoo.Title);
             Assert.AreEqual(TestFactory.ProjectWithAccess, newFoo.ProjectName);
             AssertCreatedBy(UserType.Writer, newFoo.CreatedBy);
+
+            var allFoos = await FoosControllerTestsHelper
+                .GetAllFoosInProjectAsync(UserType.Writer, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
+            Assert.AreEqual(_initialFoosInProject.Count+1, allFoos.Count);
         }
 
         [TestMethod]
@@ -52,12 +63,24 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
         }
 
         [TestMethod]
+        public async Task GetAllFoos_AsWriter_ShouldGetAllFoos()
+        {
+            // Act
+            var foos = await FoosControllerTestsHelper
+                .GetAllFoosInProjectAsync(UserType.Writer, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
+
+            // Assert
+            Assert.IsTrue(foos.Count > 0);
+            Assert.IsTrue(foos.All(f => f.ProjectName == TestFactory.ProjectWithAccess));
+        }
+
+        [TestMethod]
         public async Task UpdateFoo_AsWriter_ShouldUpdateFooAndRowVersion()
         {
             // Arrange
             var newTitle = Guid.NewGuid().ToString();
             var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooIdUnderTest);
-            var currentRowVersion = foo.RowVersion;
+            var initialRowVersion = foo.RowVersion;
 
             // Act
             var newRowVersion = await FoosControllerTestsHelper.UpdateFooAsync(
@@ -65,12 +88,13 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
                 TestFactory.PlantWithAccess,
                 foo.Id,
                 newTitle,
-                currentRowVersion);
+                initialRowVersion);
 
             // Assert
-            AssertRowVersionChange(currentRowVersion, newRowVersion);
+            AssertRowVersionChange(initialRowVersion, newRowVersion);
             foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooIdUnderTest);
             Assert.AreEqual(newTitle, foo.Title);
+            Assert.AreEqual(newRowVersion, foo.RowVersion);
         }
 
         [TestMethod]
@@ -82,19 +106,20 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
                 TestFactory.PlantWithAccess,
                 Guid.NewGuid().ToString(),
                 TestFactory.ProjectWithAccess);
-            var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
-            Assert.IsFalse(foo.IsVoided);
+            var initialRowVersion = idAndRowVersion.RowVersion;
 
             // Act
-            var currentRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
+            var newRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
                 UserType.Writer,
                 TestFactory.PlantWithAccess,
                 idAndRowVersion.Id,
                 idAndRowVersion.RowVersion);
 
             // Assert
-            foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
+            AssertRowVersionChange(initialRowVersion, newRowVersion);
+            var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
             Assert.IsTrue(foo.IsVoided);
+            Assert.AreEqual(newRowVersion, foo.RowVersion);
         }
 
         [TestMethod]
@@ -106,7 +131,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
                 TestFactory.PlantWithAccess,
                 Guid.NewGuid().ToString(),
                 TestFactory.ProjectWithAccess);
-            var currentRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
+            var newRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
                 UserType.Writer,
                 TestFactory.PlantWithAccess,
                 idAndRowVersion.Id,
@@ -118,7 +143,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
             await FoosControllerTestsHelper.DeleteFooAsync(
                 UserType.Writer, TestFactory.PlantWithAccess,
                 idAndRowVersion.Id,
-                currentRowVersion);
+                newRowVersion);
 
             // Assert
             await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id, HttpStatusCode.NotFound);

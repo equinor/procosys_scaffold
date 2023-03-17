@@ -21,16 +21,16 @@ namespace Equinor.ProCoSys.PCS5.Query.GetFoosInProject
         public async Task<Result<IEnumerable<FooDto>>> Handle(GetFoosInProjectQuery request, CancellationToken cancellationToken)
         {
             var foos =
-                await (from f in _context.QuerySet<Foo>()
-                       join p in _context.QuerySet<Project>()
-                           on EF.Property<int>(f, "ProjectId") equals p.Id
-                       where p.Name == request.ProjectName
+                await (from foo in _context.QuerySet<Foo>()
+                       join pro in _context.QuerySet<Project>()
+                           on foo.ProjectId equals pro.Id
+                       where pro.Name == request.ProjectName && (!foo.IsVoided || request.IncludeVoided)
                        select new FooDto(
-                           f.Id,
-                           p.Name,
-                           f.Title,
-                           f.IsVoided,
-                           f.RowVersion.ConvertToString())
+                           foo.Id,
+                           pro.Name,
+                           foo.Title,
+                           foo.IsVoided,
+                           foo.RowVersion.ConvertToString())
                 )
                 .TagWith($"{nameof(GetFoosInProjectQueryHandler)}: foos")
                 .ToListAsync(cancellationToken);

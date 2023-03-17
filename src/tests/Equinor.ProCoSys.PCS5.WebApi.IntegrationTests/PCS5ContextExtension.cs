@@ -39,9 +39,13 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
 
             var plant = plantProvider.Plant;
             
-            var project = SeedProject(dbContext, plant);
+            var project = SeedProject(dbContext, plant, KnownTestData.ProjectNameA, KnownTestData.ProjectDescriptionA);
             var foo = SeedFoo(dbContext, plant, project, KnownTestData.FooA);
             knownTestData.FooAId = foo.Id;
+
+            project = SeedProject(dbContext, plant, KnownTestData.ProjectNameB, KnownTestData.ProjectDescriptionB);
+            foo = SeedFoo(dbContext, plant, project, KnownTestData.FooB);
+            knownTestData.FooBId = foo.Id;
         }
 
         private static void EnsureCurrentUserIsSeeded(PCS5Context dbContext, ICurrentUserProvider userProvider)
@@ -62,10 +66,10 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
             dbContext.SaveChangesAsync().Wait();
         }
 
-        private static Project SeedProject(PCS5Context dbContext, string plant)
+        private static Project SeedProject(PCS5Context dbContext, string plant, string name, string desc)
         {
             var projectRepository = new ProjectRepository(dbContext);
-            var project = new Project(plant, KnownTestData.ProjectName, KnownTestData.ProjectDescription);
+            var project = new Project(plant, name, desc);
             projectRepository.Add(project);
             dbContext.SaveChangesAsync().Wait();
             return project;

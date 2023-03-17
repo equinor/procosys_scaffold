@@ -1,8 +1,8 @@
 ﻿namespace Equinor.ProCoSys.PCS5.Query.GetFooById
 {
-    public class FooDto
+    public class FooDetailsDto
     {
-        public FooDto(
+        public FooDetailsDto(
             int id,
             string projectName,
             string title,

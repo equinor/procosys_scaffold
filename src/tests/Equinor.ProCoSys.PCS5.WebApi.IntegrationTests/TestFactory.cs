@@ -38,9 +38,9 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
 
         public static string PlantWithAccess => KnownPlantData.PlantA;
         public static string PlantWithoutAccess => KnownPlantData.PlantB;
-        public static string UnknownPlant => "UNKNOWN_PLANT";
-        public static string ProjectWithAccess => KnownTestData.ProjectName;
-        public static string ProjectWithoutAccess => "Project999";
+        public static string Unknown => "UNKNOWN";
+        public static string ProjectWithAccess => KnownTestData.ProjectNameA;
+        public static string ProjectWithoutAccess => KnownTestData.ProjectNameB;
         public static string AValidRowVersion => "AAAAAAAAAAA=";
         public static string WrongButValidRowVersion => "AAAAAAAAAAA=";
 
@@ -164,28 +164,21 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
 
         private void CreateSeededTestDatabase(IServiceCollection services)
         {
-            using (var serviceProvider = services.BuildServiceProvider())
-            {
-                using (var scope = serviceProvider.CreateScope())
-                {
-                    var scopeServiceProvider = scope.ServiceProvider;
-                    var dbContext = scopeServiceProvider.GetRequiredService<PCS5Context>();
+            using var serviceProvider = services.BuildServiceProvider();
 
-                    dbContext.Database.EnsureDeleted();
+            using var scope = serviceProvider.CreateScope();
+            
+            var scopeServiceProvider = scope.ServiceProvider;
+            var dbContext = scopeServiceProvider.GetRequiredService<PCS5Context>();
 
-                    dbContext.Database.SetCommandTimeout(TimeSpan.FromMinutes(5));
+            dbContext.Database.EnsureDeleted();
 
-                    dbContext.CreateNewDatabaseWithCorrectSchema();
-                    var migrations = dbContext.Database.GetPendingMigrations();
-                    if (migrations.Any())
-                    {
-                        dbContext.Database.Migrate();
-                    }
+            dbContext.Database.SetCommandTimeout(TimeSpan.FromMinutes(5));
 
-                    SeedDataForPlant(dbContext, scopeServiceProvider, KnownPlantData.PlantA);
-                    SeedDataForPlant(dbContext, scopeServiceProvider, KnownPlantData.PlantB);
-                }
-            }
+            dbContext.CreateNewDatabaseWithCorrectSchema();
+
+            SeedDataForPlant(dbContext, scopeServiceProvider, KnownPlantData.PlantA);
+            SeedDataForPlant(dbContext, scopeServiceProvider, KnownPlantData.PlantB);
         }
 
         private void SeedDataForPlant(PCS5Context dbContext, IServiceProvider scopeServiceProvider, string plant)
@@ -198,10 +191,9 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
         private void EnsureTestDatabaseDeletedAtTeardown(IServiceCollection services)
             => _teardownList.Add(() =>
             {
-                using (var dbContext = DatabaseContext(services))
-                {
-                    dbContext.Database.EnsureDeleted();
-                }
+                using var dbContext = DatabaseContext(services);
+                
+                dbContext.Database.EnsureDeleted();
             });
 
         private PCS5Context DatabaseContext(IServiceCollection services)

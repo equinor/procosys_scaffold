@@ -95,7 +95,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
                     {nameof(projectEvent.ProCoSysGuid), projectEvent.ProCoSysGuid},
                     {nameof(projectEvent.ProjectName), projectEvent.ProjectName},
                     {nameof(projectEvent.IsClosed), projectEvent.IsClosed.ToString()},
-                    {nameof(projectEvent.Plant), projectEvent.Plant[4..]}, //TODO: DRY, replace with NormalizePlant
+                    {nameof(projectEvent.Plant), projectEvent.Plant[4..]}
                 });
 
         private void TrackDeleteEvent(PcsTopic topic, string guid, bool supported) =>

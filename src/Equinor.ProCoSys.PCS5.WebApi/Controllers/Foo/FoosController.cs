@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.PCS5.Command;
@@ -7,6 +8,7 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Query.GetFooById;
+using Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +27,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 
         [Authorize(Roles = Permissions.FOO_READ)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<FooDto>> GetFooById(
+        public async Task<ActionResult<FooDetailsDto>> GetFooById(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
             [Required]
             [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
@@ -33,6 +35,20 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
             [FromRoute] int id)
         {
             var result = await _mediator.Send(new GetFooByIdQuery(id));
+            return this.FromResult(result);
+        }
+
+        [Authorize(Roles = Permissions.FOO_READ)]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<FooDto>>> GetFoosInProject(
+            [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+            [Required]
+            [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+            string plant,
+            [FromQuery] string projectName,
+            [FromQuery] bool includeVoided = false)
+        {
+            var result = await _mediator.Send(new GetFoosInProjectQuery(projectName, includeVoided));
             return this.FromResult(result);
         }
 

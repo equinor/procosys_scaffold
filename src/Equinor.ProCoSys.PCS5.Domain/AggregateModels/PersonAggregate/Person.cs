@@ -12,10 +12,10 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate
         public const int UserNameLengthMax = 128;
         public const int EmailLengthMax = 128;
 
-        // Todo Test without this constructor. Will EF handle if empty constructor don't exists?
-        protected Person()
-        {
-        }
+        //// Todo Test without this constructor. Will EF handle if empty constructor don't exists?
+        //protected Person()
+        //{
+        //}
 
         public Person(Guid oid, string firstName, string lastName, string userName, string email)
         {

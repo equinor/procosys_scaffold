@@ -58,14 +58,14 @@ namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFooById
             AssertFoo(result.Data, _foo);
         }
 
-        private void AssertFoo(FooDto fooDto, Foo foo)
+        private void AssertFoo(FooDetailsDto fooDetailsDto, Foo foo)
         {
-            Assert.AreEqual(foo.Title, fooDto.Title);
+            Assert.AreEqual(foo.Title, fooDetailsDto.Title);
             Assert.IsFalse(foo.IsVoided);
             var project = GetProjectById(foo.ProjectId);
-            Assert.AreEqual(project.Name, fooDto.ProjectName);
+            Assert.AreEqual(project.Name, fooDetailsDto.ProjectName);
 
-            var createdBy = fooDto.CreatedBy;
+            var createdBy = fooDetailsDto.CreatedBy;
             Assert.IsNotNull(createdBy);
             Assert.AreEqual(CurrentUserOid, createdBy.AzureOid);
         }
