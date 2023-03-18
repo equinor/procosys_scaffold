@@ -6,5 +6,7 @@
         public const string FOO_CREATE = "FOO/CREATE";
         public const string FOO_DELETE = "FOO/DELETE";
         public const string FOO_WRITE = "FOO/WRITE";
+
+        public const string APPLICATION_TESTER = "APPLICATION_EXPLORER/EXECUTE";
     }
 }

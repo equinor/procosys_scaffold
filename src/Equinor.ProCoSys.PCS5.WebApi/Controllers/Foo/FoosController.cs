@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Equinor.ProCoSys.Auth;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
@@ -17,7 +18,6 @@ using ServiceResult.ApiExtensions;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 {
-    [Authorize]
     [ApiController]
     [Route("Foos")]
     public class FoosController : ControllerBase
@@ -26,7 +26,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 
         public FoosController(IMediator mediator) => _mediator = mediator;
 
-        [Authorize(Roles = Permissions.FOO_READ)]
+        [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
         [HttpGet("{id}")]
         public async Task<ActionResult<FooDetailsDto>> GetFooById(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -39,7 +39,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
             return this.FromResult(result);
         }
 
-        [Authorize(Roles = Permissions.FOO_READ)]
+        [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FooDto>>> GetFoosInProject(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -53,7 +53,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
             return this.FromResult(result);
         }
 
-        [Authorize(Roles = Permissions.FOO_CREATE)]
+        [AuthorizeAny(Permissions.FOO_CREATE, Permissions.APPLICATION_TESTER)]
         [HttpPost]
         public async Task<ActionResult<IdAndRowVersion>> CreateFoo(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -67,7 +67,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
             return this.FromResult(result);
         }
 
-        [Authorize(Roles = Permissions.FOO_WRITE)]
+        [AuthorizeAny(Permissions.FOO_WRITE, Permissions.APPLICATION_TESTER)]
         [HttpPut("{id}")]
         public async Task<ActionResult<string>> EditFoo(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -82,7 +82,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
             return this.FromResult(result);
         }
 
-        [Authorize(Roles = Permissions.FOO_WRITE)]
+        [AuthorizeAny(Permissions.FOO_WRITE, Permissions.APPLICATION_TESTER)]
         [HttpPut("{id}/Void")]
         public async Task<ActionResult<string>> VoidFoo(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -97,7 +97,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
             return this.FromResult(result);
         }
 
-        [Authorize(Roles = Permissions.FOO_DELETE)]
+        [AuthorizeAny(Permissions.FOO_DELETE, Permissions.APPLICATION_TESTER)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteFoo(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]

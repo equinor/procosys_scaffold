@@ -11,6 +11,7 @@ using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Misc
 {
+    [Authorize]
     [ApiController]
     [Route("Cache")]
     public class CacheController : ControllerBase
@@ -29,7 +30,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Misc
             _permissionApiService = permissionApiService;
         }
 
-        [Authorize]
         [HttpPut("Clear")]
         public void Clear(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -41,7 +41,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Misc
             _permissionCache.ClearAll(plant, currentUserOid);
         }
 
-        [Authorize]
         [HttpGet("PermissionsFromCache")]
         public async Task<IList<string>> GetPermissions(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -53,7 +52,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Misc
             return permissions;
         }
 
-        [Authorize]
         [HttpGet("PermissionsFromMain")]
         public async Task<IList<string>> GetPermissionsFromMain(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -64,7 +62,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Misc
             return permissions;
         }
 
-        [Authorize]
         [HttpGet("ProjectsFromCache")]
         public async Task<IList<string>> GetProjects(
             [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -76,7 +73,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Misc
             return projects;
         }
 
-        [Authorize]
         [HttpGet("PlantsFromCache")]
         public async Task<IList<string>> GetPlantsFromCache()
         {
@@ -85,7 +81,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Misc
             return plants;
         }
 
-        [Authorize]
         [HttpGet("AllPlantsFromMain")]
         public async Task<IList<AccessablePlant>> GetPlantsFromMain()
         {

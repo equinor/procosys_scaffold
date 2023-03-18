@@ -38,11 +38,13 @@ After all renaming completed, there should not exists any phrases as foo or pcs5
 
 With correct connectionstring in appsettings.json or user sercret file, pointing to an existing database, the solution should now be able to run and test in swagger.
 
-# Test the solution
-NB 1! When testing Foo endpoints, these are secured with fictive permissions as FOO/READ etc.
-As a result, all users will get 401 Access denied on these since these permissions can't be given as-is.
-To test endpoints without needing permissions, remove [Authorize(Roles = *** 
-from Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo.FoosController. 
-NB 2! Without the Authorize-attribute will cause some negative integration tests in 
-Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos.FoosControllerNegativeTests
-to fail since some tests expect HttpStatusCode.Forbidden)
+# Permissions
+All Foo endpoints are secured with the AuthorizeAny attribute, each endpoint secured with 2
+permissions (roles). AuthorizeAny is used to secure with a list of permission, where clients
+are allowed to use endpoint if having any of listed permission.
+The first permission on Foo-endpoints, is a non-existing fictive permissions as FOO/READ etc.
+This permission shoild be replaced with a real permission in the final solution. The integration tests 
+are setup to test that each endpoint actually ARE secured by a such FOO-permission.
+The second permision, APPLICATION_EXPLORER/EXECUTE, are there to be able to test these endpoints 
+in swagger as a logged in ProCoSys Administrator (which normally have this permission). This
+permission should be considered to be removed in the final solution.
