@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Equinor.ProCoSys.Common.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
@@ -72,6 +73,9 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
             // Assert
             Assert.IsTrue(foos.Count > 0);
             Assert.IsTrue(foos.All(f => f.ProjectName == TestFactory.ProjectWithAccess));
+            Assert.IsTrue(foos.All(f => !f.Title.IsEmpty()));
+            Assert.IsTrue(foos.All(f => !f.RowVersion.IsEmpty()));
+            Assert.IsTrue(foos.All(f => !f.IsVoided));
         }
 
         [TestMethod]

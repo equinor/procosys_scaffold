@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Equinor.ProCoSys.Auth.Authentication;
+using Equinor.ProCoSys.Auth.Authorization;
 using Equinor.ProCoSys.Auth.Client;
 using Equinor.ProCoSys.Common.Caches;
 using Equinor.ProCoSys.Common.Email;
@@ -55,6 +56,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.DIModules
             services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<PCS5Context>());
             services.AddScoped<IReadOnlyContext, PCS5Context>();
             services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<ILocalPersonRepository, LocalPersonRepository>();
             services.AddScoped<IFooRepository, FooRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
 

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Equinor.ProCoSys.Auth" Version="0.1.2" />
+    <PackageReference Include="Equinor.ProCoSys.Auth" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
