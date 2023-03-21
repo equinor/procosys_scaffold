@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
-using Equinor.ProCoSys.PCS5.Domain.Events;
 using MediatR;
 
 namespace Equinor.ProCoSys.PCS5.Command.EventHandlers
@@ -13,11 +11,11 @@ namespace Equinor.ProCoSys.PCS5.Command.EventHandlers
     {
         private readonly IMediator _mediator;
 
-        public EventDispatcher(IMediator mediator) => _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        public EventDispatcher(IMediator mediator) => _mediator = mediator;
 
         public async Task DispatchPreSaveAsync(IEnumerable<EntityBase> entities, CancellationToken cancellationToken = default)
         {
-            var allEntities  = ConvertToList(entities);
+            var allEntities = entities.ToList();
 
             var events = allEntities
                 .SelectMany(x => x.PreSaveDomainEvents)
@@ -32,26 +30,17 @@ namespace Equinor.ProCoSys.PCS5.Command.EventHandlers
 
         public async Task DispatchPostSaveAsync(IEnumerable<EntityBase> entities, CancellationToken cancellationToken = default)
         {
-            var allEntities = ConvertToList(entities);
+            var entityList = entities.ToList();
 
-            var events = allEntities
+            var events = entityList
                 .SelectMany(x => x.PostSaveDomainEvents)
                 .ToList();
 
-            allEntities.ForEach(e => e.ClearPostSaveDomainEvents());
+            entityList.ForEach(e => e.ClearPostSaveDomainEvents());
 
             var tasks = PublishToMediator(events, cancellationToken);
 
             await Task.WhenAll(tasks);
-        }
-
-        private static List<EntityBase> ConvertToList(IEnumerable<EntityBase> entities)
-        {
-            if (entities == null)
-            {
-                throw new ArgumentNullException(nameof(entities));
-            }
-            return entities.ToList();
         }
 
         private IEnumerable<Task> PublishToMediator(IList<INotification> domainEvents, CancellationToken cancellationToken)

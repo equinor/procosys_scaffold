@@ -28,7 +28,7 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo
             async Task<bool> BeAnExistingFoo(int fooId, CancellationToken cancellationToken)
                 => await fooValidator.FooExistsAsync(fooId, cancellationToken);
 
-            bool HaveAValidRowVersion(string rowVersion)
+            bool HaveAValidRowVersion(string? rowVersion)
                 => rowVersionValidator.IsValid(rowVersion);
         }
     }

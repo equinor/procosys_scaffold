@@ -11,7 +11,9 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate
         public const int NameLengthMax = 30;
         public const int DescriptionLengthMax = 1000;
 
+#pragma warning disable CS8618
         protected Project()
+#pragma warning restore CS8618
             : base(null)
         {
         }
@@ -20,8 +22,9 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate
             : base(plant)
         {
             ProCoSysGuid = proCoSysGuid;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
             Name = name;
-            Description = description;
         }
 
         public Guid ProCoSysGuid { get; private set; }

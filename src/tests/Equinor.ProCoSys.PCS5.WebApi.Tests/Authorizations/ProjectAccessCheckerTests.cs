@@ -47,15 +47,23 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations
         }
 
         [TestMethod]
-        public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectToCheckNotGiven()
+        public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectIsNull()
         {
             // Act
-            var result1 = _dut.HasCurrentUserAccessToProject(null);
-            var result2 = _dut.HasCurrentUserAccessToProject("");
+            var result = _dut.HasCurrentUserAccessToProject(null);
 
             // Assert
-            Assert.IsFalse(result1);
-            Assert.IsFalse(result2);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectToCheckIsBlank()
+        {
+            // Act
+            var result = _dut.HasCurrentUserAccessToProject("");
+
+            // Assert
+            Assert.IsFalse(result);
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IRowVersionValidator
     {
-        bool IsValid(string rowVersion);
+        bool IsValid(string? rowVersion);
     }
 }

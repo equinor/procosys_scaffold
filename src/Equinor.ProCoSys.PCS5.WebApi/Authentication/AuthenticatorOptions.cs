@@ -18,14 +18,19 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Authentication
         public AuthenticatorOptions(IOptionsMonitor<PCS5AuthenticatorOptions> options)
         {
             _options = options;
-            _scopes.Add(MainApiAuthenticator.MainApiScopeKey, _options.CurrentValue.MainApiScope);
+            var mainApiScope = _options.CurrentValue.MainApiScope ??
+                throw new ArgumentNullException($"{nameof(AuthenticatorOptions)}. {nameof(_options.CurrentValue.MainApiScope)} can't ne null. Probably missing configuration");
+            _scopes.Add(MainApiAuthenticator.MainApiScopeKey, mainApiScope);
         }
 
-        public string Instance => _options.CurrentValue.Instance;
+        public string Instance => _options.CurrentValue.Instance ?? 
+                                  throw new ArgumentNullException($"{nameof(AuthenticatorOptions)}. {nameof(_options.CurrentValue.Instance)} can't ne null. Probably missing configuration");
 
-        public string ClientId => _options.CurrentValue.PCS5ApiClientId;
+        public string ClientId => _options.CurrentValue.PCS5ApiClientId ??
+                                  throw new ArgumentNullException($"{nameof(AuthenticatorOptions)}. {nameof(_options.CurrentValue.PCS5ApiClientId)} can't ne null. Probably missing configuration");
 
-        public string Secret => _options.CurrentValue.PCS5ApiSecret;
+        public string Secret => _options.CurrentValue.PCS5ApiSecret ??
+                                throw new ArgumentNullException($"{nameof(AuthenticatorOptions)}. {nameof(_options.CurrentValue.PCS5ApiSecret)} can't ne null. Probably missing configuration");
 
         public Guid ObjectId => _options.CurrentValue.PCS5ApiObjectId;
 

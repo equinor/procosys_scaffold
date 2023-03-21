@@ -11,7 +11,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Authorizations
 
         public ProjectAccessChecker(IClaimsPrincipalProvider claimsPrincipalProvider) => _claimsPrincipalProvider = claimsPrincipalProvider;
 
-        public bool HasCurrentUserAccessToProject(string projectName)
+        public bool HasCurrentUserAccessToProject(string? projectName)
         {
             if (string.IsNullOrEmpty(projectName))
             {

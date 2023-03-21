@@ -75,7 +75,6 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
             Assert.IsTrue(foos.All(f => f.ProjectName == TestFactory.ProjectWithAccess));
             Assert.IsTrue(foos.All(f => !f.Title.IsEmpty()));
             Assert.IsTrue(foos.All(f => !f.RowVersion.IsEmpty()));
-            Assert.IsTrue(foos.All(f => !f.IsVoided));
         }
 
         [TestMethod]

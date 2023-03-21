@@ -41,12 +41,12 @@ namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.FooAggregate
         [TestMethod]
         public void Constructor_ShouldThrowException_WhenTitleNotGiven() =>
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new Foo(_testPlant, _project, null));
+                new Foo(_testPlant, _project, null!));
 
         [TestMethod]
         public void Constructor_ShouldThrowException_WhenProjectNotGiven() =>
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new Foo(_testPlant, null, _title));
+                new Foo(_testPlant, null!, _title));
 
         [TestMethod]
         public void Constructor_ShouldThrowException_WhenProjectInOtherPlant()

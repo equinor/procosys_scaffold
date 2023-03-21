@@ -5,7 +5,7 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo
 {
     public class EditFooCommand : IRequest<Result<string>>, IFooCommandRequest
     {
-        public EditFooCommand(int fooId, string title, string rowVersion)
+        public EditFooCommand(int fooId, string? title, string? rowVersion)
         {
             FooId = fooId;
             Title = title;
@@ -13,7 +13,7 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo
         }
 
         public int FooId { get; }
-        public string Title { get; }
-        public string RowVersion { get; }
+        public string? Title { get; }
+        public string? RowVersion { get; }
     }
 }

@@ -56,6 +56,7 @@ namespace Equinor.ProCoSys.PCS5.ForeignApi.Tests.MainApi.Project
             var result = await _dut.TryGetProjectAsync(_plant, _project1Name);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(_project1Name, result.Name);
             Assert.AreEqual(_project1Description, result.Description);
         }

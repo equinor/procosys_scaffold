@@ -5,31 +5,31 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
     [Obsolete("Revert to use Topic-classes from Equinor.ProCoSys.PcsServiceBus after ensuring real Guids on bus.")]
     public class ProjectTmpTopic
     {
-        public string Plant
+        public string? Plant
         {
             get;
             set;
         }
 
-        public string ProCoSysGuid
+        public string? ProCoSysGuid
         {
             get;
             set;
         }
 
-        public string Behavior
+        public string? Behavior
         {
             get;
             set;
         }
 
-        public string ProjectName
+        public string? ProjectName
         {
             get;
             set;
         }
 
-        public string Description
+        public string? Description
         {
             get;
             set;

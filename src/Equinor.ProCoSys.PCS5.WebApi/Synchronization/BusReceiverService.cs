@@ -82,25 +82,28 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
             var project = await _projectRepository.GetProjectOnlyByNameAsync(projectEvent.ProjectName);
             if (project != null)
             {
-                project.Description = projectEvent.Description;
+                if (!string.IsNullOrEmpty(projectEvent.Description))
+                {
+                    project.Description = projectEvent.Description;
+                }
                 project.IsClosed = projectEvent.IsClosed;
             }
         }
 
         private void TrackProjectEvent(ProjectTmpTopic projectEvent) =>
             _telemetryClient.TrackEvent(FooBusReceiverTelemetryEvent,
-                new Dictionary<string, string>
+                new Dictionary<string, string?>
                 {
                     {"Event", ProjectTopic.TopicName},
                     {nameof(projectEvent.ProCoSysGuid), projectEvent.ProCoSysGuid},
                     {nameof(projectEvent.ProjectName), projectEvent.ProjectName},
                     {nameof(projectEvent.IsClosed), projectEvent.IsClosed.ToString()},
-                    {nameof(projectEvent.Plant), projectEvent.Plant[4..]}
+                    {nameof(projectEvent.Plant), projectEvent.Plant != null ? projectEvent.Plant[4..]: string.Empty}
                 });
 
-        private void TrackDeleteEvent(PcsTopic topic, string guid, bool supported) =>
+        private void TrackDeleteEvent(PcsTopic topic, string? guid, bool supported) =>
             _telemetryClient.TrackEvent(FooBusReceiverTelemetryEvent,
-                new Dictionary<string, string>
+                new Dictionary<string, string?>
                 {
                     {"Event Delete", topic.ToString()},
                     {"ProCoSysGuid", guid},

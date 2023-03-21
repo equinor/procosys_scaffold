@@ -10,7 +10,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
         public Task SendAsync(string topic, string jsonMessage) => Task.CompletedTask;
 
         public Task CloseAllAsync() => Task.CompletedTask;
-        public ValueTask<ServiceBusMessageBatch> CreateMessageBatchAsync(string topic) => ValueTask.FromResult<ServiceBusMessageBatch>(null);
+        public ValueTask<ServiceBusMessageBatch> CreateMessageBatchAsync(string topic) => ValueTask.FromResult<ServiceBusMessageBatch>(null!);
 
         public Task SendMessagesAsync(ServiceBusMessageBatch messageBatch, string topic) => Task.CompletedTask;
     }
