@@ -106,10 +106,11 @@ namespace Equinor.ProCoSys.PCS5.WebApi
                 typeof(Startup).Assembly
             });
 
-            var scopes = Configuration.GetSection("Swagger:Scopes")?.Get<Dictionary<string, string>>() ?? new Dictionary<string, string>();
+            var scopes = Configuration.GetSection("Swagger:Scopes").Get<Dictionary<string, string>>() ?? new Dictionary<string, string>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProCoSys PCS5 API", Version = "v1" });
+                var authorizationUrl = Configuration.GetRequiredConfiguration("Swagger:AuthorizationUrl");
 
                 //Define the OAuth2.0 scheme that's in use (i.e. Implicit Flow)
                 c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -119,7 +120,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi
                     {
                         Implicit = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri(Configuration["Swagger:AuthorizationUrl"]),
+                            AuthorizationUrl = new Uri(authorizationUrl),
                             Scopes = scopes
                         }
                     }
@@ -156,7 +157,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi
 
             services.AddApplicationInsightsTelemetry(options =>
             {
-                options.ConnectionString = Configuration["ApplicationInsights:ConnectionString"];
+                options.ConnectionString = Configuration.GetRequiredConfiguration("ApplicationInsights:ConnectionString");
             });
             services.AddMediatrModules();
             services.AddApplicationModules(Configuration);
@@ -166,14 +167,16 @@ namespace Equinor.ProCoSys.PCS5.WebApi
             if (serviceBusEnabled)
             {
                 // Env variable used in kubernetes. Configuration is added for easier use locally
-                // Url will be validated during startup of service bus integration and give a
-                // Uri exception if invalid.
-                var leaderElectorUrl = "http://" + (Environment.GetEnvironmentVariable("LEADERELECTOR_SERVICE") ?? Configuration["ServiceBus:LeaderElectorUrl"]) + ":3003";
+                var leaderElectorUrlPart =
+                    Environment.GetEnvironmentVariable("LEADERELECTOR_SERVICE")
+                        ?? Configuration.GetRequiredConfiguration("ServiceBus:LeaderElectorUrl");
+
+                var leaderElectorRenewLeaseInterval = Configuration.GetRequiredIntConfiguration("ServiceBus:LeaderElectorRenewLeaseInterval");
 
                 services.AddPcsServiceBusIntegration(options => options
-                    .UseBusConnection(Configuration.GetConnectionString("ServiceBus"))
-                    .WithLeaderElector(leaderElectorUrl)
-                    .WithRenewLeaseInterval(int.Parse(Configuration["ServiceBus:LeaderElectorRenewLeaseInterval"]))
+                    .UseBusConnection(Configuration.GetRequiredConnectionString("ServiceBus"))
+                    .WithLeaderElector("http://" + leaderElectorUrlPart + ":3003")
+                    .WithRenewLeaseInterval(leaderElectorRenewLeaseInterval)
                     .WithSubscription(PcsTopic.Project, "foo_project")
                     //THIS METHOD SHOULD BE FALSE IN NORMAL OPERATION.
                     //ONLY SET TO TRUE WHEN A LARGE NUMBER OF MESSAGES HAVE FAILED AND ARE COPIED TO DEAD LETTER.
@@ -181,7 +184,10 @@ namespace Equinor.ProCoSys.PCS5.WebApi
                     .WithReadFromDeadLetterQueue(Configuration.GetValue("ServiceBus:ReadFromDeadLetterQueue", defaultValue: false)));
 
                 var topics = Configuration["ServiceBus:TopicNames"];
-                services.AddTopicClients(Configuration.GetConnectionString("ServiceBus"), topics);
+                if (topics != null)
+                {
+                    services.AddTopicClients(Configuration.GetRequiredConnectionString("ServiceBus"), topics);
+                }
             }
             else
             {
@@ -217,7 +223,8 @@ namespace Equinor.ProCoSys.PCS5.WebApi
                 c.OAuthClientId(Configuration["Swagger:ClientId"]);
                 c.OAuthAppName("ProCoSys PCS5 API V1");
                 c.OAuthScopeSeparator(" ");
-                c.OAuthAdditionalQueryStringParams(new Dictionary<string, string> { { "resource", Configuration["API:Audience"] } });
+                var audience = Configuration.GetRequiredConfiguration("API:Audience");
+                c.OAuthAdditionalQueryStringParams(new Dictionary<string, string> { { "resource", audience } });
             });
 
             app.UseHttpsRedirection();
