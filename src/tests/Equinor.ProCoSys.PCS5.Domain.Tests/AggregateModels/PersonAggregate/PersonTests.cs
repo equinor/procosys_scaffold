@@ -7,16 +7,37 @@ namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.PersonAggregate
     [TestClass]
     public class PersonTests
     {
+        private readonly Guid _oid = Guid.NewGuid();
+
         [TestMethod]
         public void Constructor_SetsProperties()
         {
-            var oid = new Guid("11111111-1111-2222-2222-333333333333");
-            var dut = new Person(oid, "FirstName", "LastName", "UserName", "EmailAddress");
-            Assert.AreEqual(oid, dut.Oid);
+            var dut = new Person(_oid, "FirstName", "LastName", "UserName", "EmailAddress");
+            Assert.AreEqual(_oid, dut.Oid);
             Assert.AreEqual("FirstName", dut.FirstName);
             Assert.AreEqual("LastName", dut.LastName);
             Assert.AreEqual("UserName", dut.UserName);
             Assert.AreEqual("EmailAddress", dut.Email);
         }
+
+        [TestMethod]
+        public void Constructor_ShouldThrowException_WhenFirstNameNotGiven() =>
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new Person(_oid, null!, "LastName", "UserName", "EmailAddress"));
+
+        [TestMethod]
+        public void Constructor_ShouldThrowException_WhenLastNameNotGiven() =>
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new Person(_oid, "FirstName", null!, "UserName", "EmailAddress"));
+
+        [TestMethod]
+        public void Constructor_ShouldThrowException_WhenUserNameNotGiven() =>
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new Person(_oid, "FirstName", "LastName", null!, "EmailAddress"));
+
+        [TestMethod]
+        public void Constructor_ShouldThrowException_WhenMailNotGiven() =>
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new Person(_oid, "FirstName", "LastName", "UserName", null!));
     }
 }

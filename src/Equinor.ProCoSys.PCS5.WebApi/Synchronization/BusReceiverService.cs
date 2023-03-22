@@ -64,7 +64,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
 
         private async Task ProcessProjectEvent(string messageJson)
         {
-            var projectEvent = JsonSerializer.Deserialize<ProjectTmpTopic>(messageJson);
+            var projectEvent = JsonSerializer.Deserialize<ProjectTopic>(messageJson);
             if (projectEvent != null && projectEvent.Behavior == "delete")
             {
                 TrackDeleteEvent(PcsTopic.Project, projectEvent.ProCoSysGuid, false);
@@ -82,28 +82,31 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
             var project = await _projectRepository.GetProjectOnlyByNameAsync(projectEvent.ProjectName);
             if (project != null)
             {
-                project.Description = projectEvent.Description;
+                if (!string.IsNullOrEmpty(projectEvent.Description))
+                {
+                    project.Description = projectEvent.Description;
+                }
                 project.IsClosed = projectEvent.IsClosed;
             }
         }
 
-        private void TrackProjectEvent(ProjectTmpTopic projectEvent) =>
+        private void TrackProjectEvent(ProjectTopic projectEvent) =>
             _telemetryClient.TrackEvent(FooBusReceiverTelemetryEvent,
-                new Dictionary<string, string>
+                new Dictionary<string, string?>
                 {
                     {"Event", ProjectTopic.TopicName},
-                    {nameof(projectEvent.ProCoSysGuid), projectEvent.ProCoSysGuid},
+                    {nameof(projectEvent.ProCoSysGuid), projectEvent.ProCoSysGuid.ToString()},
                     {nameof(projectEvent.ProjectName), projectEvent.ProjectName},
                     {nameof(projectEvent.IsClosed), projectEvent.IsClosed.ToString()},
-                    {nameof(projectEvent.Plant), projectEvent.Plant[4..]}
+                    {nameof(projectEvent.Plant), projectEvent.Plant != null ? projectEvent.Plant[4..]: string.Empty}
                 });
 
-        private void TrackDeleteEvent(PcsTopic topic, string guid, bool supported) =>
+        private void TrackDeleteEvent(PcsTopic topic, Guid guid, bool supported) =>
             _telemetryClient.TrackEvent(FooBusReceiverTelemetryEvent,
-                new Dictionary<string, string>
+                new Dictionary<string, string?>
                 {
                     {"Event Delete", topic.ToString()},
-                    {"ProCoSysGuid", guid},
+                    {"ProCoSysGuid", guid.ToString()},
                     {"Supported", supported.ToString()}
                 });
     }

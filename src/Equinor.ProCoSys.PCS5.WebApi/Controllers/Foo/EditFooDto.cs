@@ -2,7 +2,7 @@
 {
     public class EditFooDto
     {
-        public string Title { get; set; }
-        public string RowVersion { get; set; }
+        public string? Title { get; set; }
+        public string? RowVersion { get; set; }
     }
 }

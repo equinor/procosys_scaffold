@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,10 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo
         public async Task<Result<Unit>> Handle(DeleteFooCommand request, CancellationToken cancellationToken)
         {
             var foo = await _fooRepository.GetByIdAsync(request.FooId);
+            if (foo == null)
+            {
+                throw new Exception($"Entity {nameof(Foo)} {request.FooId} not found");
+            }
 
             foo.SetRowVersion(request.RowVersion);
 

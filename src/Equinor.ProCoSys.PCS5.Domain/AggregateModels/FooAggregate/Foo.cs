@@ -14,12 +14,14 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate
         public const int TitleMinLength = 3;
         public const int TitleMaxLength = 250;
 
+#pragma warning disable CS8618
         protected Foo()
+#pragma warning restore CS8618
             : base(null)
         {
         }
 
-        public Foo(string plant, Project project, string title)
+        public Foo(string plant, Project project, string? title)
             : base(plant)
         {
             if (project is null)
@@ -31,14 +33,10 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate
             {
                 throw new ArgumentException($"Can't relate item in {project.Plant} to item in {plant}");
             }
-
-            if (string.IsNullOrEmpty(title))
-            {
-                throw new ArgumentNullException(nameof(title));
-            }
-
             ProjectId = project.Id;
-            Title = title;
+
+            Title = title ?? throw new ArgumentNullException(nameof(title));
+
             ProCoSysGuid = Guid.NewGuid();
 
             AddPreSaveDomainEvent(new Events.PreSave.FooCreatedEvent(plant, ProCoSysGuid));
@@ -54,9 +52,9 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate
         public DateTime? ModifiedAtUtc { get; private set; }
         public int? ModifiedById { get; private set; }
 
-        public void EditFoo(string title)
+        public void EditFoo(string? title)
         {
-            Title = title;
+            Title = title ?? throw new ArgumentNullException(nameof(title));
             AddPreSaveDomainEvent(new Events.PreSave.FooEditedEvent(ProCoSysGuid));
         }
 

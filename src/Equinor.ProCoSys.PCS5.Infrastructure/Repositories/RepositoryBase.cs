@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories
 {
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
+    public abstract class RepositoryBase<TEntity> : Domain.IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
     {
         protected readonly PCS5Context Context;
         protected readonly DbSet<TEntity> Set;
@@ -34,7 +34,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories
         public virtual Task<List<TEntity>> GetAllAsync() =>
             DefaultQuery.ToListAsync();
 
-        public virtual Task<TEntity> GetByIdAsync(int id) =>
+        public virtual Task<TEntity?> GetByIdAsync(int id) =>
             DefaultQuery.SingleOrDefaultAsync(x => x.Id == id);
 
         public Task<List<TEntity>> GetByIdsAsync(IEnumerable<int> ids) =>

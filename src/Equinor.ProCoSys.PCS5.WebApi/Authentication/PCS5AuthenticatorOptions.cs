@@ -8,15 +8,15 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Authentication
     /// </summary>
     public class PCS5AuthenticatorOptions
     {
-        public string Instance { get; set; }
+        public string? Instance { get; set; }
 
-        public string PCS5ApiClientId { get; set; }
-        public string PCS5ApiSecret { get; set; }
+        public string? PCS5ApiClientId { get; set; }
+        public string? PCS5ApiSecret { get; set; }
         public Guid PCS5ApiObjectId { get; set; }
 
         public bool DisableProjectUserDataClaims { get; set; }
         public bool DisableRestrictionRoleUserDataClaims { get; set; }
 
-        public string MainApiScope { get; set; }
+        public string? MainApiScope { get; set; }
     }
 }

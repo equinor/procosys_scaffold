@@ -77,6 +77,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Tests.Repositories
         {
             var result = await _dut.GetByIdAsync(_fooId);
 
+            Assert.IsNotNull(result);
             Assert.AreEqual(_fooId, result.Id);
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
 using MediatR;
@@ -28,6 +29,10 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo
         public async Task<Result<string>> Handle(VoidFooCommand request, CancellationToken cancellationToken)
         {
             var foo = await _fooRepository.GetByIdAsync(request.FooId);
+            if (foo == null)
+            {
+                throw new Exception($"Entity {nameof(Foo)} {request.FooId} not found");
+            }
 
             foo.IsVoided = true;
             foo.SetRowVersion(request.RowVersion);

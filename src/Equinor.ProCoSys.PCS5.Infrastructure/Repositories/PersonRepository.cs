@@ -10,7 +10,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories
         public PersonRepository(PCS5Context context)
             : base(context, context.Persons) { }
 
-        public Task<Person> GetByOidAsync(Guid oid)
+        public Task<Person?> GetByOidAsync(Guid oid)
             => DefaultQuery.SingleOrDefaultAsync(p => p.Oid == oid);
     }
 }

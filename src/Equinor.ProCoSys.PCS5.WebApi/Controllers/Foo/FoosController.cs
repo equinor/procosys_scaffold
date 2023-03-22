@@ -12,7 +12,6 @@ using Equinor.ProCoSys.PCS5.Query.GetFooById;
 using Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceResult.ApiExtensions;
 

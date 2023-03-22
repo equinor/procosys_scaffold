@@ -4,7 +4,6 @@ using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using ServiceResult;
 using Equinor.ProCoSys.PCS5.Query.GetFooById;
 

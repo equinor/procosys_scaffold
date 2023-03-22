@@ -22,11 +22,16 @@ namespace Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project
             _baseAddress = new Uri(options.CurrentValue.BaseAddress);
         }
 
-        public async Task<ProCoSysProject> TryGetProjectAsync(string plant, string name)
+        public async Task<ProCoSysProject?> TryGetProjectAsync(string plant, string? projectName)
         {
+            if (string.IsNullOrEmpty(projectName))
+            {
+                return null;
+            }
+
             var url = $"{_baseAddress}ProjectByName" +
                 $"?plantId={plant}" +
-                $"&projectName={WebUtility.UrlEncode(name)}" +
+                $"&projectName={WebUtility.UrlEncode(projectName)}" +
                 $"&api-version={_apiVersion}";
 
             return await _apiClient.TryQueryAndDeserializeAsync<ProCoSysProject>(url);

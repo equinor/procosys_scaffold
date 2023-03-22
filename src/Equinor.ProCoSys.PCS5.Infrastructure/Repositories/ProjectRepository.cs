@@ -12,7 +12,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories
         {
         }
 
-        public Task<Project> GetProjectOnlyByNameAsync(string projectName)
-            => Set.SingleOrDefaultAsync(p => p.Name == projectName);
+        public Task<Project?> GetProjectOnlyByNameAsync(string? projectName)
+            => Set.SingleOrDefaultAsync(p => !string.IsNullOrEmpty(projectName) &&  p.Name == projectName);
     }
 }

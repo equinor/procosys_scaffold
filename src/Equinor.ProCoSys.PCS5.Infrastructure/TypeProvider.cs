@@ -7,20 +7,20 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure
 {
     public static class TypeProvider
     {
-        private static List<Type> _entityTypeCache;
+        private static List<Type>? s_entityTypeCache;
 
         public static List<Type> GetEntityTypes(Assembly assembly, Type baseType)
         {
-            if (_entityTypeCache != null)
+            if (s_entityTypeCache != null)
             {
-                return _entityTypeCache;
+                return s_entityTypeCache;
             }
 
-            _entityTypeCache = (from t in assembly.DefinedTypes
+            s_entityTypeCache = (from t in assembly.DefinedTypes
                                 where t.BaseType == baseType
                                 select t.AsType()).ToList();
 
-            return _entityTypeCache;
+            return s_entityTypeCache;
         }
     }
 }

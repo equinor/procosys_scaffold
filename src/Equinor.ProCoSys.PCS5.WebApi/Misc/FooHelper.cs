@@ -13,7 +13,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Misc
 
         public FooHelper(IReadOnlyContext context) => _context = context;
 
-        public async Task<string> GetProjectNameAsync(int fooId)
+        public async Task<string?> GetProjectNameAsync(int fooId)
         {
             var projectName = await (from p in _context.QuerySet<Project>()
                 join foo in _context.QuerySet<Foo>() on p.Id equals foo.ProjectId

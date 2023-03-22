@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +24,9 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure
         private readonly IEventDispatcher _eventDispatcher;
         private readonly ICurrentUserProvider _currentUserProvider;
 
+#pragma warning disable CS8618
         public PCS5Context(
+#pragma warning restore CS8618
             DbContextOptions<PCS5Context> options,
             IPlantProvider plantProvider,
             IEventDispatcher eventDispatcher,
@@ -39,7 +42,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure
         {
             if (DebugOptions.DebugEntityFrameworkInDevelopment)
             {
-                optionsBuilder.LogTo(System.Console.WriteLine);
+                optionsBuilder.LogTo(Console.WriteLine);
             }
         }
 
@@ -149,6 +152,11 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure
             {
                 var currentUserOid = _currentUserProvider.GetCurrentUserOid();
                 var currentUser = await Persons.SingleOrDefaultAsync(p => p.Oid == currentUserOid);
+                if (currentUser == null)
+                {
+                    throw new Exception(
+                        $"{nameof(Person)} {currentUserOid} not found when setting SetCreated / SetModified");
+                }
 
                 foreach (var entry in addedEntries)
                 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
@@ -13,10 +12,6 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers
     [TestClass]
     public class EventDispatcherTests
     {
-        [TestMethod]
-        public void Constructor_ThrowsException_IFMediatorIsNull_Test() 
-            => Assert.ThrowsException<ArgumentNullException>(() => new EventDispatcher(null));
-
         [TestMethod]
         public async Task DispatchPreSaveAsync_SendsOutEvents_Test()
         {
@@ -61,26 +56,6 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers
 
             entities.ForEach(e => Assert.AreEqual(1, e.PreSaveDomainEvents.Count));
             entities.ForEach(e => Assert.AreEqual(0, e.PostSaveDomainEvents.Count));
-        }
-
-        [TestMethod]
-        public async Task DispatchPreSaveAsync_ThrowsException_IfListIsEmptyAsync_Test()
-        {
-            var mediator = new Mock<IMediator>();
-            var dut = new EventDispatcher(mediator.Object);
-
-            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                dut.DispatchPreSaveAsync(null));
-        }
-
-        [TestMethod]
-        public async Task DispatchPostSaveAsync_ThrowsException_IfListIsEmptyAsync_Test()
-        {
-            var mediator = new Mock<IMediator>();
-            var dut = new EventDispatcher(mediator.Object);
-
-            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                dut.DispatchPostSaveAsync(null));
         }
     }
 
