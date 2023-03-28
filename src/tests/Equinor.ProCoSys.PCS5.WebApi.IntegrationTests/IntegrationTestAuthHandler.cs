@@ -86,14 +86,15 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
                     claims.Add(new Claim(ClaimTypes.Surname, profile.LastName));
                     break;
                 case AuthType.Application:
-                    if (profile.AppRoles != null)
-                    {
-                        foreach (var role in profile.AppRoles)
-                        {
-                            claims.Add(new Claim(ClaimTypes.Role, role));
-                        }
-                    }
                     break;
+            }
+
+            if (profile.AppRoles != null)
+            {
+                foreach (var role in profile.AppRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
             }
 
             return Task.FromResult(claims);
