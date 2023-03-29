@@ -1,4 +1,4 @@
-# procosys_scaffold
+# procosys-scaffold
 Template repo for new ProCoSys backend solutions/application. Swagger enabled Api using Entity Framework and Mediator
 This repo is ment to be used as startup code base for new ProCoSys solutions.
 
@@ -10,7 +10,7 @@ Rename file/folder names for:
 * Folder names for projects
 * csproj files
 
-Edit solution file, csproj filess and Dockerfile in Notepad and fix paths to csproj-files according to new name
+Edit solution file, csproj files and Dockerfile in Notepad and fix paths to csproj-files according to new name
 
 Solution should now load correctly in Visual Studio. Check Project references.
 
