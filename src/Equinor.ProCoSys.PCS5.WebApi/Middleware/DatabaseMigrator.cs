@@ -11,17 +11,14 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Middleware
     {
         private readonly IServiceScopeFactory _serviceProvider;
 
-        public DatabaseMigrator(IServiceScopeFactory serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+        public DatabaseMigrator(IServiceScopeFactory serviceProvider) => _serviceProvider = serviceProvider;
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<PCS5Context>();
-                await dbContext.Database.MigrateAsync();
+                await dbContext.Database.MigrateAsync(cancellationToken);
             }
         }
 
