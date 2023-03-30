@@ -24,9 +24,7 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
     private readonly IEventDispatcher _eventDispatcher;
     private readonly ICurrentUserProvider _currentUserProvider;
 
-#pragma warning disable CS8618
     public PCS5Context(
-#pragma warning restore CS8618
         DbContextOptions<PCS5Context> options,
         IPlantProvider plantProvider,
         IEventDispatcher eventDispatcher,
@@ -53,11 +51,11 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
         SetGlobalPlantFilter(modelBuilder);
     }      
 
-    public static DateTimeKindConverter DateTimeKindConverter { get; } = new DateTimeKindConverter();
-        
-    public virtual DbSet<Person> Persons { get; set; }
-    public virtual DbSet<Foo> Foos { get; set; }
-    public virtual DbSet<Project> Projects { get; set; }
+    public static DateTimeKindConverter DateTimeKindConverter { get; } = new();
+
+    public DbSet<Person> Persons => Set<Person>();
+    public DbSet<Foo> Foos => Set<Foo>();
+    public DbSet<Project> Projects => Set<Project>();
 
     private void SetGlobalPlantFilter(ModelBuilder modelBuilder)
     {
