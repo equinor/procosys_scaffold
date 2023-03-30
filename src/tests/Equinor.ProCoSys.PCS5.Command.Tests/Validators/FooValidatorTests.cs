@@ -11,8 +11,8 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.Validators;
 [TestClass]
 public class FooValidatorTests : ReadOnlyTestsBase
 {
-    private int _nonVoidedfooId;
-    private int _voidedfooId;
+    private int _nonVoidedFooId;
+    private int _voidedFooId;
 
     protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
     {
@@ -23,8 +23,8 @@ public class FooValidatorTests : ReadOnlyTestsBase
         context.Foos.Add(foo1);
         context.Foos.Add(foo2);
         context.SaveChangesAsync().Wait();
-        _nonVoidedfooId = foo1.Id;
-        _voidedfooId = foo2.Id;
+        _nonVoidedFooId = foo1.Id;
+        _voidedFooId = foo2.Id;
     }
 
     #region FooExists
@@ -34,7 +34,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         var dut = new FooValidator(context);
-        var result = await dut.FooExistsAsync(_nonVoidedfooId, default);
+        var result = await dut.FooExistsAsync(_nonVoidedFooId, default);
         Assert.IsTrue(result);
     }
 
@@ -56,7 +56,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         var dut = new FooValidator(context);
-        var result = await dut.FooIsVoidedAsync(_voidedfooId, default);
+        var result = await dut.FooIsVoidedAsync(_voidedFooId, default);
         Assert.IsTrue(result);
     }
 

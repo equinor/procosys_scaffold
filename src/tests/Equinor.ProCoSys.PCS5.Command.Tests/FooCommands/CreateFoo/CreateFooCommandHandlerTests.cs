@@ -56,9 +56,9 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
         _command = new CreateFooCommand("Foo", _projectName);
 
         _dut = new CreateFooCommandHandler(
-            PlantProviderMock.Object,
+            _plantProviderMock.Object,
             _fooRepositoryMock.Object,
-            UnitOfWorkMock.Object,
+            _unitOfWorkMock.Object,
             _projectRepositoryMock.Object,
             _projectApiServiceMock.Object,
             new Mock<ILogger<CreateFooCommandHandler>>().Object);
@@ -139,7 +139,7 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
         await _dut.Handle(_command, default);
 
         // Assert
-        UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
     }
 
     [TestMethod]
@@ -149,6 +149,6 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
         await _dut.Handle(_command, default);
 
         // Assert
-        UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Exactly(2));
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Exactly(2));
     }
 }

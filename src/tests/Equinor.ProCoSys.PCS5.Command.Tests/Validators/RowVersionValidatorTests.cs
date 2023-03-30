@@ -14,7 +14,7 @@ public class RowVersionValidatorTests
     [TestMethod]
     public void IsValid_ValidRowVersion_ShouldReturnTrue()
     { 
-        const string validRowVersion = "AAAAAAAAABA=";
+        var validRowVersion = "AAAAAAAAABA=";
 
         var result = _dut.IsValid(validRowVersion);
         Assert.IsTrue(result);
@@ -23,7 +23,7 @@ public class RowVersionValidatorTests
     [TestMethod]
     public void IsValid_InvalidRowVersion_ShouldReturnFalse()
     {
-        const string invalidRowVersion = "String";
+        var invalidRowVersion = "String";
 
         var result = _dut.IsValid(invalidRowVersion);
         Assert.IsFalse(result);

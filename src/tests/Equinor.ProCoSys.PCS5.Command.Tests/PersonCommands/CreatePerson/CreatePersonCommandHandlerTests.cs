@@ -72,7 +72,7 @@ public class CreatePersonCommandHandlerTests : CommandHandlerTestsBase
         _dut = new CreatePersonCommandHandler(
             _personCacheMock.Object,
             _personRepositoryMock.Object,
-            UnitOfWorkMock.Object,
+            _unitOfWorkMock.Object,
             _optionsMock.Object);
     }
 
@@ -131,7 +131,7 @@ public class CreatePersonCommandHandlerTests : CommandHandlerTestsBase
         await _dut.Handle(_command, default);
 
         // Assert
-        UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
     }
 
     [TestMethod]

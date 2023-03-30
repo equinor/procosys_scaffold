@@ -36,7 +36,7 @@ public class DeleteFooCommandHandlerTests : CommandHandlerTestsBase
 
         _dut = new DeleteFooCommandHandler(
             _fooRepositoryMock.Object,
-            UnitOfWorkMock.Object,
+            _unitOfWorkMock.Object,
             new Mock<ILogger<DeleteFooCommandHandler>>().Object);
     }
 
@@ -57,6 +57,6 @@ public class DeleteFooCommandHandlerTests : CommandHandlerTestsBase
         await _dut.Handle(_command, default);
 
         // Assert
-        UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
     }
 }

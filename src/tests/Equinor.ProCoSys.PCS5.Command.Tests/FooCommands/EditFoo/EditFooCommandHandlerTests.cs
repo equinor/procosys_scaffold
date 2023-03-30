@@ -39,7 +39,7 @@ public class EditFooCommandHandlerTests : CommandHandlerTestsBase
 
         _dut = new EditFooCommandHandler(
             _fooRepositoryMock.Object,
-            UnitOfWorkMock.Object,
+            _unitOfWorkMock.Object,
             new Mock<ILogger<EditFooCommandHandler>>().Object);
     }
 
@@ -58,7 +58,7 @@ public class EditFooCommandHandlerTests : CommandHandlerTestsBase
     {
         await _dut.Handle(_command, default);
 
-        UnitOfWorkMock.Verify(r => r.SaveChangesAsync(default), Times.Once);
+        _unitOfWorkMock.Verify(r => r.SaveChangesAsync(default), Times.Once);
     }
 
     [TestMethod]

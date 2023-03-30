@@ -36,7 +36,7 @@ public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
 
         _dut = new VoidFooCommandHandler(
             _fooRepositoryMock.Object,
-            UnitOfWorkMock.Object,
+            _unitOfWorkMock.Object,
             new Mock<ILogger<VoidFooCommandHandler>>().Object);
     }
 
@@ -60,6 +60,6 @@ public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
         await _dut.Handle(_command, default);
 
         // Assert
-        UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
     }
 }
