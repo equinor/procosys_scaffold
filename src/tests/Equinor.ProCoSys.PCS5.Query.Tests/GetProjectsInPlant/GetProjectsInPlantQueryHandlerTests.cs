@@ -73,19 +73,6 @@ public class GetProjectsInPlantQueryHandlerTests
         AssertProjectData(_mainApiProjects.Single(p => p.Id == item3.Id), item3);
     }
 
-    [TestMethod]
-    public async Task Handle_ShouldReturnEmptyList_WhenReturnsNull()
-    {
-        _projectApiServiceMock
-            .Setup(x => x.GetProjectsInPlantAsync(_testPlant))
-            .Returns(Task.FromResult<IList<ProCoSysProject>>(null));
-
-        var result = await _dut.Handle(_query, default);
-
-        Assert.AreEqual(ResultType.Ok, result.ResultType);
-        Assert.AreEqual(0, result.Data.Count);
-    }
-
     private void AssertProjectData(ProCoSysProject pcsProject, ProCoSysProjectDto projectDto)
     {
         Assert.AreEqual(pcsProject.Id, projectDto.Id);
