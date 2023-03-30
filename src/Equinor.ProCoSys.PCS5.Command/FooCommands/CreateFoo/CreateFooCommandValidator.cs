@@ -14,13 +14,11 @@ public class CreateFooCommandValidator : AbstractValidator<CreateFooCommand>
         RuleFor(command => command)
             //input validators
             .Must(command =>
-                command.ProjectName != null && 
                 command.ProjectName.Length >= Foo.ProjectNameMinLength &&
                 command.ProjectName.Length < Foo.ProjectNameMaxLength)
             .WithMessage(command =>
                 $"Project name must be between {Foo.ProjectNameMinLength} and {Foo.ProjectNameMaxLength} characters! ProjectName={command.ProjectName}")
             .Must(command => 
-                command.Title != null &&
                 command.Title.Length >= Foo.TitleMinLength && 
                 command.Title.Length < Foo.TitleMaxLength)
             .WithMessage(command =>

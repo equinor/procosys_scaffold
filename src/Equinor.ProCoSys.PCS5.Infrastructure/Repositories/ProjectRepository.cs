@@ -12,6 +12,6 @@ public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
     {
     }
 
-    public Task<Project?> GetProjectOnlyByNameAsync(string? projectName)
+    public Task<Project?> GetProjectOnlyByNameAsync(string projectName)
         => Set.SingleOrDefaultAsync(p => !string.IsNullOrEmpty(projectName) &&  p.Name == projectName);
 }
