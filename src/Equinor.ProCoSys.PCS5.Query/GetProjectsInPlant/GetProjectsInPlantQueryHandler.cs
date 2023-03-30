@@ -25,8 +25,7 @@ public class GetProjectsInPlantQueryHandler : IRequestHandler<GetProjectsInPlant
     public async Task<Result<List<ProCoSysProjectDto>>> Handle(GetProjectsInPlantQuery request,
         CancellationToken cancellationToken)
     {
-        var mainApiProjects = await _projectApiService
-            .GetProjectsInPlantAsync(_plantProvider.Plant) ?? new List<ProCoSysProject>();
+        var mainApiProjects = await _projectApiService.GetProjectsInPlantAsync(_plantProvider.Plant);
 
         var projectDtos = mainApiProjects
             .Select(project => new ProCoSysProjectDto(
