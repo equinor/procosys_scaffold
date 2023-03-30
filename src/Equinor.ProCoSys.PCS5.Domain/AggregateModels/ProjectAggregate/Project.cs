@@ -27,6 +27,7 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
         Name = name;
     }
 
+    // private set needed for EntityFramework
     public Guid ProCoSysGuid { get; private set; }
     public string Name { get; private set; }
     public string Description { get; set; }

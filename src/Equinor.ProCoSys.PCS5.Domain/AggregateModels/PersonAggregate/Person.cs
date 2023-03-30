@@ -21,6 +21,7 @@ public class Person : EntityBase, IAggregateRoot, IModificationAuditable
         Email = email ?? throw new ArgumentNullException(nameof(email));
     }
 
+    // private set needed for EntityFramework
     public Guid Oid { get; private set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }

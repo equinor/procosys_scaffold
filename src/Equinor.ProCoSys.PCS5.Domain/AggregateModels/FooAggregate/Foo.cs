@@ -43,6 +43,7 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
         AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(plant, ProCoSysGuid));
     }
 
+    // private set needed for EntityFramework
     public Guid ProCoSysGuid { get; private set; }
     public int ProjectId { get; private set; }
     public string Title { get; set; }
