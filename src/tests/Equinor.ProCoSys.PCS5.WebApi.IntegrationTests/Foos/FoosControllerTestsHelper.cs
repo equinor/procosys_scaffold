@@ -5,163 +5,162 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos
+namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
+
+public static class FoosControllerTestsHelper
 {
-    public static class FoosControllerTestsHelper
+    private const string _route = "Foos";
+
+    public static async Task<FooDetailsDto> GetFooAsync(
+        UserType userType,
+        string plant,
+        int id,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
     {
-        private const string _route = "Foos";
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{id}");
 
-        public static async Task<FooDetailsDto> GetFooAsync(
-            UserType userType,
-            string plant,
-            int id,
-            HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
-            string expectedMessageOnBadRequest = null)
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (expectedStatusCode != HttpStatusCode.OK)
         {
-            var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{id}");
-
-            await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
-
-            if (expectedStatusCode != HttpStatusCode.OK)
-            {
-                return null;
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<FooDetailsDto>(content);
+            return null;
         }
 
-        public static async Task<List<FooDto>> GetAllFoosInProjectAsync(
-            UserType userType,
-            string plant,
-            string projectName,
-            HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
-            string expectedMessageOnBadRequest = null)
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<FooDetailsDto>(content);
+    }
+
+    public static async Task<List<FooDto>> GetAllFoosInProjectAsync(
+        UserType userType,
+        string plant,
+        string projectName,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var parameters = new ParameterCollection
         {
-            var parameters = new ParameterCollection
-            {
-                { "projectName", projectName },
-                { "includeVoided", "true" }
-            };
-            var url = $"{_route}{parameters}";
+            { "projectName", projectName },
+            { "includeVoided", "true" }
+        };
+        var url = $"{_route}{parameters}";
 
-            var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync(url);
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync(url);
 
-            await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
-            if (expectedStatusCode != HttpStatusCode.OK)
-            {
-                return null;
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<FooDto>>(content);
+        if (expectedStatusCode != HttpStatusCode.OK)
+        {
+            return null;
         }
 
-        public static async Task<IdAndRowVersion> CreateFooAsync(
-            UserType userType,
-            string plant,
-            string title,
-            string projectName,
-            HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
-            string expectedMessageOnBadRequest = null)
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<List<FooDto>>(content);
+    }
+
+    public static async Task<IdAndRowVersion> CreateFooAsync(
+        UserType userType,
+        string plant,
+        string title,
+        string projectName,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
         {
-            var bodyPayload = new
-            {
-                title,
-                projectName
-            };
+            title,
+            projectName
+        };
 
-            var serializePayload = JsonConvert.SerializeObject(bodyPayload);
-            var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
-            var response = await TestFactory.Instance.GetHttpClient(userType, plant).PostAsync(_route, content);
-            await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PostAsync(_route, content);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return null;
-            }
-
-            var jsonString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IdAndRowVersion>(jsonString);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return null;
         }
 
-        public static async Task<string> UpdateFooAsync(
-            UserType userType,
-            string plant,
-            int id,
-            string title,
-            string rowVersion,
-            HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
-            string expectedMessageOnBadRequest = null)
+        var jsonString = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IdAndRowVersion>(jsonString);
+    }
+
+    public static async Task<string> UpdateFooAsync(
+        UserType userType,
+        string plant,
+        int id,
+        string title,
+        string rowVersion,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
         {
-            var bodyPayload = new
-            {
-                title,
-                rowVersion
-            };
+            title,
+            rowVersion
+        };
 
-            var serializePayload = JsonConvert.SerializeObject(bodyPayload);
-            var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
-            var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{id}", content);
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{id}", content);
 
-            await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return null;
-            }
-
-            return await response.Content.ReadAsStringAsync();
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return null;
         }
 
-        public static async Task<string> VoidFooAsync(
-            UserType userType,
-            string plant,
-            int id,
-            string rowVersion,
-            HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
-            string expectedMessageOnBadRequest = null)
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public static async Task<string> VoidFooAsync(
+        UserType userType,
+        string plant,
+        int id,
+        string rowVersion,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
         {
-            var bodyPayload = new
-            {
-                rowVersion
-            };
+            rowVersion
+        };
 
-            var serializePayload = JsonConvert.SerializeObject(bodyPayload);
-            var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
-            var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{id}/Void", content);
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{id}/Void", content);
 
-            await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return null;
-            }
-
-            return await response.Content.ReadAsStringAsync();
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return null;
         }
 
-        public static async Task DeleteFooAsync(
-            UserType userType,
-            string plant,
-            int id,
-            string rowVersion,
-            HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
-            string expectedMessageOnBadRequest = null)
-        {
-            var bodyPayload = new
-            {
-                rowVersion
-            };
-            var serializePayload = JsonConvert.SerializeObject(bodyPayload);
-            var request = new HttpRequestMessage(HttpMethod.Delete, $"{_route}/{id}")
-            {
-                Content = new StringContent(serializePayload, Encoding.UTF8, "application/json")
-            };
+        return await response.Content.ReadAsStringAsync();
+    }
 
-            var response = await TestFactory.Instance.GetHttpClient(userType, plant).SendAsync(request);
-            await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
-        }
+    public static async Task DeleteFooAsync(
+        UserType userType,
+        string plant,
+        int id,
+        string rowVersion,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
+        {
+            rowVersion
+        };
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"{_route}/{id}")
+        {
+            Content = new StringContent(serializePayload, Encoding.UTF8, "application/json")
+        };
+
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).SendAsync(request);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
     }
 }

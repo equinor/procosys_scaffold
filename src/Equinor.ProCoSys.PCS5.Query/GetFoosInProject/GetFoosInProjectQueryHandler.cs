@@ -10,32 +10,31 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ServiceResult;
 
-namespace Equinor.ProCoSys.PCS5.Query.GetFoosInProject
+namespace Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
+
+public class GetFoosInProjectQueryHandler : IRequestHandler<GetFoosInProjectQuery, Result<IEnumerable<FooDto>>>
 {
-    public class GetFoosInProjectQueryHandler : IRequestHandler<GetFoosInProjectQuery, Result<IEnumerable<FooDto>>>
+    private readonly IReadOnlyContext _context;
+
+    public GetFoosInProjectQueryHandler(IReadOnlyContext context) => _context = context;
+
+    public async Task<Result<IEnumerable<FooDto>>> Handle(GetFoosInProjectQuery request, CancellationToken cancellationToken)
     {
-        private readonly IReadOnlyContext _context;
-
-        public GetFoosInProjectQueryHandler(IReadOnlyContext context) => _context = context;
-
-        public async Task<Result<IEnumerable<FooDto>>> Handle(GetFoosInProjectQuery request, CancellationToken cancellationToken)
-        {
-            var foos =
-                await (from foo in _context.QuerySet<Foo>()
-                       join pro in _context.QuerySet<Project>()
-                           on foo.ProjectId equals pro.Id
-                       where pro.Name == request.ProjectName && (!foo.IsVoided || request.IncludeVoided)
-                       select new FooDto(
-                           foo.Id,
-                           pro.Name,
-                           foo.Title,
-                           foo.IsVoided,
-                           foo.RowVersion.ConvertToString())
+        var foos =
+            await (from foo in _context.QuerySet<Foo>()
+                    join pro in _context.QuerySet<Project>()
+                        on foo.ProjectId equals pro.Id
+                    where pro.Name == request.ProjectName && (!foo.IsVoided || request.IncludeVoided)
+                    select new FooDto(
+                        foo.Id,
+                        pro.Name,
+                        foo.Title,
+                        foo.IsVoided,
+                        foo.RowVersion.ConvertToString())
                 )
                 .TagWith($"{nameof(GetFoosInProjectQueryHandler)}: foos")
                 .ToListAsync(cancellationToken);
 
-            return new SuccessResult<IEnumerable<FooDto>>(foos);
-        }
+        return new SuccessResult<IEnumerable<FooDto>>(foos);
     }
 }

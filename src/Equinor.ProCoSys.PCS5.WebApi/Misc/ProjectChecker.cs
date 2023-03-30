@@ -6,37 +6,36 @@ using Equinor.ProCoSys.PCS5.Domain;
 using MediatR;
 using Equinor.ProCoSys.Common;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Misc
-{
-    public class ProjectChecker : IProjectChecker
-    {
-        private readonly IPlantProvider _plantProvider;
-        private readonly ICurrentUserProvider _currentUserProvider;
-        private readonly IPermissionCache _permissionCache;
+namespace Equinor.ProCoSys.PCS5.WebApi.Misc;
 
-        public ProjectChecker(IPlantProvider plantProvider,
-            ICurrentUserProvider currentUserProvider,
-            IPermissionCache permissionCache)
+public class ProjectChecker : IProjectChecker
+{
+    private readonly IPlantProvider _plantProvider;
+    private readonly ICurrentUserProvider _currentUserProvider;
+    private readonly IPermissionCache _permissionCache;
+
+    public ProjectChecker(IPlantProvider plantProvider,
+        ICurrentUserProvider currentUserProvider,
+        IPermissionCache permissionCache)
+    {
+        _plantProvider = plantProvider;
+        _currentUserProvider = currentUserProvider;
+        _permissionCache = permissionCache;
+    }
+
+    public async Task EnsureValidProjectAsync<TRequest>(TRequest request) where TRequest : IBaseRequest
+    {
+        if (request == null)
         {
-            _plantProvider = plantProvider;
-            _currentUserProvider = currentUserProvider;
-            _permissionCache = permissionCache;
+            throw new ArgumentNullException(nameof(request));
         }
 
-        public async Task EnsureValidProjectAsync<TRequest>(TRequest request) where TRequest : IBaseRequest
+        var plant = _plantProvider.Plant;
+        var userOid = _currentUserProvider.GetCurrentUserOid();
+
+        if (request is IProjectRequest projectRequest && projectRequest.ProjectName != null && !await _permissionCache.IsAValidProjectForUserAsync(plant, userOid, projectRequest.ProjectName))
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            var plant = _plantProvider.Plant;
-            var userOid = _currentUserProvider.GetCurrentUserOid();
-
-            if (request is IProjectRequest projectRequest && projectRequest.ProjectName != null && !await _permissionCache.IsAValidProjectForUserAsync(plant, userOid, projectRequest.ProjectName))
-            {
-                throw new InValidProjectException($"Project '{projectRequest.ProjectName}' is not a valid project in '{plant}'");
-            }
+            throw new InValidProjectException($"Project '{projectRequest.ProjectName}' is not a valid project in '{plant}'");
         }
     }
 }

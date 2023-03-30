@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using MediatR;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Misc
+namespace Equinor.ProCoSys.PCS5.WebApi.Misc;
+
+public interface IProjectChecker
 {
-    public interface IProjectChecker
-    {
-        Task EnsureValidProjectAsync<TRequest>(TRequest request) where TRequest: IBaseRequest;
-    }
+    Task EnsureValidProjectAsync<TRequest>(TRequest request) where TRequest: IBaseRequest;
 }

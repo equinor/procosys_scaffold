@@ -2,21 +2,20 @@
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
 
-namespace Equinor.ProCoSys.PCS5.Domain
+namespace Equinor.ProCoSys.PCS5.Domain;
+
+public interface IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
 {
-    public interface IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
-    {
-        void Add(TEntity item);
+    void Add(TEntity item);
 
-        Task<bool> Exists(int id);
+    Task<bool> Exists(int id);
 
-        Task<TEntity?> GetByIdAsync(int id);
+    Task<TEntity?> GetByIdAsync(int id);
 
-        Task<List<TEntity>> GetByIdsAsync(IEnumerable<int> id);
+    Task<List<TEntity>> GetByIdsAsync(IEnumerable<int> id);
 
-        void Remove(TEntity entity);
+    void Remove(TEntity entity);
 
-        Task<List<TEntity>> GetAllAsync();
+    Task<List<TEntity>> GetAllAsync();
 
-    }
 }

@@ -1,16 +1,15 @@
 ﻿using Equinor.ProCoSys.Common.Misc;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Seeding
+namespace Equinor.ProCoSys.PCS5.WebApi.Seeding;
+
+public class SeedingPlantProvider : IPlantProvider
 {
-    public class SeedingPlantProvider : IPlantProvider
-    {
-        public SeedingPlantProvider(string plant) => Plant = plant;
+    public SeedingPlantProvider(string plant) => Plant = plant;
 
-        public string Plant { get; }
+    public string Plant { get; }
 
-        public bool IsCrossPlantQuery => throw new System.NotImplementedException();
+    public bool IsCrossPlantQuery => throw new System.NotImplementedException();
 
-        public void SetTemporaryPlant(string plant) => throw new System.NotImplementedException();
-        public void ReleaseTemporaryPlant() => throw new System.NotImplementedException();
-    }
+    public void SetTemporaryPlant(string plant) => throw new System.NotImplementedException();
+    public void ReleaseTemporaryPlant() => throw new System.NotImplementedException();
 }

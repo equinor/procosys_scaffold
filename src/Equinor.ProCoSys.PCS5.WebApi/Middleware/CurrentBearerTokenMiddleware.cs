@@ -3,36 +3,35 @@ using Equinor.ProCoSys.Auth.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Middleware
+namespace Equinor.ProCoSys.PCS5.WebApi.Middleware;
+
+public class CurrentBearerTokenMiddleware
 {
-    public class CurrentBearerTokenMiddleware
+    private readonly RequestDelegate _next;
+
+    public CurrentBearerTokenMiddleware(RequestDelegate next) => _next = next;
+
+    public async Task InvokeAsync(
+        HttpContext context,
+        IHttpContextAccessor httpContextAccessor,
+        IBearerTokenSetterForAll bearerTokenSetterForAll,
+        ILogger<CurrentBearerTokenMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-
-        public CurrentBearerTokenMiddleware(RequestDelegate next) => _next = next;
-
-        public async Task InvokeAsync(
-            HttpContext context,
-            IHttpContextAccessor httpContextAccessor,
-            IBearerTokenSetterForAll bearerTokenSetterForAll,
-            ILogger<CurrentBearerTokenMiddleware> logger)
+        logger.LogInformation($"----- {GetType().Name} start");
+        if (httpContextAccessor.HttpContext != null)
         {
-            logger.LogInformation($"----- {GetType().Name} start");
-            if (httpContextAccessor.HttpContext != null)
+            var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            var tokens = authorizationHeader.ToString()?.Split(' ');
+
+            if (tokens != null && tokens.Length > 1)
             {
-                var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["Authorization"];
-                var tokens = authorizationHeader.ToString()?.Split(' ');
-
-                if (tokens != null && tokens.Length > 1)
-                {
-                    var token = tokens[1];
-                    bearerTokenSetterForAll.SetBearerToken(token);
-                }
+                var token = tokens[1];
+                bearerTokenSetterForAll.SetBearerToken(token);
             }
-
-            logger.LogInformation($"----- {GetType().Name} complete");
-            // Call the next delegate/middleware in the pipeline
-            await _next(context);
         }
+
+        logger.LogInformation($"----- {GetType().Name} complete");
+        // Call the next delegate/middleware in the pipeline
+        await _next(context);
     }
 }

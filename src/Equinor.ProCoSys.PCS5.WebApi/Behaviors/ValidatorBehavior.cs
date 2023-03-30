@@ -7,39 +7,38 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Behaviors
+namespace Equinor.ProCoSys.PCS5.WebApi.Behaviors;
+
+public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    private readonly ILogger<ValidatorBehavior<TRequest, TResponse>> _logger;
+    private readonly IEnumerable<IValidator<TRequest>> _validators;
+
+    public ValidatorBehavior(IEnumerable<IValidator<TRequest>> validators, ILogger<ValidatorBehavior<TRequest, TResponse>> logger)
     {
-        private readonly ILogger<ValidatorBehavior<TRequest, TResponse>> _logger;
-        private readonly IEnumerable<IValidator<TRequest>> _validators;
+        _validators = validators;
+        _logger = logger;
+    }
 
-        public ValidatorBehavior(IEnumerable<IValidator<TRequest>> validators, ILogger<ValidatorBehavior<TRequest, TResponse>> logger)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        var typeName = request.GetGenericTypeName();
+
+        _logger.LogInformation("----- Validating command {CommandType}", typeName);
+
+        var failures = _validators
+            .Select(async v => await v.ValidateAsync(request, cancellationToken))
+            .SelectMany(result => result.Result.Errors)
+            .Where(error => error != null)
+            .ToList();
+
+        if (failures.Any())
         {
-            _validators = validators;
-            _logger = logger;
+            _logger.LogWarning("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, request, failures);
+
+            throw new ValidationException("Validation errors", failures);
         }
 
-        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
-        {
-            var typeName = request.GetGenericTypeName();
-
-            _logger.LogInformation("----- Validating command {CommandType}", typeName);
-
-            var failures = _validators
-                .Select(async v => await v.ValidateAsync(request, cancellationToken))
-                .SelectMany(result => result.Result.Errors)
-                .Where(error => error != null)
-                .ToList();
-
-            if (failures.Any())
-            {
-                _logger.LogWarning("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, request, failures);
-
-                throw new ValidationException("Validation errors", failures);
-            }
-
-            return await next();
-        }
+        return await next();
     }
 }

@@ -5,48 +5,47 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.Auth.Client;
 using Microsoft.Extensions.Options;
 
-namespace Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project
+namespace Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
+
+public class MainApiProjectService : IProjectApiService
 {
-    public class MainApiProjectService : IProjectApiService
+    private readonly string _apiVersion;
+    private readonly Uri _baseAddress;
+    private readonly IMainApiClient _apiClient;
+
+    public MainApiProjectService(
+        IMainApiClient apiClient,
+        IOptionsMonitor<MainApiOptions> options)
     {
-        private readonly string _apiVersion;
-        private readonly Uri _baseAddress;
-        private readonly IMainApiClient _apiClient;
+        _apiClient = apiClient;
+        _apiVersion = options.CurrentValue.ApiVersion;
+        _baseAddress = new Uri(options.CurrentValue.BaseAddress);
+    }
 
-        public MainApiProjectService(
-            IMainApiClient apiClient,
-            IOptionsMonitor<MainApiOptions> options)
+    public async Task<ProCoSysProject?> TryGetProjectAsync(string plant, string? projectName)
+    {
+        if (string.IsNullOrEmpty(projectName))
         {
-            _apiClient = apiClient;
-            _apiVersion = options.CurrentValue.ApiVersion;
-            _baseAddress = new Uri(options.CurrentValue.BaseAddress);
+            return null;
         }
 
-        public async Task<ProCoSysProject?> TryGetProjectAsync(string plant, string? projectName)
-        {
-            if (string.IsNullOrEmpty(projectName))
-            {
-                return null;
-            }
+        var url = $"{_baseAddress}ProjectByName" +
+                  $"?plantId={plant}" +
+                  $"&projectName={WebUtility.UrlEncode(projectName)}" +
+                  $"&api-version={_apiVersion}";
 
-            var url = $"{_baseAddress}ProjectByName" +
-                $"?plantId={plant}" +
-                $"&projectName={WebUtility.UrlEncode(projectName)}" +
-                $"&api-version={_apiVersion}";
+        return await _apiClient.TryQueryAndDeserializeAsync<ProCoSysProject>(url);
+    }
 
-            return await _apiClient.TryQueryAndDeserializeAsync<ProCoSysProject>(url);
-        }
+    public async Task<IList<ProCoSysProject>> GetProjectsInPlantAsync(string plant)
+    {
+        var url = $"{_baseAddress}Projects" +
+                  $"?plantId={plant}" +
+                  $"&api-version={_apiVersion}" +
+                  "&includeSubProjectsOnly=true";
 
-        public async Task<IList<ProCoSysProject>> GetProjectsInPlantAsync(string plant)
-        {
-            var url = $"{_baseAddress}Projects" +
-                      $"?plantId={plant}" +
-                      $"&api-version={_apiVersion}" +
-                      "&includeSubProjectsOnly=true";
+        var projects = await _apiClient.QueryAndDeserializeAsync<List<ProCoSysProject>>(url);
 
-            var projects = await _apiClient.QueryAndDeserializeAsync<List<ProCoSysProject>>(url);
-
-            return projects;
-        }
+        return projects;
     }
 }

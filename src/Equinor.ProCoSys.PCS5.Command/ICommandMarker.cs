@@ -1,7 +1,6 @@
-﻿namespace Equinor.ProCoSys.PCS5.Command
+﻿namespace Equinor.ProCoSys.PCS5.Command;
+
+public interface ICommandMarker
 {
-    public interface ICommandMarker
-    {
-        // Marker interface for assembly
-    }
+    // Marker interface for assembly
 }

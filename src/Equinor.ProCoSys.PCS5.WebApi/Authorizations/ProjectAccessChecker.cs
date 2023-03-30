@@ -3,23 +3,22 @@ using System.Security.Claims;
 using Equinor.ProCoSys.Auth.Authorization;
 using Equinor.ProCoSys.Auth.Misc;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Authorizations
+namespace Equinor.ProCoSys.PCS5.WebApi.Authorizations;
+
+public class ProjectAccessChecker : IProjectAccessChecker
 {
-    public class ProjectAccessChecker : IProjectAccessChecker
+    private readonly IClaimsPrincipalProvider _claimsPrincipalProvider;
+
+    public ProjectAccessChecker(IClaimsPrincipalProvider claimsPrincipalProvider) => _claimsPrincipalProvider = claimsPrincipalProvider;
+
+    public bool HasCurrentUserAccessToProject(string? projectName)
     {
-        private readonly IClaimsPrincipalProvider _claimsPrincipalProvider;
-
-        public ProjectAccessChecker(IClaimsPrincipalProvider claimsPrincipalProvider) => _claimsPrincipalProvider = claimsPrincipalProvider;
-
-        public bool HasCurrentUserAccessToProject(string? projectName)
+        if (string.IsNullOrEmpty(projectName))
         {
-            if (string.IsNullOrEmpty(projectName))
-            {
-                return false;
-            }
-            
-            var userDataClaimWithProject = ClaimsTransformation.GetProjectClaimValue(projectName);
-            return _claimsPrincipalProvider.GetCurrentClaimsPrincipal().Claims.Any(c => c.Type == ClaimTypes.UserData && c.Value == userDataClaimWithProject);
+            return false;
         }
+            
+        var userDataClaimWithProject = ClaimsTransformation.GetProjectClaimValue(projectName);
+        return _claimsPrincipalProvider.GetCurrentClaimsPrincipal().Claims.Any(c => c.Type == ClaimTypes.UserData && c.Value == userDataClaimWithProject);
     }
 }

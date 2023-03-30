@@ -1,7 +1,6 @@
-﻿namespace Equinor.ProCoSys.PCS5.WebApi.Authorizations
+﻿namespace Equinor.ProCoSys.PCS5.WebApi.Authorizations;
+
+public interface IProjectAccessChecker
 {
-    public interface IProjectAccessChecker
-    {
-        bool HasCurrentUserAccessToProject(string projectName);
-    }
+    bool HasCurrentUserAccessToProject(string projectName);
 }

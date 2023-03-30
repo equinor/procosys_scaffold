@@ -5,65 +5,64 @@ using Equinor.ProCoSys.PCS5.WebApi.Authorizations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations
+namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations;
+
+[TestClass]
+public class ProjectAccessCheckerTests
 {
-    [TestClass]
-    public class ProjectAccessCheckerTests
+    private readonly string ProjectName = "P1";
+    private ProjectAccessChecker _dut;
+
+    [TestInitialize]
+    public void Setup()
     {
-        private readonly string ProjectName = "P1";
-        private ProjectAccessChecker _dut;
-
-        [TestInitialize]
-        public void Setup()
-        {
-            var principal = new ClaimsPrincipal();
-            var claimsIdentity = new ClaimsIdentity();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.UserData, ClaimsTransformation.GetProjectClaimValue(ProjectName)));
-            principal.AddIdentity(claimsIdentity);
-            var claimsPrincipalProviderMock = new Mock<IClaimsPrincipalProvider>();
-            claimsPrincipalProviderMock.Setup(c => c.GetCurrentClaimsPrincipal()).Returns(principal);
+        var principal = new ClaimsPrincipal();
+        var claimsIdentity = new ClaimsIdentity();
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.UserData, ClaimsTransformation.GetProjectClaimValue(ProjectName)));
+        principal.AddIdentity(claimsIdentity);
+        var claimsPrincipalProviderMock = new Mock<IClaimsPrincipalProvider>();
+        claimsPrincipalProviderMock.Setup(c => c.GetCurrentClaimsPrincipal()).Returns(principal);
             
-            _dut = new ProjectAccessChecker(claimsPrincipalProviderMock.Object);
-        }
+        _dut = new ProjectAccessChecker(claimsPrincipalProviderMock.Object);
+    }
 
-        [TestMethod]
-        public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectClaimNotExists()
-        {
-            // Act
-            var result = _dut.HasCurrentUserAccessToProject("XYZ");
+    [TestMethod]
+    public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectClaimNotExists()
+    {
+        // Act
+        var result = _dut.HasCurrentUserAccessToProject("XYZ");
 
-            // Assert
-            Assert.IsFalse(result);
-        }
+        // Assert
+        Assert.IsFalse(result);
+    }
 
-        [TestMethod]
-        public void HasCurrentUserAccessToProject_ShouldReturnTrue_WhenProjectClaimExists()
-        {
-            // Act
-            var result = _dut.HasCurrentUserAccessToProject(ProjectName);
+    [TestMethod]
+    public void HasCurrentUserAccessToProject_ShouldReturnTrue_WhenProjectClaimExists()
+    {
+        // Act
+        var result = _dut.HasCurrentUserAccessToProject(ProjectName);
 
-            // Assert
-            Assert.IsTrue(result);
-        }
+        // Assert
+        Assert.IsTrue(result);
+    }
 
-        [TestMethod]
-        public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectIsNull()
-        {
-            // Act
-            var result = _dut.HasCurrentUserAccessToProject(null);
+    [TestMethod]
+    public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectIsNull()
+    {
+        // Act
+        var result = _dut.HasCurrentUserAccessToProject(null);
 
-            // Assert
-            Assert.IsFalse(result);
-        }
+        // Assert
+        Assert.IsFalse(result);
+    }
 
-        [TestMethod]
-        public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectToCheckIsBlank()
-        {
-            // Act
-            var result = _dut.HasCurrentUserAccessToProject("");
+    [TestMethod]
+    public void HasCurrentUserAccessToProject_ShouldReturnFalse_WhenProjectToCheckIsBlank()
+    {
+        // Act
+        var result = _dut.HasCurrentUserAccessToProject("");
 
-            // Assert
-            Assert.IsFalse(result);
-        }
+        // Assert
+        Assert.IsFalse(result);
     }
 }

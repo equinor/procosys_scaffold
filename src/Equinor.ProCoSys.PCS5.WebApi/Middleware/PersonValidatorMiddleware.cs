@@ -5,36 +5,35 @@ using Equinor.ProCoSys.Common.Misc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Middleware
+namespace Equinor.ProCoSys.PCS5.WebApi.Middleware;
+
+public class PersonValidatorMiddleware
 {
-    public class PersonValidatorMiddleware
+    private readonly RequestDelegate _next;
+
+    public PersonValidatorMiddleware(RequestDelegate next) => _next = next;
+
+    public async Task InvokeAsync(
+        HttpContext context,
+        ICurrentUserProvider currentUserProvider,
+        ILocalPersonRepository localPersonRepository,
+        IPersonCache personCache,
+        ILogger<PersonValidatorMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-
-        public PersonValidatorMiddleware(RequestDelegate next) => _next = next;
-
-        public async Task InvokeAsync(
-            HttpContext context,
-            ICurrentUserProvider currentUserProvider,
-            ILocalPersonRepository localPersonRepository,
-            IPersonCache personCache,
-            ILogger<PersonValidatorMiddleware> logger)
+        logger.LogInformation($"----- {GetType().Name} start");
+        if (currentUserProvider.HasCurrentUser)
         {
-            logger.LogInformation($"----- {GetType().Name} start");
-            if (currentUserProvider.HasCurrentUser)
+            var oid = currentUserProvider.GetCurrentUserOid();
+            if (!await localPersonRepository.ExistsAsync(oid) &&
+                !await personCache.ExistsAsync(oid))
             {
-                var oid = currentUserProvider.GetCurrentUserOid();
-                if (!await localPersonRepository.ExistsAsync(oid) &&
-                    !await personCache.ExistsAsync(oid))
-                {
-                    await context.WriteForbidden(logger);
-                    return;
-                }
+                await context.WriteForbidden(logger);
+                return;
             }
-
-            logger.LogInformation($"----- {GetType().Name} complete");
-            // Call the next delegate/middleware in the pipeline
-            await _next(context);
         }
+
+        logger.LogInformation($"----- {GetType().Name} complete");
+        // Call the next delegate/middleware in the pipeline
+        await _next(context);
     }
 }

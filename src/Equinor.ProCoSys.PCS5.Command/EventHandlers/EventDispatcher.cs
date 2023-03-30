@@ -5,52 +5,51 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
 using MediatR;
 
-namespace Equinor.ProCoSys.PCS5.Command.EventHandlers
+namespace Equinor.ProCoSys.PCS5.Command.EventHandlers;
+
+public class EventDispatcher : IEventDispatcher
 {
-    public class EventDispatcher : IEventDispatcher
+    private readonly IMediator _mediator;
+
+    public EventDispatcher(IMediator mediator) => _mediator = mediator;
+
+    public async Task DispatchPreSaveAsync(IEnumerable<EntityBase> entities, CancellationToken cancellationToken = default)
     {
-        private readonly IMediator _mediator;
+        var allEntities = entities.ToList();
 
-        public EventDispatcher(IMediator mediator) => _mediator = mediator;
+        var events = allEntities
+            .SelectMany(x => x.PreSaveDomainEvents)
+            .ToList();
 
-        public async Task DispatchPreSaveAsync(IEnumerable<EntityBase> entities, CancellationToken cancellationToken = default)
-        {
-            var allEntities = entities.ToList();
+        allEntities.ForEach(e => e.ClearPreSaveDomainEvents());
 
-            var events = allEntities
-                .SelectMany(x => x.PreSaveDomainEvents)
-                .ToList();
+        var tasks = PublishToMediator(events, cancellationToken);
 
-            allEntities.ForEach(e => e.ClearPreSaveDomainEvents());
+        await Task.WhenAll(tasks);
+    }
 
-            var tasks = PublishToMediator(events, cancellationToken);
+    public async Task DispatchPostSaveAsync(IEnumerable<EntityBase> entities, CancellationToken cancellationToken = default)
+    {
+        var entityList = entities.ToList();
 
-            await Task.WhenAll(tasks);
-        }
+        var events = entityList
+            .SelectMany(x => x.PostSaveDomainEvents)
+            .ToList();
 
-        public async Task DispatchPostSaveAsync(IEnumerable<EntityBase> entities, CancellationToken cancellationToken = default)
-        {
-            var entityList = entities.ToList();
+        entityList.ForEach(e => e.ClearPostSaveDomainEvents());
 
-            var events = entityList
-                .SelectMany(x => x.PostSaveDomainEvents)
-                .ToList();
+        var tasks = PublishToMediator(events, cancellationToken);
 
-            entityList.ForEach(e => e.ClearPostSaveDomainEvents());
+        await Task.WhenAll(tasks);
+    }
 
-            var tasks = PublishToMediator(events, cancellationToken);
-
-            await Task.WhenAll(tasks);
-        }
-
-        private IEnumerable<Task> PublishToMediator(IList<INotification> domainEvents, CancellationToken cancellationToken)
-        {
-            var tasks = domainEvents
-                .Select(async (domainEvent) =>
-                {
-                    await _mediator.Publish(domainEvent, cancellationToken);
-                });
-            return tasks;
-        }
+    private IEnumerable<Task> PublishToMediator(IList<INotification> domainEvents, CancellationToken cancellationToken)
+    {
+        var tasks = domainEvents
+            .Select(async (domainEvent) =>
+            {
+                await _mediator.Publish(domainEvent, cancellationToken);
+            });
+        return tasks;
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace Equinor.ProCoSys.PCS5.Query
+﻿namespace Equinor.ProCoSys.PCS5.Query;
+
+public interface IQueryMarker
 {
-    public interface IQueryMarker
-    {
-        // Marker interface for assembly
-    }
+    // Marker interface for assembly
 }

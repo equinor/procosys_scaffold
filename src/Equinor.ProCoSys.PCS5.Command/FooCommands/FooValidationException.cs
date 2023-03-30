@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.Command.FooCommands
+namespace Equinor.ProCoSys.PCS5.Command.FooCommands;
+
+public class FooValidationException : Exception
 {
-    public class FooValidationException : Exception
+    public FooValidationException(string error) : base(error)
     {
-        public FooValidationException(string error) : base(error)
-        {
-        }
     }
 }

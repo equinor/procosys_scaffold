@@ -2,16 +2,15 @@
 using Azure.Messaging.ServiceBus;
 using Equinor.ProCoSys.PcsServiceBus.Sender.Interfaces;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization
+namespace Equinor.ProCoSys.PCS5.WebApi.Synchronization;
+
+/// Used when service bus is disabled
+class DisabledServiceBusSender : IPcsBusSender
 {
-    /// Used when service bus is disabled
-    class DisabledServiceBusSender : IPcsBusSender
-    {
-        public Task SendAsync(string topic, string jsonMessage) => Task.CompletedTask;
+    public Task SendAsync(string topic, string jsonMessage) => Task.CompletedTask;
 
-        public Task CloseAllAsync() => Task.CompletedTask;
-        public ValueTask<ServiceBusMessageBatch> CreateMessageBatchAsync(string topic) => ValueTask.FromResult<ServiceBusMessageBatch>(null!);
+    public Task CloseAllAsync() => Task.CompletedTask;
+    public ValueTask<ServiceBusMessageBatch> CreateMessageBatchAsync(string topic) => ValueTask.FromResult<ServiceBusMessageBatch>(null!);
 
-        public Task SendMessagesAsync(ServiceBusMessageBatch messageBatch, string topic) => Task.CompletedTask;
-    }
+    public Task SendMessagesAsync(ServiceBusMessageBatch messageBatch, string topic) => Task.CompletedTask;
 }

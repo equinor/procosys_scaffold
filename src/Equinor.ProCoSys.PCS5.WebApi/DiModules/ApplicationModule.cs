@@ -22,52 +22,51 @@ using Equinor.ProCoSys.Common.Email;
 using Equinor.ProCoSys.Common.Telemetry;
 using Equinor.ProCoSys.Common;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.DIModules
+namespace Equinor.ProCoSys.PCS5.WebApi.DIModules;
+
+public static class ApplicationModule
 {
-    public static class ApplicationModule
+    public static void AddApplicationModules(this IServiceCollection services, IConfiguration configuration)
     {
-        public static void AddApplicationModules(this IServiceCollection services, IConfiguration configuration)
+        services.Configure<ApplicationOptions>(configuration.GetSection("Application"));
+        services.Configure<MainApiOptions>(configuration.GetSection("MainApi"));
+        services.Configure<CacheOptions>(configuration.GetSection("CacheOptions"));
+        services.Configure<PCS5AuthenticatorOptions>(configuration.GetSection("Authenticator"));
+
+        services.AddDbContext<PCS5Context>(options =>
         {
-            services.Configure<ApplicationOptions>(configuration.GetSection("Application"));
-            services.Configure<MainApiOptions>(configuration.GetSection("MainApi"));
-            services.Configure<CacheOptions>(configuration.GetSection("CacheOptions"));
-            services.Configure<PCS5AuthenticatorOptions>(configuration.GetSection("Authenticator"));
+            var connectionString = configuration.GetConnectionString(PCS5Context.PCS5ContextConnectionStringName);
+            options.UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+        });
 
-            services.AddDbContext<PCS5Context>(options =>
-            {
-                var connectionString = configuration.GetConnectionString(PCS5Context.PCS5ContextConnectionStringName);
-                options.UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-            });
+        services.AddHttpContextAccessor();
+        services.AddHttpClient();
 
-            services.AddHttpContextAccessor();
-            services.AddHttpClient();
+        // Hosted services
 
-            // Hosted services
+        // Transient - Created each time it is requested from the service container
 
-            // Transient - Created each time it is requested from the service container
+        // Scoped - Created once per client request (connection)
+        services.AddScoped<ITelemetryClient, ApplicationInsightsTelemetryClient>();
+        services.AddScoped<IAccessValidator, AccessValidator>();
+        services.AddScoped<IProjectAccessChecker, ProjectAccessChecker>();
+        services.AddScoped<IProjectChecker, ProjectChecker>();
+        services.AddScoped<IFooHelper, FooHelper>();
+        services.AddScoped<IEventDispatcher, EventDispatcher>();
+        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<PCS5Context>());
+        services.AddScoped<IReadOnlyContext, PCS5Context>();
+        services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<ILocalPersonRepository, LocalPersonRepository>();
+        services.AddScoped<IFooRepository, FooRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
 
-            // Scoped - Created once per client request (connection)
-            services.AddScoped<ITelemetryClient, ApplicationInsightsTelemetryClient>();
-            services.AddScoped<IAccessValidator, AccessValidator>();
-            services.AddScoped<IProjectAccessChecker, ProjectAccessChecker>();
-            services.AddScoped<IProjectChecker, ProjectChecker>();
-            services.AddScoped<IFooHelper, FooHelper>();
-            services.AddScoped<IEventDispatcher, EventDispatcher>();
-            services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<PCS5Context>());
-            services.AddScoped<IReadOnlyContext, PCS5Context>();
-            services.AddScoped<IPersonRepository, PersonRepository>();
-            services.AddScoped<ILocalPersonRepository, LocalPersonRepository>();
-            services.AddScoped<IFooRepository, FooRepository>();
-            services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
+        services.AddScoped<IProjectApiService, MainApiProjectService>();
 
-            services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
-            services.AddScoped<IProjectApiService, MainApiProjectService>();
+        services.AddScoped<IFooValidator, FooValidator>();
+        services.AddScoped<IRowVersionValidator, RowVersionValidator>();
 
-            services.AddScoped<IFooValidator, FooValidator>();
-            services.AddScoped<IRowVersionValidator, RowVersionValidator>();
-
-            // Singleton - Created the first time they are requested
-            services.AddSingleton<IEmailService, EmailService>();
-        }
+        // Singleton - Created the first time they are requested
+        services.AddSingleton<IEmailService, EmailService>();
     }
 }

@@ -4,26 +4,25 @@ using Equinor.ProCoSys.PCS5.Infrastructure.EntityConfigurations.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Equinor.ProCoSys.PCS5.Infrastructure.EntityConfigurations
+namespace Equinor.ProCoSys.PCS5.Infrastructure.EntityConfigurations;
+
+internal class FooConfiguration : IEntityTypeConfiguration<Foo>
 {
-    internal class FooConfiguration : IEntityTypeConfiguration<Foo>
+    public void Configure(EntityTypeBuilder<Foo> builder)
     {
-        public void Configure(EntityTypeBuilder<Foo> builder)
-        {
-            builder.ConfigurePlant();
-            builder.ConfigureCreationAudit();
-            builder.ConfigureModificationAudit();
-            builder.ConfigureConcurrencyToken();
+        builder.ConfigurePlant();
+        builder.ConfigureCreationAudit();
+        builder.ConfigureModificationAudit();
+        builder.ConfigureConcurrencyToken();
 
-            builder.HasOne<Project>()
-                .WithMany()
-                .HasForeignKey(x => x.ProjectId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne<Project>()
+            .WithMany()
+            .HasForeignKey(x => x.ProjectId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Property(x => x.Title)
-                .HasMaxLength(Foo.TitleMaxLength)
-                .IsRequired();
-        }
+        builder.Property(x => x.Title)
+            .HasMaxLength(Foo.TitleMaxLength)
+            .IsRequired();
     }
 }

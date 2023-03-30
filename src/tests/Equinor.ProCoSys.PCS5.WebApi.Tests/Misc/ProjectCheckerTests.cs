@@ -8,65 +8,64 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Equinor.ProCoSys.Common;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc
+namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc;
+
+[TestClass]
+public class ProjectCheckerTests
 {
-    [TestClass]
-    public class ProjectCheckerTests
+    private readonly Guid _currentUserOid = new Guid("12345678-1234-1234-1234-123456789123");
+    private readonly string _plant = "Plant";
+    private readonly string _project = "Project";
+
+    private Mock<IPlantProvider> _plantProviderMock;
+    private Mock<ICurrentUserProvider> _currentUserProviderMock;
+    private Mock<IPermissionCache> _permissionCacheMock;
+    private TestRequest _testRequest;
+    private ProjectChecker _dut;
+
+    [TestInitialize]
+    public void Setup()
     {
-        private readonly Guid _currentUserOid = new Guid("12345678-1234-1234-1234-123456789123");
-        private readonly string _plant = "Plant";
-        private readonly string _project = "Project";
+        _plantProviderMock = new Mock<IPlantProvider>();
+        _plantProviderMock.SetupGet(p => p.Plant).Returns(_plant);
 
-        private Mock<IPlantProvider> _plantProviderMock;
-        private Mock<ICurrentUserProvider> _currentUserProviderMock;
-        private Mock<IPermissionCache> _permissionCacheMock;
-        private TestRequest _testRequest;
-        private ProjectChecker _dut;
+        _currentUserProviderMock = new Mock<ICurrentUserProvider>();
+        _currentUserProviderMock.Setup(c => c.GetCurrentUserOid()).Returns(_currentUserOid);
 
-        [TestInitialize]
-        public void Setup()
-        {
-            _plantProviderMock = new Mock<IPlantProvider>();
-            _plantProviderMock.SetupGet(p => p.Plant).Returns(_plant);
+        _permissionCacheMock = new Mock<IPermissionCache>();
 
-            _currentUserProviderMock = new Mock<ICurrentUserProvider>();
-            _currentUserProviderMock.Setup(c => c.GetCurrentUserOid()).Returns(_currentUserOid);
+        _testRequest = new TestRequest(_project);
+        _dut = new ProjectChecker(_plantProviderMock.Object, _currentUserProviderMock.Object, _permissionCacheMock.Object);
+    }
 
-            _permissionCacheMock = new Mock<IPermissionCache>();
+    [TestMethod]
+    public async Task EnsureValidProjectAsync_ShouldValidateOK()
+    {
+        // Arrange
+        _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).ReturnsAsync(true);
 
-            _testRequest = new TestRequest(_project);
-            _dut = new ProjectChecker(_plantProviderMock.Object, _currentUserProviderMock.Object, _permissionCacheMock.Object);
-        }
+        // Act
+        await _dut.EnsureValidProjectAsync(_testRequest);
+    }
 
-        [TestMethod]
-        public async Task EnsureValidProjectAsync_ShouldValidateOK()
-        {
-            // Arrange
-            _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).ReturnsAsync(true);
+    [TestMethod]
+    public async Task EnsureValidProjectAsync_ShouldThrowInvalidException_WhenProjectIsNotValid()
+    {
+        // Arrange
+        _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).ReturnsAsync(false);
 
-            // Act
-            await _dut.EnsureValidProjectAsync(_testRequest);
-        }
+        // Act
+        await Assert.ThrowsExceptionAsync<InValidProjectException>(() => _dut.EnsureValidProjectAsync(_testRequest));
+    }
 
-        [TestMethod]
-        public async Task EnsureValidProjectAsync_ShouldThrowInvalidException_WhenProjectIsNotValid()
-        {
-            // Arrange
-            _permissionCacheMock.Setup(p => p.IsAValidProjectForUserAsync(_plant, _currentUserOid, _project)).ReturnsAsync(false);
+    [TestMethod]
+    public async Task EnsureValidProjectAsync_ShouldThrowException_WhenRequestIsNull()
+        => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _dut.EnsureValidProjectAsync((IBaseRequest)null));
 
-            // Act
-            await Assert.ThrowsExceptionAsync<InValidProjectException>(() => _dut.EnsureValidProjectAsync(_testRequest));
-        }
+    private class TestRequest : IBaseRequest, IProjectRequest
+    {
+        public TestRequest(string projectName) => ProjectName = projectName;
 
-        [TestMethod]
-        public async Task EnsureValidProjectAsync_ShouldThrowException_WhenRequestIsNull()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _dut.EnsureValidProjectAsync((IBaseRequest)null));
-
-        private class TestRequest : IBaseRequest, IProjectRequest
-        {
-            public TestRequest(string projectName) => ProjectName = projectName;
-
-            public string ProjectName { get; }
-        }
+        public string ProjectName { get; }
     }
 }

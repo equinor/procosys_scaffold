@@ -1,46 +1,45 @@
 ﻿using Equinor.ProCoSys.PCS5.Command.Validators.RowVersionValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.Validators
+namespace Equinor.ProCoSys.PCS5.Command.Tests.Validators;
+
+[TestClass]
+public class RowVersionValidatorTests
 {
-    [TestClass]
-    public class RowVersionValidatorTests
+    private RowVersionValidator _dut;
+
+    [TestInitialize]
+    public void SetUp() => _dut = new RowVersionValidator();
+
+    [TestMethod]
+    public void IsValid_ValidRowVersion_ShouldReturnTrue()
+    { 
+        const string validRowVersion = "AAAAAAAAABA=";
+
+        var result = _dut.IsValid(validRowVersion);
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void IsValid_InvalidRowVersion_ShouldReturnFalse()
     {
-        private RowVersionValidator _dut;
+        const string invalidRowVersion = "String";
 
-        [TestInitialize]
-        public void SetUp() => _dut = new RowVersionValidator();
+        var result = _dut.IsValid(invalidRowVersion);
+        Assert.IsFalse(result);
+    }
 
-        [TestMethod]
-        public void IsValid_ValidRowVersion_ShouldReturnTrue()
-        { 
-            const string validRowVersion = "AAAAAAAAABA=";
+    [TestMethod]
+    public void IsValid_EmptyString_ShouldReturnFalse()
+    {
+        var result = _dut.IsValid(string.Empty);
+        Assert.IsFalse(result);
+    }
 
-            var result = _dut.IsValid(validRowVersion);
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void IsValid_InvalidRowVersion_ShouldReturnFalse()
-        {
-            const string invalidRowVersion = "String";
-
-            var result = _dut.IsValid(invalidRowVersion);
-            Assert.IsFalse(result);
-        }
-
-        [TestMethod]
-        public void IsValid_EmptyString_ShouldReturnFalse()
-        {
-            var result = _dut.IsValid(string.Empty);
-            Assert.IsFalse(result);
-        }
-
-        [TestMethod]
-        public void IsValid_Null_ShouldReturnFalse()
-        {
-            var result = _dut.IsValid(null);
-            Assert.IsFalse(result);
-        }
+    [TestMethod]
+    public void IsValid_Null_ShouldReturnFalse()
+    {
+        var result = _dut.IsValid(null);
+        Assert.IsFalse(result);
     }
 }

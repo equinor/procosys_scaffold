@@ -2,9 +2,8 @@
 using MediatR;
 using ServiceResult;
 
-namespace Equinor.ProCoSys.PCS5.Query.GetProjectsInPlant
+namespace Equinor.ProCoSys.PCS5.Query.GetProjectsInPlant;
+
+public class GetProjectsInPlantQuery : IRequest<Result<List<ProCoSysProjectDto>>>
 {
-    public class GetProjectsInPlantQuery : IRequest<Result<List<ProCoSysProjectDto>>>
-    {
-    }
 }

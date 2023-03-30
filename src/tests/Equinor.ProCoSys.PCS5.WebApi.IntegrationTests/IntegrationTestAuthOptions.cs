@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
+namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests;
+
+internal class IntegrationTestAuthOptions : AuthenticationSchemeOptions
 {
-    internal class IntegrationTestAuthOptions : AuthenticationSchemeOptions
-    {
-    }
 }

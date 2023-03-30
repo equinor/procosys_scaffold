@@ -2,12 +2,11 @@
 using MediatR;
 using ServiceResult;
 
-namespace Equinor.ProCoSys.PCS5.Command.PersonCommands.CreatePerson
-{
-    public class CreatePersonCommand : IRequest<Result<Unit>>
-    {
-        public CreatePersonCommand(Guid oid) => Oid = oid;
+namespace Equinor.ProCoSys.PCS5.Command.PersonCommands.CreatePerson;
 
-        public Guid Oid { get; }
-    }
+public class CreatePersonCommand : IRequest<Result<Unit>>
+{
+    public CreatePersonCommand(Guid oid) => Oid = oid;
+
+    public Guid Oid { get; }
 }

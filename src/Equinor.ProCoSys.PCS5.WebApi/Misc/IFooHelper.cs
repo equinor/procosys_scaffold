@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Misc
+namespace Equinor.ProCoSys.PCS5.WebApi.Misc;
+
+public interface IFooHelper
 {
-    public interface IFooHelper
-    {
-        Task<string?> GetProjectNameAsync(int fooId);
-    }
+    Task<string?> GetProjectNameAsync(int fooId);
 }

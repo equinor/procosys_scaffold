@@ -8,59 +8,58 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.VoidFoo
+namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.VoidFoo;
+
+[TestClass]
+public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
 {
-    [TestClass]
-    public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
+    private readonly int _fooId = 1;
+    private readonly string _rowVersion = "AAAAAAAAABA=";
+
+    private Mock<IFooRepository> _fooRepositoryMock;
+    private Foo _existingFoo;
+
+    private VoidFooCommand _command;
+    private VoidFooCommandHandler _dut;
+
+    [TestInitialize]
+    public void Setup()
     {
-        private readonly int _fooId = 1;
-        private readonly string _rowVersion = "AAAAAAAAABA=";
+        var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
+        _existingFoo = new Foo(TestPlant, project, "Foo");
+        _existingFoo.SetProtectedIdForTesting(_fooId);
+        _fooRepositoryMock = new Mock<IFooRepository>();
+        _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
+            .ReturnsAsync(_existingFoo);
 
-        private Mock<IFooRepository> _fooRepositoryMock;
-        private Foo _existingFoo;
+        _command = new VoidFooCommand(_fooId, _rowVersion);
 
-        private VoidFooCommand _command;
-        private VoidFooCommandHandler _dut;
+        _dut = new VoidFooCommandHandler(
+            _fooRepositoryMock.Object,
+            UnitOfWorkMock.Object,
+            new Mock<ILogger<VoidFooCommandHandler>>().Object);
+    }
 
-        [TestInitialize]
-        public void Setup()
-        {
-            var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
-            _existingFoo = new Foo(TestPlant, project, "Foo");
-            _existingFoo.SetProtectedIdForTesting(_fooId);
-            _fooRepositoryMock = new Mock<IFooRepository>();
-            _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
-                .ReturnsAsync(_existingFoo);
+    [TestMethod]
+    public async Task HandlingCommand_ShouldVoidFoo()
+    {
+        // Arrange
+        Assert.IsFalse(_existingFoo.IsVoided);
 
-            _command = new VoidFooCommand(_fooId, _rowVersion);
+        // Act
+        await _dut.Handle(_command, default);
 
-            _dut = new VoidFooCommandHandler(
-                _fooRepositoryMock.Object,
-                UnitOfWorkMock.Object,
-                new Mock<ILogger<VoidFooCommandHandler>>().Object);
-        }
+        // Assert
+        Assert.IsTrue(_existingFoo.IsVoided);
+    }
 
-        [TestMethod]
-        public async Task HandlingCommand_ShouldVoidFoo()
-        {
-            // Arrange
-            Assert.IsFalse(_existingFoo.IsVoided);
+    [TestMethod]
+    public async Task HandlingCommand_ShouldSave()
+    {
+        // Act
+        await _dut.Handle(_command, default);
 
-            // Act
-            await _dut.Handle(_command, default);
-
-            // Assert
-            Assert.IsTrue(_existingFoo.IsVoided);
-        }
-
-        [TestMethod]
-        public async Task HandlingCommand_ShouldSave()
-        {
-            // Act
-            await _dut.Handle(_command, default);
-
-            // Assert
-            UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
-        }
+        // Assert
+        UnitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
     }
 }

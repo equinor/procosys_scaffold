@@ -1,10 +1,9 @@
-﻿namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests
+﻿namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests;
+
+public enum UserType
 {
-    public enum UserType
-    {
-        Anonymous,
-        Writer,
-        Reader,
-        NoPermissionUser
-    }
+    Anonymous,
+    Writer,
+    Reader,
+    NoPermissionUser
 }

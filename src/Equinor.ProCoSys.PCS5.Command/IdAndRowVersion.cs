@@ -1,14 +1,13 @@
-﻿namespace Equinor.ProCoSys.PCS5.Command
-{
-    public class IdAndRowVersion
-    {
-        public IdAndRowVersion(int id, string rowVersion)
-        {
-            Id = id;
-            RowVersion = rowVersion;
-        }
+﻿namespace Equinor.ProCoSys.PCS5.Command;
 
-        public int Id { get; }
-        public string RowVersion { get; }
+public class IdAndRowVersion
+{
+    public IdAndRowVersion(int id, string rowVersion)
+    {
+        Id = id;
+        RowVersion = rowVersion;
     }
+
+    public int Id { get; }
+    public string RowVersion { get; }
 }
