@@ -53,9 +53,9 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
 
     public static DateTimeKindConverter DateTimeKindConverter { get; } = new();
 
-    public DbSet<Person> Persons => Set<Person>();
-    public DbSet<Foo> Foos => Set<Foo>();
-    public DbSet<Project> Projects => Set<Project>();
+    public virtual DbSet<Person> Persons => Set<Person>();
+    public virtual DbSet<Foo> Foos => Set<Foo>();
+    public virtual DbSet<Project> Projects => Set<Project>();
 
     private void SetGlobalPlantFilter(ModelBuilder modelBuilder)
     {

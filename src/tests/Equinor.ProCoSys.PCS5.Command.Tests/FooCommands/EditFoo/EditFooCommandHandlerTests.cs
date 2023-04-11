@@ -15,8 +15,9 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo;
 public class EditFooCommandHandlerTests : CommandHandlerTestsBase
 {
     private readonly int _fooId = 1;
-    private readonly string _newTitle = "FooUpdated";
-    private readonly string _existingTitle = "OldFoo";
+    private readonly string _newTitle = "newTitle";
+    private readonly string _existingTitle = "existingTitle";
+    private readonly string _newText = "newText";
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
     private Mock<IFooRepository> _fooRepositoryMock;
@@ -35,7 +36,7 @@ public class EditFooCommandHandlerTests : CommandHandlerTestsBase
         _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
             .ReturnsAsync(_existingFoo);
 
-        _command = new EditFooCommand(_fooId, _newTitle, _rowVersion);
+        _command = new EditFooCommand(_fooId, _newTitle, _newText, _rowVersion);
 
         _dut = new EditFooCommandHandler(
             _fooRepositoryMock.Object,
@@ -51,6 +52,7 @@ public class EditFooCommandHandlerTests : CommandHandlerTestsBase
         await _dut.Handle(_command, default);
 
         Assert.AreEqual(_newTitle, _existingFoo.Title);
+        Assert.AreEqual(_newText, _existingFoo.Text);
     }
 
     [TestMethod]

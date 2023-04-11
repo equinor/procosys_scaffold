@@ -1,7 +1,12 @@
-﻿namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
 
 public class EditFooDto
 {
-    public string? Title { get; set; }
-    public string? RowVersion { get; set; }
+    [Required]
+    public string Title { get; set; } = null!;
+    public string? Text { get; set; }
+    [Required]
+    public string RowVersion { get; set; } = null!;
 }

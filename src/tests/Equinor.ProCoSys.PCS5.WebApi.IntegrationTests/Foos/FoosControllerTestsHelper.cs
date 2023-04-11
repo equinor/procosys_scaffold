@@ -91,6 +91,7 @@ public static class FoosControllerTestsHelper
         string plant,
         int id,
         string title,
+        string text,
         string rowVersion,
         HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
         string expectedMessageOnBadRequest = null)
@@ -98,6 +99,7 @@ public static class FoosControllerTestsHelper
         var bodyPayload = new
         {
             title,
+            text,
             rowVersion
         };
 

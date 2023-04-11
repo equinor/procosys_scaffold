@@ -1,11 +1,11 @@
 ﻿using System;
-using MediatR;
+using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.Domain.Events.PreSave;
 
-public class FooCreatedEvent : INotification
+public class FooCreatingEvent : IPreSaveDomainEvent
 {
-    public FooCreatedEvent(
+    public FooCreatingEvent(
         string plant,
         Guid proCoSysGuid)
     {

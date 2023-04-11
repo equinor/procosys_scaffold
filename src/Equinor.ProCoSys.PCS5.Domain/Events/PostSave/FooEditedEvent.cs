@@ -1,9 +1,9 @@
 ﻿using System;
-using MediatR;
+using Equinor.ProCoSys.Common;
 
-namespace Equinor.ProCoSys.PCS5.Domain.Events.PreSave;
+namespace Equinor.ProCoSys.PCS5.Domain.Events.PostSave;
 
-public class FooEditedEvent : INotification
+public class FooEditedEvent : IPostSaveDomainEvent
 {
     public FooEditedEvent(Guid proCoSysGuid) => ProCoSysGuid = proCoSysGuid;
         

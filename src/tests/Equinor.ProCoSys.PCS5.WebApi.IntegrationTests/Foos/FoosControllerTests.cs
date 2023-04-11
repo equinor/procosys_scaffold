@@ -82,6 +82,7 @@ public class FoosControllerTests : TestBase
     {
         // Arrange
         var newTitle = Guid.NewGuid().ToString();
+        var newText = Guid.NewGuid().ToString();
         var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooIdUnderTest);
         var initialRowVersion = foo.RowVersion;
 
@@ -91,12 +92,14 @@ public class FoosControllerTests : TestBase
             TestFactory.PlantWithAccess,
             foo.Id,
             newTitle,
+            newText,
             initialRowVersion);
 
         // Assert
         AssertRowVersionChange(initialRowVersion, newRowVersion);
         foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooIdUnderTest);
         Assert.AreEqual(newTitle, foo.Title);
+        Assert.AreEqual(newText, foo.Text);
         Assert.AreEqual(newRowVersion, foo.RowVersion);
     }
 

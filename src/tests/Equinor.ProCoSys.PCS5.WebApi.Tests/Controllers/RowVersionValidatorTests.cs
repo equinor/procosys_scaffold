@@ -1,7 +1,7 @@
-﻿using Equinor.ProCoSys.PCS5.Command.Validators.RowVersionValidators;
+﻿using Equinor.ProCoSys.PCS5.WebApi.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.Validators;
+namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Controllers;
 
 [TestClass]
 public class RowVersionValidatorTests

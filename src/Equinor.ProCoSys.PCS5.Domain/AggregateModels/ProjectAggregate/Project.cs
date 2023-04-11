@@ -22,9 +22,8 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
         : base(plant)
     {
         ProCoSysGuid = proCoSysGuid;
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        Description = description ?? throw new ArgumentNullException(nameof(description));
         Name = name;
+        Description = description;
     }
 
     // private set needed for EntityFramework

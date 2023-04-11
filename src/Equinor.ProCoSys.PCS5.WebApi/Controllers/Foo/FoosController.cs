@@ -77,7 +77,7 @@ public class FoosController : ControllerBase
         [FromBody] EditFooDto dto)
     {
         var result = await _mediator.Send(
-            new EditFooCommand(id, dto.Title, dto.RowVersion));
+            new EditFooCommand(id, dto.Title, dto.Text, dto.RowVersion));
         return this.FromResult(result);
     }
 

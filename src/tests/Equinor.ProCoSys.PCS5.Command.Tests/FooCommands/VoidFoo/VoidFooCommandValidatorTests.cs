@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
-using Equinor.ProCoSys.PCS5.Command.Validators.RowVersionValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -15,7 +14,6 @@ public class VoidFooCommandValidatorTests
 
     private VoidFooCommandValidator _dut;
     private Mock<IFooValidator> _fooValidatorMock;
-    private Mock<IRowVersionValidator> _rowVersionValidatorMock;
 
     private VoidFooCommand _command;
 
@@ -26,12 +24,7 @@ public class VoidFooCommandValidatorTests
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooId, default)).ReturnsAsync(true);
         _command = new VoidFooCommand(_fooId, _rowVersion);
 
-        _rowVersionValidatorMock = new Mock<IRowVersionValidator>();
-        _rowVersionValidatorMock.Setup(x => x.IsValid(_rowVersion)).Returns(true);
-
-        _dut = new VoidFooCommandValidator(
-            _fooValidatorMock.Object, 
-            _rowVersionValidatorMock.Object);
+        _dut = new VoidFooCommandValidator(_fooValidatorMock.Object);
     }
 
     [TestMethod]
