@@ -34,7 +34,7 @@ public class EditFooCommandHandler : IRequestHandler<EditFooCommand, Result<stri
             throw new Exception($"Entity {nameof(Foo)} {request.FooId} not found");
         }
 
-        foo.EditFoo(request.Title);
+        foo.EditFoo(request.Title, request.Text);
         foo.SetRowVersion(request.RowVersion);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

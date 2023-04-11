@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
-using Equinor.ProCoSys.PCS5.Command.Validators.RowVersionValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -15,7 +14,6 @@ public class DeleteFooCommandValidatorTests
 
     private DeleteFooCommandValidator _dut;
     private Mock<IFooValidator> _fooValidatorMock;
-    private Mock<IRowVersionValidator> _rowVersionValidatorMock;
 
     private DeleteFooCommand _command;
 
@@ -27,12 +25,7 @@ public class DeleteFooCommandValidatorTests
         _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooId, default)).ReturnsAsync(true);
         _command = new DeleteFooCommand(_fooId, _rowVersion);
 
-        _rowVersionValidatorMock = new Mock<IRowVersionValidator>();
-        _rowVersionValidatorMock.Setup(x => x.IsValid(_rowVersion)).Returns(true);
-
-        _dut = new DeleteFooCommandValidator(
-            _fooValidatorMock.Object, 
-            _rowVersionValidatorMock.Object);
+        _dut = new DeleteFooCommandValidator(_fooValidatorMock.Object);
     }
 
     [TestMethod]

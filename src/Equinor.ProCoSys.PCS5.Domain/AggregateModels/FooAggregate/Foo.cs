@@ -9,10 +9,9 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 
 public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IVoidable
 {
-    public const int ProjectNameMinLength = 3;
-    public const int ProjectNameMaxLength = 512;
     public const int TitleMinLength = 3;
     public const int TitleMaxLength = 250;
+    public const int TextMaxLength = 500;
 
 #pragma warning disable CS8618
     protected Foo()
@@ -21,7 +20,7 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
     {
     }
 
-    public Foo(string plant, Project project, string? title)
+    public Foo(string plant, Project project, string title)
         : base(plant)
     {
         if (project is null)
@@ -35,11 +34,11 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
         }
         ProjectId = project.Id;
 
-        Title = title ?? throw new ArgumentNullException(nameof(title));
+        Title = title;
 
         ProCoSysGuid = Guid.NewGuid();
 
-        AddPreSaveDomainEvent(new Events.PreSave.FooCreatedEvent(plant, ProCoSysGuid));
+        AddPreSaveDomainEvent(new Events.PreSave.FooCreatingEvent(plant, ProCoSysGuid));
         AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(plant, ProCoSysGuid));
     }
 
@@ -47,16 +46,19 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
     public Guid ProCoSysGuid { get; private set; }
     public int ProjectId { get; private set; }
     public string Title { get; set; }
+    public string? Text { get; set; }
 
     public DateTime CreatedAtUtc { get; private set; }
     public int CreatedById { get; private set; }
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
 
-    public void EditFoo(string? title)
+    public void EditFoo(string title, string? text)
     {
-        Title = title ?? throw new ArgumentNullException(nameof(title));
-        AddPreSaveDomainEvent(new Events.PreSave.FooEditedEvent(ProCoSysGuid));
+        Title = title;
+        Text = text;
+        AddPreSaveDomainEvent(new Events.PreSave.FooEditingEvent(ProCoSysGuid));
+        AddPostSaveDomainEvent(new Events.PostSave.FooEditedEvent(ProCoSysGuid));
     }
 
     public void SetCreated(Person createdBy)

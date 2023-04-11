@@ -39,11 +39,6 @@ public class FooTests
     }
 
     [TestMethod]
-    public void Constructor_ShouldThrowException_WhenTitleNotGiven() =>
-        Assert.ThrowsException<ArgumentNullException>(() =>
-            new Foo(_testPlant, _project, null!));
-
-    [TestMethod]
     public void Constructor_ShouldThrowException_WhenProjectNotGiven() =>
         Assert.ThrowsException<ArgumentNullException>(() =>
             new Foo(_testPlant, null!, _title));
@@ -55,7 +50,7 @@ public class FooTests
 
     [TestMethod]
     public void Constructor_ShouldAddFooCreatedPreEvent()
-        => Assert.IsInstanceOfType(_dut.PreSaveDomainEvents.First(), typeof(Events.PreSave.FooCreatedEvent));
+        => Assert.IsInstanceOfType(_dut.PreSaveDomainEvents.First(), typeof(Events.PreSave.FooCreatingEvent));
 
     [TestMethod]
     public void Constructor_ShouldAddFooCreatedPostEvent()
@@ -67,17 +62,18 @@ public class FooTests
     [TestMethod]
     public void EditFoo_ShouldEditFoo()
     {
-        _dut.EditFoo("New Title");
+        _dut.EditFoo("New Title", "New Text");
 
         Assert.AreEqual("New Title", _dut.Title);
+        Assert.AreEqual("New Text", _dut.Text);
     }
 
     [TestMethod]
     public void EditFoo_ShouldAddFooEditedEvent()
     {
-        _dut.EditFoo("New Title");
+        _dut.EditFoo("New Title", "New Text");
 
-        Assert.IsInstanceOfType(_dut.PreSaveDomainEvents.Last(), typeof(Events.PreSave.FooEditedEvent));
+        Assert.IsInstanceOfType(_dut.PreSaveDomainEvents.Last(), typeof(Events.PreSave.FooEditingEvent));
     }
     #endregion
 }

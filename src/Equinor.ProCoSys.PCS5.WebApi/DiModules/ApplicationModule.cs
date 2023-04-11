@@ -1,6 +1,5 @@
 ﻿using Equinor.ProCoSys.PCS5.Command.EventHandlers;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
-using Equinor.ProCoSys.PCS5.Command.Validators.RowVersionValidators;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
@@ -21,6 +20,7 @@ using Equinor.ProCoSys.Common.Caches;
 using Equinor.ProCoSys.Common.Email;
 using Equinor.ProCoSys.Common.Telemetry;
 using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.WebApi.Controllers;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.DIModules;
 

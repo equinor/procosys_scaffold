@@ -24,5 +24,8 @@ internal class FooConfiguration : IEntityTypeConfiguration<Foo>
         builder.Property(x => x.Title)
             .HasMaxLength(Foo.TitleMaxLength)
             .IsRequired();
+
+        builder.Property(x => x.Text)
+            .HasMaxLength(Foo.TextMaxLength);
     }
 }

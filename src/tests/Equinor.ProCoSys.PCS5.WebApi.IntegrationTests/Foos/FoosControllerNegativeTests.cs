@@ -253,6 +253,7 @@ public class FoosControllerNegativeTests : TestBase
             TestFactory.Unknown,
             _fooIdUnderTest,
             "Foo1",
+            "Foo1-txt",
             TestFactory.AValidRowVersion,
             HttpStatusCode.Unauthorized);
 
@@ -263,6 +264,7 @@ public class FoosControllerNegativeTests : TestBase
             TestFactory.Unknown,
             _fooIdUnderTest,
             "Foo1",
+            "Foo1-txt",
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -274,6 +276,7 @@ public class FoosControllerNegativeTests : TestBase
             TestFactory.Unknown,
             _fooIdUnderTest,
             "Foo1",
+            "Foo1-txt",
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -285,6 +288,7 @@ public class FoosControllerNegativeTests : TestBase
             TestFactory.PlantWithoutAccess,
             _fooIdUnderTest,
             "Foo1",
+            "Foo1-txt",
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -295,6 +299,7 @@ public class FoosControllerNegativeTests : TestBase
             TestFactory.PlantWithoutAccess,
             _fooIdUnderTest,
             "Foo1",
+            "Foo1-txt",
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -305,6 +310,7 @@ public class FoosControllerNegativeTests : TestBase
             TestFactory.PlantWithAccess,
             _fooIdUnderTest,
             "Foo1",
+            "Foo1-txt",
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -314,6 +320,7 @@ public class FoosControllerNegativeTests : TestBase
             UserType.Writer,
             TestFactory.PlantWithAccess,
             _fooIdUnderTest,
+            Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
             TestFactory.WrongButValidRowVersion,
             HttpStatusCode.Conflict);

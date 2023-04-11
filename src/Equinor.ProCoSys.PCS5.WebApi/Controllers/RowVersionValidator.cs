@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.Command.Validators.RowVersionValidators;
+namespace Equinor.ProCoSys.PCS5.WebApi.Controllers;
 
 public class RowVersionValidator : IRowVersionValidator
 {
-    public bool IsValid(string? rowVersion)
+    public bool IsValid(string rowVersion)
         => !string.IsNullOrWhiteSpace(rowVersion) && TryConvertBase64StringToByteArray(rowVersion);
 
     private static bool TryConvertBase64StringToByteArray(string input)

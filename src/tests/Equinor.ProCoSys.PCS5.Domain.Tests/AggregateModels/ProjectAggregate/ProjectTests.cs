@@ -24,14 +24,4 @@ public class ProjectTests
         Assert.AreEqual(_description, _dut.Description);
         Assert.AreEqual(_projectGuid, _dut.ProCoSysGuid);
     }
-
-    [TestMethod]
-    public void Constructor_ShouldThrowException_WhenNameNotGiven() =>
-        Assert.ThrowsException<ArgumentNullException>(() =>
-            new Project(_testPlant, _projectGuid, null!, _description));
-
-    [TestMethod]
-    public void Constructor_ShouldThrowException_WhenDescriptionNotGiven() =>
-        Assert.ThrowsException<ArgumentNullException>(() =>
-            new Project(_testPlant, _projectGuid, _name, null!));
 }

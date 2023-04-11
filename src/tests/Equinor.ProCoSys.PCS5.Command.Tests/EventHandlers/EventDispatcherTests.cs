@@ -22,8 +22,8 @@ public class EventDispatcherTests
         for (var i = 0; i < 3; i++)
         {
             var entity = new Mock<TestableEntityBase>();
-            entity.Object.AddPreSaveDomainEvent(new Mock<INotification>().Object);
-            entity.Object.AddPostSaveDomainEvent(new Mock<INotification>().Object);
+            entity.Object.AddPreSaveDomainEvent(new Mock<IPreSaveDomainEvent>().Object);
+            entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
         }
         await dut.DispatchPreSaveAsync(entities);
@@ -45,8 +45,8 @@ public class EventDispatcherTests
         for (var i = 0; i < 3; i++)
         {
             var entity = new Mock<TestableEntityBase>();
-            entity.Object.AddPreSaveDomainEvent(new Mock<INotification>().Object);
-            entity.Object.AddPostSaveDomainEvent(new Mock<INotification>().Object);
+            entity.Object.AddPreSaveDomainEvent(new Mock<IPreSaveDomainEvent>().Object);
+            entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
         }
         await dut.DispatchPostSaveAsync(entities);

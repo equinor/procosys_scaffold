@@ -1,9 +1,9 @@
 ﻿using System;
-using MediatR;
+using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.Domain.Events.PostSave;
 
-public class FooCreatedEvent : INotification
+public class FooCreatedEvent : IPostSaveDomainEvent
 {
     public FooCreatedEvent(
         string plant,

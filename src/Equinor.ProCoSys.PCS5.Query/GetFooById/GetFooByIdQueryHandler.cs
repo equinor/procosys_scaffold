@@ -31,6 +31,7 @@ public class GetFooByIdQueryHandler : IRequestHandler<GetFooByIdQuery, Result<Fo
                         foo.Id,
                         pro.Name,
                         foo.Title,
+                        foo.Text,
                         new PersonDto(per.Id, per.FirstName, per.LastName, per.UserName, per.Oid, per.Email),
                         foo.IsVoided,
                         foo.RowVersion.ConvertToString())
