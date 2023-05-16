@@ -15,6 +15,8 @@ internal class FooConfiguration : IEntityTypeConfiguration<Foo>
         builder.ConfigureModificationAudit();
         builder.ConfigureConcurrencyToken();
 
+        builder.ToTable(t => t.IsTemporal());
+
         builder.HasOne<Project>()
             .WithMany()
             .HasForeignKey(x => x.ProjectId)
