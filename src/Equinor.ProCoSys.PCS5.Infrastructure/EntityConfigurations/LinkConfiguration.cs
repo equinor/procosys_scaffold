@@ -14,6 +14,8 @@ internal class LinkConfiguration : IEntityTypeConfiguration<Link>
         builder.ConfigureModificationAudit();
         builder.ConfigureConcurrencyToken();
 
+        builder.ToTable(t => t.IsTemporal());
+
         builder.Property(x => x.Title)
             .HasMaxLength(Link.TitleLengthMax)
             .IsRequired();
