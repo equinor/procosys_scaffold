@@ -7,6 +7,7 @@ using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Audit;
@@ -56,6 +57,7 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
     public virtual DbSet<Person> Persons => Set<Person>();
     public virtual DbSet<Foo> Foos => Set<Foo>();
     public virtual DbSet<Project> Projects => Set<Project>();
+    public virtual DbSet<Link> Links => Set<Link>();
 
     private void SetGlobalPlantFilter(ModelBuilder modelBuilder)
     {
