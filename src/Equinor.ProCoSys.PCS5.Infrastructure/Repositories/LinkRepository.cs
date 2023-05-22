@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
-using Microsoft.EntityFrameworkCore;
+﻿using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 

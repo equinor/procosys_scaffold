@@ -51,7 +51,7 @@ public class AccessValidator : IAccessValidator
 
         if (request is IFooCommandRequest fooCommandRequest)
         {
-            if (!await HasCurrentUserAccessToProjectAsync(fooCommandRequest.FooId, userOid))
+            if (!await HasCurrentUserAccessToProjectAsync(fooCommandRequest.FooGuid, userOid))
             {
                 return false;
             }
@@ -59,7 +59,7 @@ public class AccessValidator : IAccessValidator
 
         if (request is IFooQueryRequest fooQueryRequest)
         {
-            if (!await HasCurrentUserAccessToProjectAsync(fooQueryRequest.FooId, userOid))
+            if (!await HasCurrentUserAccessToProjectAsync(fooQueryRequest.FooGuid, userOid))
             {
                 return false;
             }
@@ -68,9 +68,9 @@ public class AccessValidator : IAccessValidator
         return true;
     }
 
-    private async Task<bool> HasCurrentUserAccessToProjectAsync(int fooId, Guid userOid)
+    private async Task<bool> HasCurrentUserAccessToProjectAsync(Guid fooGuid, Guid userOid)
     {
-        var projectName = await _fooHelper.GetProjectNameAsync(fooId);
+        var projectName = await _fooHelper.GetProjectNameAsync(fooGuid);
         if (projectName != null)
         {
             var accessToProject = _projectAccessChecker.HasCurrentUserAccessToProject(projectName);

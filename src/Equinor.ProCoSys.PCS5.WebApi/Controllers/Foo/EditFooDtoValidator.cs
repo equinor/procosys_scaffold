@@ -13,11 +13,11 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 
             RuleFor(dto => dto.Title)
                 .NotNull()
-                .MinimumLength(Domain.AggregateModels.FooAggregate.Foo.TitleMinLength)
-                .MaximumLength(Domain.AggregateModels.FooAggregate.Foo.TitleMaxLength);
+                .MinimumLength(Domain.AggregateModels.FooAggregate.Foo.TitleLengthMin)
+                .MaximumLength(Domain.AggregateModels.FooAggregate.Foo.TitleLengthMax);
 
             RuleFor(dto => dto.Text)
-                .MaximumLength(Domain.AggregateModels.FooAggregate.Foo.TextMaxLength);
+                .MaximumLength(Domain.AggregateModels.FooAggregate.Foo.TextLengthMax);
 
             RuleFor(dto => dto.RowVersion)
                 .NotNull()

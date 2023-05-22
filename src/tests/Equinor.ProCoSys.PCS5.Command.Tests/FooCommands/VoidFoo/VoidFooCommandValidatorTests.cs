@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +10,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.VoidFoo;
 [TestClass]
 public class VoidFooCommandValidatorTests
 {
-    private readonly int _fooId = 1;
+    private readonly Guid _fooGuid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
     private VoidFooCommandValidator _dut;
@@ -21,8 +22,8 @@ public class VoidFooCommandValidatorTests
     public void Setup_OkState()
     {
         _fooValidatorMock = new Mock<IFooValidator>();
-        _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooId, default)).ReturnsAsync(true);
-        _command = new VoidFooCommand(_fooId, _rowVersion);
+        _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default)).ReturnsAsync(true);
+        _command = new VoidFooCommand(_fooGuid, _rowVersion);
 
         _dut = new VoidFooCommandValidator(_fooValidatorMock.Object);
     }
@@ -38,7 +39,7 @@ public class VoidFooCommandValidatorTests
     [TestMethod]
     public async Task Validate_ShouldFail_When_FooAlreadyVoided()
     {
-        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooId, default)).ReturnsAsync(true);
+        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooGuid, default)).ReturnsAsync(true);
 
         var result = await _dut.ValidateAsync(_command);
 
@@ -50,7 +51,7 @@ public class VoidFooCommandValidatorTests
     [TestMethod]
     public async Task Validate_ShouldFail_When_FooNotExists()
     {
-        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_fooId, default))
+        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(false);
 
         var result = await _dut.ValidateAsync(_command);

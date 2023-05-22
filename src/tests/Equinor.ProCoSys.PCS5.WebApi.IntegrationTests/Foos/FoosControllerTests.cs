@@ -11,13 +11,13 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
 [TestClass]
 public class FoosControllerTests : TestBase
 {
-    private int _fooIdUnderTest;
+    private Guid _fooGuidUnderTest;
     private List<FooDto> _initialFoosInProject;
 
     [TestInitialize]
     public async Task TestInitialize()
     {
-        _fooIdUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAId;
+        _fooGuidUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAGuid;
         _initialFoosInProject = await FoosControllerTestsHelper
             .GetAllFoosInProjectAsync(UserType.Writer, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
     }
@@ -29,18 +29,17 @@ public class FoosControllerTests : TestBase
         var title = Guid.NewGuid().ToString();
 
         // Act
-        var idAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
+        var guidAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
             title,
             TestFactory.ProjectWithAccess);
 
         // Assert
-        Assert.IsNotNull(idAndRowVersion);
-        IsAValidRowVersion(idAndRowVersion.RowVersion);
-        Assert.IsTrue(idAndRowVersion.Id > 0);
+        Assert.IsNotNull(guidAndRowVersion);
+        IsAValidRowVersion(guidAndRowVersion.RowVersion);
         var newFoo = await FoosControllerTestsHelper
-            .GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
+            .GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, guidAndRowVersion.Guid);
         Assert.IsNotNull(newFoo);
         Assert.AreEqual(title, newFoo.Title);
         Assert.AreEqual(TestFactory.ProjectWithAccess, newFoo.ProjectName);
@@ -56,10 +55,10 @@ public class FoosControllerTests : TestBase
     {
         // Act
         var foo = await FoosControllerTestsHelper
-            .GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooIdUnderTest);
+            .GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooGuidUnderTest);
 
         // Assert
-        Assert.AreEqual(_fooIdUnderTest, foo.Id);
+        Assert.AreEqual(_fooGuidUnderTest, foo.Guid);
         Assert.IsNotNull(foo.RowVersion);
     }
 
@@ -83,21 +82,21 @@ public class FoosControllerTests : TestBase
         // Arrange
         var newTitle = Guid.NewGuid().ToString();
         var newText = Guid.NewGuid().ToString();
-        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooIdUnderTest);
+        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooGuidUnderTest);
         var initialRowVersion = foo.RowVersion;
 
         // Act
         var newRowVersion = await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            foo.Id,
+            foo.Guid,
             newTitle,
             newText,
             initialRowVersion);
 
         // Assert
         AssertRowVersionChange(initialRowVersion, newRowVersion);
-        foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooIdUnderTest);
+        foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooGuidUnderTest);
         Assert.AreEqual(newTitle, foo.Title);
         Assert.AreEqual(newText, foo.Text);
         Assert.AreEqual(newRowVersion, foo.RowVersion);
@@ -118,12 +117,12 @@ public class FoosControllerTests : TestBase
         var newRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Id,
+            idAndRowVersion.Guid,
             idAndRowVersion.RowVersion);
 
         // Assert
         AssertRowVersionChange(initialRowVersion, newRowVersion);
-        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
+        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Guid);
         Assert.IsTrue(foo.IsVoided);
         Assert.AreEqual(newRowVersion, foo.RowVersion);
     }
@@ -140,18 +139,18 @@ public class FoosControllerTests : TestBase
         var newRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Id,
+            idAndRowVersion.Guid,
             idAndRowVersion.RowVersion);
-        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id);
+        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Guid);
         Assert.IsNotNull(foo);
 
         // Act
         await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Writer, TestFactory.PlantWithAccess,
-            idAndRowVersion.Id,
+            idAndRowVersion.Guid,
             newRowVersion);
 
         // Assert
-        await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Id, HttpStatusCode.NotFound);
+        await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Guid, HttpStatusCode.NotFound);
     }
 }

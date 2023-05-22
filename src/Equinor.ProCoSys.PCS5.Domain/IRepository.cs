@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
 
@@ -11,6 +12,8 @@ public interface IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
     Task<bool> Exists(int id);
 
     Task<TEntity?> GetByIdAsync(int id);
+
+    Task<TEntity?> GetByGuidAsync(Guid guid);
 
     Task<List<TEntity>> GetByIdsAsync(IEnumerable<int> id);
 

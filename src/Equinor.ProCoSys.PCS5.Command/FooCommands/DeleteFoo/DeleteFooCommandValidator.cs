@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using FluentValidation;
@@ -14,15 +15,15 @@ public class DeleteFooCommandValidator : AbstractValidator<DeleteFooCommand>
 
         RuleFor(command => command)
             //business validators
-            .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooId, cancellationToken))
-            .WithMessage(command => $"Foo with this ID does not exist! Id={command.FooId}")
-            .MustAsync((command, cancellationToken) => BeAVoidedFoo(command.FooId, cancellationToken))
+            .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooGuid, cancellationToken))
+            .WithMessage(command => $"Foo with this ID does not exist! Id={command.FooGuid}")
+            .MustAsync((command, cancellationToken) => BeAVoidedFoo(command.FooGuid, cancellationToken))
             .WithMessage("Foo must be voided before delete!");
 
-        async Task<bool> BeAnExistingFoo(int fooId, CancellationToken cancellationToken)
-            => await fooValidator.FooExistsAsync(fooId, cancellationToken);
+        async Task<bool> BeAnExistingFoo(Guid fooGuid, CancellationToken cancellationToken)
+            => await fooValidator.FooExistsAsync(fooGuid, cancellationToken);
 
-        async Task<bool> BeAVoidedFoo(int fooId, CancellationToken cancellationToken)
-            => await fooValidator.FooIsVoidedAsync(fooId, cancellationToken);
+        async Task<bool> BeAVoidedFoo(Guid fooGuid, CancellationToken cancellationToken)
+            => await fooValidator.FooIsVoidedAsync(fooGuid, cancellationToken);
     }
 }

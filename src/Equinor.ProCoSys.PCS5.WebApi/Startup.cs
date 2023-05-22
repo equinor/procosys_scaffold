@@ -177,7 +177,7 @@ public class Startup
                 .UseBusConnection(Configuration.GetRequiredConnectionString("ServiceBus"))
                 .WithLeaderElector("http://" + leaderElectorUrlPart + ":3003")
                 .WithRenewLeaseInterval(leaderElectorRenewLeaseInterval)
-                .WithSubscription(PcsTopic.Project, "foo_project")
+                .WithSubscription("Project", "foo_project")
                 //THIS METHOD SHOULD BE FALSE IN NORMAL OPERATION.
                 //ONLY SET TO TRUE WHEN A LARGE NUMBER OF MESSAGES HAVE FAILED AND ARE COPIED TO DEAD LETTER.
                 //WHEN SET TO TRUE, MESSAGES ARE READ FROM DEAD LETTER QUEUE INSTEAD OF NORMAL QUEUE

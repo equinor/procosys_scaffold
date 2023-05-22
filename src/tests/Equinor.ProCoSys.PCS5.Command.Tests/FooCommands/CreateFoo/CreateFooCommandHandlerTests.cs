@@ -71,7 +71,7 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
         var result = await _dut.Handle(_command, default);
 
         // Assert
-        Assert.IsInstanceOfType(result.Data, typeof(IdAndRowVersion));
+        Assert.IsInstanceOfType(result.Data, typeof(GuidAndRowVersion));
     }
 
     [TestMethod]

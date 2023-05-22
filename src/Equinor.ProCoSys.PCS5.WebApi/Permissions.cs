@@ -6,6 +6,8 @@ public class Permissions
     public const string FOO_CREATE = "FOO/CREATE";
     public const string FOO_DELETE = "FOO/DELETE";
     public const string FOO_WRITE = "FOO/WRITE";
+    public const string FOO_ATTACH = "FOO/ATTACH";
+    public const string FOO_DETACH = "FOO/DETACH";
 
     public const string APPLICATION_TESTER = "APPLICATION_EXPLORER/EXECUTE";
 }

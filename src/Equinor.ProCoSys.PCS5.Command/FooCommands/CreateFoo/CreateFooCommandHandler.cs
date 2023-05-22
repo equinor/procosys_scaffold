@@ -12,7 +12,7 @@ using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 
-public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<IdAndRowVersion>>
+public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<GuidAndRowVersion>>
 {
     private readonly ILogger<CreateFooCommandHandler> _logger;
 
@@ -38,7 +38,7 @@ public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<
         _logger = logger;
     }
 
-    public async Task<Result<IdAndRowVersion>> Handle(CreateFooCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GuidAndRowVersion>> Handle(CreateFooCommand request, CancellationToken cancellationToken)
     {
         var project = await GetOrCreateProjectAsync(request, cancellationToken);
 
@@ -49,7 +49,7 @@ public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<
 
         _logger.LogInformation($"Foo '{request.Title}' created");
 
-        return new SuccessResult<IdAndRowVersion>(new IdAndRowVersion(foo.Id, foo.RowVersion.ConvertToString()));
+        return new SuccessResult<GuidAndRowVersion>(new GuidAndRowVersion(foo.Guid, foo.RowVersion.ConvertToString()));
     }
 
     private async Task<Project> GetOrCreateProjectAsync(CreateFooCommand request, CancellationToken cancellationToken) 

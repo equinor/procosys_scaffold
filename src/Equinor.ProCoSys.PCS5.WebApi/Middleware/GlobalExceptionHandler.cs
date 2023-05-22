@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
-using Equinor.ProCoSys.PCS5.Command.FooCommands;
+using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.WebApi.Misc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler
             var errors = new Dictionary<string, string[]> {{"ProjectName", new[] {ipe.Message}}};
             await context.WriteBadRequestAsync(errors, _logger);
         }
-        catch (FooValidationException fe)
+        catch (ValidationException fe)
         {
             var errors = new Dictionary<string, string[]> { { "Exception", new[] { fe.Message } } };
             await context.WriteBadRequestAsync(errors, _logger);

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.Query.GetFooById;
+namespace Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
 
 public class PersonDto
 {

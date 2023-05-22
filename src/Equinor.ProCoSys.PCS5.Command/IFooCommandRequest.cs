@@ -1,6 +1,8 @@
-﻿namespace Equinor.ProCoSys.PCS5.Command;
+﻿using System;
+
+namespace Equinor.ProCoSys.PCS5.Command;
 
 public interface IFooCommandRequest
 {
-    int FooId { get; }
+    Guid FooGuid { get; }
 }

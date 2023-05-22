@@ -6,28 +6,21 @@ using Equinor.ProCoSys.PCS5.Domain.Audit;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 
-public class Link : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable
+public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable
 {
     public const int TitleLengthMax = 256;
     public const int UrlLengthMax = 2000;
 
-#pragma warning disable CS8618
-    protected Link()
-#pragma warning restore CS8618
-        : base(null)
+    public Link(Guid sourceGuid, string title, string url)
     {
-    }
-
-    public Link(string plant, Guid proCoSysGuid, string title, string url)
-        : base(plant)
-    {
-        ProCoSysGuid = proCoSysGuid;
         Title = title;
         Url = url;
+        Guid = Guid.NewGuid();
+        SourceGuid = sourceGuid;
     }
 
     // private set needed for EntityFramework
-    public Guid ProCoSysGuid { get; private set; }
+    public Guid SourceGuid { get; private set; }
     public string Title { get; private set; }
     public string Url { get; set; }
     public DateTime CreatedAtUtc { get; private set; }

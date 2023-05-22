@@ -42,20 +42,20 @@ public static class PCS5ContextExtension
         var project = SeedProject(
             dbContext,
             plant,
-            KnownTestData.ProjectProCoSysGuidA,
+            KnownTestData.ProjectGuidA,
             KnownTestData.ProjectNameA,
             KnownTestData.ProjectDescriptionA);
         var foo = SeedFoo(dbContext, plant, project, KnownTestData.FooA);
-        knownTestData.FooAId = foo.Id;
+        knownTestData.FooAGuid = foo.Guid;
 
         project = SeedProject(
             dbContext, 
             plant, 
-            KnownTestData.ProjectProCoSysGuidB,
+            KnownTestData.ProjectGuidB,
             KnownTestData.ProjectNameB, 
             KnownTestData.ProjectDescriptionB);
         foo = SeedFoo(dbContext, plant, project, KnownTestData.FooB);
-        knownTestData.FooBId = foo.Id;
+        knownTestData.FooBGuid = foo.Guid;
     }
 
     private static void EnsureCurrentUserIsSeeded(PCS5Context dbContext, ICurrentUserProvider userProvider)
@@ -79,12 +79,12 @@ public static class PCS5ContextExtension
     private static Project SeedProject(
         PCS5Context dbContext,
         string plant,
-        Guid proCoSysGuid,
+        Guid guid,
         string name,
         string desc)
     {
         var projectRepository = new ProjectRepository(dbContext);
-        var project = new Project(plant, proCoSysGuid, name, desc);
+        var project = new Project(plant, guid, name, desc);
         projectRepository.Add(project);
         dbContext.SaveChangesAsync().Wait();
         return project;

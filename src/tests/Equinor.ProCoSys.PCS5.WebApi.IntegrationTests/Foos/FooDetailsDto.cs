@@ -1,8 +1,10 @@
-﻿namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
+﻿using System;
+
+namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
 
 public class FooDetailsDto
 {
-    public int Id { get; set; }
+    public Guid Guid { get; set; }
     public string ProjectName { get; set; }
     public string Title { get; set; }
     public string Text { get; set;  }

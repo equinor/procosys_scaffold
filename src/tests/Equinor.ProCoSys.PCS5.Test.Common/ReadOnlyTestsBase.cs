@@ -17,8 +17,8 @@ public abstract class ReadOnlyTestsBase
     protected readonly string TestPlantA = "PCS$PlantA";
     protected readonly string ProjectNameA = "ProA";
     protected readonly string ProjectNameB = "ProB";
-    protected static readonly Guid ProjectProCoSysGuidA = Guid.NewGuid();
-    protected static readonly Guid ProjectProCoSysGuidB = Guid.NewGuid();
+    protected static readonly Guid ProjectGuidA = Guid.NewGuid();
+    protected static readonly Guid ProjectGuidB = Guid.NewGuid();
     protected Project _projectA;
     protected Project _projectB;
     protected Person _currentPerson;
@@ -60,8 +60,8 @@ public abstract class ReadOnlyTestsBase
             AddPerson(context, _currentPerson);
         }
 
-        _projectA = new(TestPlantA, ProjectProCoSysGuidA, ProjectNameA, $"{ProjectNameA} desc");
-        _projectB = new(TestPlantA, ProjectProCoSysGuidB, ProjectNameB, $"{ProjectNameB} desc");
+        _projectA = new(TestPlantA, ProjectGuidA, ProjectNameA, $"{ProjectNameA} desc");
+        _projectB = new(TestPlantA, ProjectGuidB, ProjectNameB, $"{ProjectNameB} desc");
 
         AddProject(context, _projectA);
         AddProject(context, _projectB);

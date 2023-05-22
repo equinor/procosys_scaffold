@@ -9,9 +9,9 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 
 public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IVoidable
 {
-    public const int TitleMinLength = 3;
-    public const int TitleMaxLength = 250;
-    public const int TextMaxLength = 500;
+    public const int TitleLengthMin = 3;
+    public const int TitleLengthMax = 250;
+    public const int TextLengthMax = 500;
 
 #pragma warning disable CS8618
     protected Foo()
@@ -36,14 +36,13 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
 
         Title = title;
 
-        ProCoSysGuid = Guid.NewGuid();
+        Guid = Guid.NewGuid();
 
-        AddPreSaveDomainEvent(new Events.PreSave.FooCreatingEvent(plant, ProCoSysGuid));
-        AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(plant, ProCoSysGuid));
+        AddPreSaveDomainEvent(new Events.PreSave.FooCreatingEvent(plant, Guid));
+        AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(plant, Guid));
     }
 
     // private set needed for EntityFramework
-    public Guid ProCoSysGuid { get; private set; }
     public int ProjectId { get; private set; }
     public string Title { get; set; }
     public string? Text { get; set; }
@@ -57,8 +56,8 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
     {
         Title = title;
         Text = text;
-        AddPreSaveDomainEvent(new Events.PreSave.FooEditingEvent(ProCoSysGuid));
-        AddPostSaveDomainEvent(new Events.PostSave.FooEditedEvent(ProCoSysGuid));
+        AddPreSaveDomainEvent(new Events.PreSave.FooEditingEvent(Guid));
+        AddPostSaveDomainEvent(new Events.PostSave.FooEditedEvent(Guid));
     }
 
     public void SetCreated(Person createdBy)

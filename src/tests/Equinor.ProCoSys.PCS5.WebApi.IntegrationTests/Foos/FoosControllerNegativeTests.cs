@@ -8,12 +8,12 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
 [TestClass]
 public class FoosControllerNegativeTests : TestBase
 {
-    private int _fooIdUnderTest;
+    private Guid _fooGuidUnderTest;
 
     [TestInitialize]
     public void TestInitialize()
-        => _fooIdUnderTest
-            = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAId;
+        => _fooGuidUnderTest
+            = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAGuid;
         
     #region Get
     [TestMethod]
@@ -21,7 +21,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Anonymous,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             HttpStatusCode.Unauthorized);
 
     [TestMethod]
@@ -29,7 +29,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.NoPermissionUser,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
 
@@ -38,7 +38,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest, 
+            _fooGuidUnderTest, 
             HttpStatusCode.BadRequest,
             "is not a valid plant");
 
@@ -47,7 +47,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest, 
+            _fooGuidUnderTest, 
             HttpStatusCode.Forbidden);
 
     [TestMethod]
@@ -55,7 +55,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess, 
-            _fooIdUnderTest, 
+            _fooGuidUnderTest, 
             HttpStatusCode.Forbidden);
 
     [TestMethod]
@@ -63,7 +63,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess, 
-            9999, 
+            Guid.Empty, 
             HttpStatusCode.NotFound);
     #endregion
 
@@ -183,7 +183,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Anonymous, 
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Unauthorized);
 
@@ -192,7 +192,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.NoPermissionUser,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -202,7 +202,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -212,7 +212,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -221,7 +221,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -230,7 +230,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Reader,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -239,7 +239,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.WrongButValidRowVersion,
             HttpStatusCode.Conflict);
 
@@ -251,7 +251,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Anonymous,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -262,7 +262,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.NoPermissionUser,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -274,7 +274,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -286,7 +286,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -297,7 +297,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -308,7 +308,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Reader,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -319,7 +319,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
             TestFactory.WrongButValidRowVersion,
@@ -333,7 +333,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Anonymous,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Unauthorized);
 
@@ -341,7 +341,7 @@ public class FoosControllerNegativeTests : TestBase
     public async Task DeleteFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.NoPermissionUser, TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -351,7 +351,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -361,7 +361,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -370,7 +370,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -379,7 +379,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Reader,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -394,14 +394,14 @@ public class FoosControllerNegativeTests : TestBase
         await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Id,
+            idAndRowVersion.Guid,
             idAndRowVersion.RowVersion);
         // Act
 
         await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Id,
+            idAndRowVersion.Guid,
             TestFactory.WrongButValidRowVersion,
             HttpStatusCode.Conflict);
     }

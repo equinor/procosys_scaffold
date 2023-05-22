@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
@@ -6,6 +7,6 @@ namespace Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 public interface IFooValidator
 {
     bool FooIsOk();
-    Task<bool> FooExistsAsync(int fooId, CancellationToken cancellationToken);
-    Task<bool> FooIsVoidedAsync(int fooId, CancellationToken cancellationToken);
+    Task<bool> FooExistsAsync(Guid fooGuid, CancellationToken cancellationToken);
+    Task<bool> FooIsVoidedAsync(Guid fooGuid, CancellationToken cancellationToken);
 }

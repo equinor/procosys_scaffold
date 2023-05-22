@@ -16,7 +16,7 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Tests.Repositories;
 [TestClass]
 public class FooRepositoryTests : RepositoryTestBase
 {
-    private readonly int _fooId = 5;
+    private readonly int _fooGuid = 5;
     private Foo _foo;
     private Mock<DbSet<Foo>> _fooSetMock;
     private FooRepository _dut;
@@ -26,7 +26,7 @@ public class FooRepositoryTests : RepositoryTestBase
     {
         var project = new Project(TestPlant, Guid.NewGuid(), "ProjectName", "Description of project");
         _foo = new Foo(TestPlant, project, "Foo X");
-        _foo.SetProtectedIdForTesting(_fooId);
+        _foo.SetProtectedIdForTesting(_fooGuid);
 
         var foos = new List<Foo> { _foo };
 
@@ -59,7 +59,7 @@ public class FooRepositoryTests : RepositoryTestBase
     [TestMethod]
     public async Task Exists_KnownId_ShouldReturnTrue()
     {
-        var result = await _dut.Exists(_fooId);
+        var result = await _dut.Exists(_fooGuid);
 
         Assert.IsTrue(result);
     }
@@ -75,10 +75,10 @@ public class FooRepositoryTests : RepositoryTestBase
     [TestMethod]
     public async Task GetById_KnownId_ShouldReturnFoo()
     {
-        var result = await _dut.GetByIdAsync(_fooId);
+        var result = await _dut.GetByIdAsync(_fooGuid);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(_fooId, result.Id);
+        Assert.AreEqual(_fooGuid, result.Id);
     }
 
     [TestMethod]

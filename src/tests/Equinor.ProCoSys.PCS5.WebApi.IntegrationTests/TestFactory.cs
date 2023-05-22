@@ -212,7 +212,7 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
 
     private string GetTestDbConnectionString(string projectDir)
     {
-        var dbName = "IntegrationTestsPresDB";
+        var dbName = "IntegrationTestsDB";
         var dbPath = Path.Combine(projectDir, $"{dbName}.mdf");
             
         // Set Initial Catalog to be able to delete database!

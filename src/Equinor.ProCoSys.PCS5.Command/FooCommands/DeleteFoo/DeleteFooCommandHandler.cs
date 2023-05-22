@@ -27,10 +27,10 @@ public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<
 
     public async Task<Result<Unit>> Handle(DeleteFooCommand request, CancellationToken cancellationToken)
     {
-        var foo = await _fooRepository.GetByIdAsync(request.FooId);
+        var foo = await _fooRepository.GetByGuidAsync(request.FooGuid);
         if (foo == null)
         {
-            throw new Exception($"Entity {nameof(Foo)} {request.FooId} not found");
+            throw new Exception($"Entity {nameof(Foo)} {request.FooGuid} not found");
         }
 
         foo.SetRowVersion(request.RowVersion);

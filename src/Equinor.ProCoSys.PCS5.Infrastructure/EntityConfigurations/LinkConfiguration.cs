@@ -9,7 +9,6 @@ internal class LinkConfiguration : IEntityTypeConfiguration<Link>
 {
     public void Configure(EntityTypeBuilder<Link> builder)
     {
-        builder.ConfigurePlant();
         builder.ConfigureCreationAudit();
         builder.ConfigureModificationAudit();
         builder.ConfigureConcurrencyToken();
@@ -23,15 +22,5 @@ internal class LinkConfiguration : IEntityTypeConfiguration<Link>
         builder.Property(x => x.Url)
             .HasMaxLength(Link.UrlLengthMax)
             .IsRequired();
-
-        builder
-            .HasIndex(p => p.Plant)
-            .HasDatabaseName("IX_Links_Plant_ASC")
-            .IncludeProperties(p => new { p.Title, p.Url, p.CreatedAtUtc, p.ModifiedAtUtc });
-
-        builder
-            .HasIndex(p => p.Title)
-            .HasDatabaseName("IX_Links_Title_ASC")
-            .IncludeProperties(p => new { p.Plant });
     }
 }

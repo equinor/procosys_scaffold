@@ -37,6 +37,9 @@ public abstract class RepositoryBase<TEntity> : Domain.IRepository<TEntity> wher
     public virtual Task<TEntity?> GetByIdAsync(int id) =>
         DefaultQuery.SingleOrDefaultAsync(x => x.Id == id);
 
+    public virtual Task<TEntity?> GetByGuidAsync(Guid guid) =>
+        DefaultQuery.SingleOrDefaultAsync(x => x.Guid == guid);
+
     public Task<List<TEntity>> GetByIdsAsync(IEnumerable<int> ids) =>
         DefaultQuery.Where(x => ids.Contains(x.Id)).ToListAsync();
 

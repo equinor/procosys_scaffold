@@ -1,22 +1,24 @@
-﻿namespace Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
+﻿using System;
+
+namespace Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
 
 public class FooDto
 {
     public FooDto(
-        int id,
+        Guid guid,
         string projectName,
         string title,
         bool isVoided,
         string rowVersion)
     {
-        Id = id;
+        Guid = guid;
         ProjectName = projectName;
         Title = title;
         IsVoided = isVoided;
         RowVersion = rowVersion;
     }
 
-    public int Id { get; }
+    public Guid Guid { get; }
     public string ProjectName { get; }
     public string Title { get; }
     public bool IsVoided { get; }

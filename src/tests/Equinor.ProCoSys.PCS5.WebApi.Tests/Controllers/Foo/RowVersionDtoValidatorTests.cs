@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.WebApi.Controllers;
-using Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
 using FluentValidation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

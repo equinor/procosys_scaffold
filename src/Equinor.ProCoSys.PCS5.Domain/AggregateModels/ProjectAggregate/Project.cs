@@ -18,16 +18,15 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
     {
     }
 
-    public Project(string plant, Guid proCoSysGuid, string name, string description)
+    public Project(string plant, Guid guid, string name, string description)
         : base(plant)
     {
-        ProCoSysGuid = proCoSysGuid;
+        Guid = guid;
         Name = name;
         Description = description;
     }
 
     // private set needed for EntityFramework
-    public Guid ProCoSysGuid { get; private set; }
     public string Name { get; private set; }
     public string Description { get; set; }
     public bool IsClosed { get; set; }

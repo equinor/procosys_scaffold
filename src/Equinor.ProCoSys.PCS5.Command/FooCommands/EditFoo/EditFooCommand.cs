@@ -1,19 +1,21 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 
 public class EditFooCommand : IRequest<Result<string>>, IFooCommandRequest
 {
-    public EditFooCommand(int fooId, string title, string? text, string rowVersion)
+    // todo add tests in AccessValidatorTests
+    public EditFooCommand(Guid fooGuid, string title, string? text, string rowVersion)
     {
-        FooId = fooId;
+        FooGuid = fooGuid;
         Title = title;
         Text = text;
         RowVersion = rowVersion;
     }
 
-    public int FooId { get; }
+    public Guid FooGuid { get; }
     public string Title { get; }
     public string? Text { get; }
     public string RowVersion { get; }

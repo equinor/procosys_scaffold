@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +10,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo;
 [TestClass]
 public class EditFooCommandValidatorTests
 {
-    private readonly int _fooId = 1;
+    private readonly Guid _fooGuid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
     private EditFooCommandValidator _dut;
@@ -22,9 +23,9 @@ public class EditFooCommandValidatorTests
     {
         _fooValidatorMock = new Mock<IFooValidator>();
         _fooValidatorMock.Setup(x => x.FooIsOk()).Returns(true);
-        _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooId, default))
+        _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
-        _command = new EditFooCommand(_fooId, "New title", "New text", _rowVersion);
+        _command = new EditFooCommand(_fooGuid, "New title", "New text", _rowVersion);
 
         _dut = new EditFooCommandValidator(_fooValidatorMock.Object);
     }
@@ -52,7 +53,7 @@ public class EditFooCommandValidatorTests
     [TestMethod]
     public async Task Validate_ShouldFail_When_FooNotExists()
     {
-        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_fooId, default))
+        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(false);
 
         var result = await _dut.ValidateAsync(_command);

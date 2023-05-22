@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 
-public class CreateFooCommand : IRequest<Result<IdAndRowVersion>>, IProjectRequest
+public class CreateFooCommand : IRequest<Result<GuidAndRowVersion>>, IProjectRequest
 {
     public CreateFooCommand(string title, string projectName)
     {

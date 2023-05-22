@@ -5,7 +5,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.Events.PreSave;
 
 public class FooEditingEvent : IPreSaveDomainEvent
 {
-    public FooEditingEvent(Guid proCoSysGuid) => ProCoSysGuid = proCoSysGuid;
+    public FooEditingEvent(Guid guid) => Guid = guid;
         
-    public Guid ProCoSysGuid { get; }
+    public Guid Guid { get; }
 }

@@ -72,7 +72,7 @@ public class EditFooDtoValidatorTests
         // Arrange
         var dto = new EditFooDto
         {
-            Title = new string('x', Domain.AggregateModels.FooAggregate.Foo.TitleMaxLength + 1),
+            Title = new string('x', Domain.AggregateModels.FooAggregate.Foo.TitleLengthMax + 1),
             RowVersion = _rowVersion
         };
 

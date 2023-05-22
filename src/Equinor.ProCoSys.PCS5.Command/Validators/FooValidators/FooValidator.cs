@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Microsoft.EntityFrameworkCore;
 using Equinor.ProCoSys.Common;
+using System;
 
 namespace Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 
@@ -13,15 +14,15 @@ public class FooValidator : IFooValidator
 
     public FooValidator(IReadOnlyContext context) => _context = context;
 
-    public async Task<bool> FooExistsAsync(int fooId, CancellationToken cancellationToken) =>
+    public async Task<bool> FooExistsAsync(Guid fooGuid, CancellationToken cancellationToken) =>
         await (from foo in _context.QuerySet<Foo>()
-            where foo.Id == fooId
+            where foo.Guid == fooGuid
             select foo).AnyAsync(cancellationToken);
 
-    public async Task<bool> FooIsVoidedAsync(int fooId, CancellationToken cancellationToken)
+    public async Task<bool> FooIsVoidedAsync(Guid fooGuid, CancellationToken cancellationToken)
     {
         var foo = await (from f in _context.QuerySet<Foo>()
-            where f.Id == fooId
+            where f.Guid == fooGuid
             select f).SingleOrDefaultAsync(cancellationToken);
         return foo != null && foo.IsVoided;
 

@@ -1,19 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure;
+using Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceResult;
-using Equinor.ProCoSys.PCS5.Query.GetFooById;
 
-namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFooById;
+namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFooByGuid;
 
 [TestClass]
-public class GetFooByIdQueryHandlerTests : ReadOnlyTestsBase
+public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
 {
     private Foo _foo;
-    private int _fooId;
+    private Guid _fooGuid;
 
     protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
     {
@@ -23,7 +24,7 @@ public class GetFooByIdQueryHandlerTests : ReadOnlyTestsBase
 
         context.Foos.Add(_foo);
         context.SaveChangesAsync().Wait();
-        _fooId = _foo.Id;
+        _fooGuid = _foo.Guid;
     }
 
     [TestMethod]
@@ -31,8 +32,8 @@ public class GetFooByIdQueryHandlerTests : ReadOnlyTestsBase
     {
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
-        var query = new GetFooByIdQuery(500);
-        var dut = new GetFooByIdQueryHandler(context);
+        var query = new GetFooByGuidQuery(Guid.Empty);
+        var dut = new GetFooByGuidQueryHandler(context);
 
         var result = await dut.Handle(query, default);
 
@@ -46,8 +47,8 @@ public class GetFooByIdQueryHandlerTests : ReadOnlyTestsBase
     {
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
-        var query = new GetFooByIdQuery(_fooId);
-        var dut = new GetFooByIdQueryHandler(context);
+        var query = new GetFooByGuidQuery(_fooGuid);
+        var dut = new GetFooByGuidQueryHandler(context);
 
         var result = await dut.Handle(query, default);
 

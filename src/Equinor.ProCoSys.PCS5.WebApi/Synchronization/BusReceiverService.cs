@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PcsServiceBus;
 using Equinor.ProCoSys.PcsServiceBus.Receiver.Interfaces;
 using Equinor.ProCoSys.PcsServiceBus.Topics;
 using Microsoft.Extensions.Options;
@@ -25,7 +24,7 @@ public class BusReceiverService : IBusReceiverService
     private readonly ICurrentUserSetter _currentUserSetter;
     private readonly IProjectRepository _projectRepository;
     private readonly Guid _fooApiOid;
-    private readonly string FooBusReceiverTelemetryEvent = "FOO Bus Receiver";
+    private readonly string _fooBusReceiverTelemetryEvent = "FOO Bus Receiver";
 
     public BusReceiverService(
         IPlantSetter plantSetter,
@@ -45,7 +44,7 @@ public class BusReceiverService : IBusReceiverService
         _fooApiOid =  options.Value.PCS5ApiObjectId;
     }
 
-    public async Task ProcessMessageAsync(PcsTopic pcsTopic, string messageJson, CancellationToken cancellationToken)
+    public async Task ProcessMessageAsync(string pcsTopic, string messageJson, CancellationToken cancellationToken)
     {
         // >> next 2 lines needed if processing messages lead to requests to foreign api's
         _currentUserSetter.SetCurrentUserOid(_fooApiOid);
@@ -54,7 +53,7 @@ public class BusReceiverService : IBusReceiverService
 
         switch (pcsTopic)
         {
-            case PcsTopic.Project:
+            case "Project":
                 await ProcessProjectEvent(messageJson);
                 break;
         }
@@ -67,7 +66,7 @@ public class BusReceiverService : IBusReceiverService
         var projectEvent = JsonSerializer.Deserialize<ProjectTopic>(messageJson);
         if (projectEvent != null && projectEvent.Behavior == "delete")
         {
-            TrackDeleteEvent(PcsTopic.Project, projectEvent.ProCoSysGuid, false);
+            TrackDeleteEvent("Project", projectEvent.ProCoSysGuid, false);
             return;
         }
         if (projectEvent == null || projectEvent.Plant.IsEmpty() || projectEvent.ProjectName.IsEmpty())
@@ -91,21 +90,21 @@ public class BusReceiverService : IBusReceiverService
     }
 
     private void TrackProjectEvent(ProjectTopic projectEvent) =>
-        _telemetryClient.TrackEvent(FooBusReceiverTelemetryEvent,
+        _telemetryClient.TrackEvent(_fooBusReceiverTelemetryEvent,
             new Dictionary<string, string?>
             {
                 {"Event", ProjectTopic.TopicName},
                 {nameof(projectEvent.ProCoSysGuid), projectEvent.ProCoSysGuid.ToString()},
                 {nameof(projectEvent.ProjectName), projectEvent.ProjectName},
                 {nameof(projectEvent.IsClosed), projectEvent.IsClosed.ToString()},
-                {nameof(projectEvent.Plant), projectEvent.Plant != null ? projectEvent.Plant[4..]: string.Empty}
+                {nameof(projectEvent.Plant), projectEvent.Plant[4..]}
             });
 
-    private void TrackDeleteEvent(PcsTopic topic, Guid guid, bool supported) =>
-        _telemetryClient.TrackEvent(FooBusReceiverTelemetryEvent,
+    private void TrackDeleteEvent(string topic, Guid guid, bool supported) =>
+        _telemetryClient.TrackEvent(_fooBusReceiverTelemetryEvent,
             new Dictionary<string, string?>
             {
-                {"Event Delete", topic.ToString()},
+                {"Event Delete", topic},
                 {"ProCoSysGuid", guid.ToString()},
                 {"Supported", supported.ToString()}
             });

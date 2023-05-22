@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +10,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.DeleteFoo;
 [TestClass]
 public class DeleteFooCommandValidatorTests
 {
-    private readonly int _fooId = 1;
+    private readonly Guid _fooGuid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
     private DeleteFooCommandValidator _dut;
@@ -21,9 +22,9 @@ public class DeleteFooCommandValidatorTests
     public void Setup_OkState()
     {
         _fooValidatorMock = new Mock<IFooValidator>();
-        _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooId, default)).ReturnsAsync(true);
-        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooId, default)).ReturnsAsync(true);
-        _command = new DeleteFooCommand(_fooId, _rowVersion);
+        _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default)).ReturnsAsync(true);
+        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooGuid, default)).ReturnsAsync(true);
+        _command = new DeleteFooCommand(_fooGuid, _rowVersion);
 
         _dut = new DeleteFooCommandValidator(_fooValidatorMock.Object);
     }
@@ -39,7 +40,7 @@ public class DeleteFooCommandValidatorTests
     [TestMethod]
     public async Task Validate_ShouldFail_When_FooNotVoided()
     {
-        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooId, default)).ReturnsAsync(false);
+        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooGuid, default)).ReturnsAsync(false);
 
         var result = await _dut.ValidateAsync(_command);
 
@@ -51,7 +52,7 @@ public class DeleteFooCommandValidatorTests
     [TestMethod]
     public async Task Validate_ShouldFail_When_FooNotExists()
     {
-        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_fooId, default))
+        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(false);
 
         var result = await _dut.ValidateAsync(_command);

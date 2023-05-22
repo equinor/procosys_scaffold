@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -13,7 +12,6 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.DeleteFoo;
 [TestClass]
 public class DeleteFooCommandHandlerTests : CommandHandlerTestsBase
 {
-    private readonly int _fooId = 1;
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
     private Mock<IFooRepository> _fooRepositoryMock;
@@ -27,12 +25,11 @@ public class DeleteFooCommandHandlerTests : CommandHandlerTestsBase
     {
         var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
         _existingFoo = new Foo(TestPlant, project, "Foo");
-        _existingFoo.SetProtectedIdForTesting(_fooId);
         _fooRepositoryMock = new Mock<IFooRepository>();
-        _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
+        _fooRepositoryMock.Setup(r => r.GetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);
 
-        _command = new DeleteFooCommand(_fooId, _rowVersion);
+        _command = new DeleteFooCommand(_existingFoo.Guid, _rowVersion);
 
         _dut = new DeleteFooCommandHandler(
             _fooRepositoryMock.Object,

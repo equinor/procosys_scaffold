@@ -26,7 +26,7 @@ public class GetFoosInProjectQueryHandler : IRequestHandler<GetFoosInProjectQuer
                         on foo.ProjectId equals pro.Id
                     where pro.Name == request.ProjectName && (!foo.IsVoided || request.IncludeVoided)
                     select new FooDto(
-                        foo.Id,
+                        foo.Guid,
                         pro.Name,
                         foo.Title,
                         foo.IsVoided,

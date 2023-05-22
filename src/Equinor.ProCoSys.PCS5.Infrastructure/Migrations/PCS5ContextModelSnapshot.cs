@@ -36,6 +36,9 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsVoided")
                         .HasColumnType("bit");
 
@@ -59,9 +62,6 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<Guid>("ProCoSysGuid")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
@@ -116,6 +116,9 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("ModifiedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -132,18 +135,13 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("PeriodStart");
 
-                    b.Property<string>("Plant")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<Guid>("ProCoSysGuid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SourceGuid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -160,16 +158,6 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("ModifiedById");
-
-                    b.HasIndex("Plant")
-                        .HasDatabaseName("IX_Links_Plant_ASC");
-
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Plant"), new[] { "Title", "Url", "CreatedAtUtc", "ModifiedAtUtc" });
-
-                    b.HasIndex("Title")
-                        .HasDatabaseName("IX_Links_Title_ASC");
-
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Title"), new[] { "Plant" });
 
                     b.ToTable("Links");
 
@@ -202,6 +190,9 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -256,6 +247,9 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsClosed")
                         .HasColumnType("bit");
 
@@ -274,9 +268,6 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<Guid>("ProCoSysGuid")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()

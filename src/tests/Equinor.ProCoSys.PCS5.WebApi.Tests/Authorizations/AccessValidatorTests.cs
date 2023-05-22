@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.WebApi.Authorizations;
 using Equinor.ProCoSys.PCS5.WebApi.Misc;
@@ -6,7 +7,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Equinor.ProCoSys.Common.Misc;
-using Equinor.ProCoSys.PCS5.Query.GetFooById;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateLink;
+using Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations;
 
@@ -17,8 +19,8 @@ public class AccessValidatorTests
     private Mock<IProjectAccessChecker> _projectAccessCheckerMock;
     private Mock<ILogger<AccessValidator>> _loggerMock;
     private Mock<ICurrentUserProvider> _currentUserProviderMock;
-    private readonly int _fooIdWithAccessToProject = 1;
-    private readonly int _fooIdWithoutAccessToProject = 2;
+    private readonly Guid _fooGuidWithAccessToProject = new("679b7135-a1a8-4762-8b99-17f34f3a95a8");
+    private readonly Guid _fooGuidWithoutAccessToProject = new("ea9efc61-8574-4a21-8a1a-14582ddff509");
     private readonly string _projectWithAccess = "TestProjectWithAccess";
     private readonly string _projectWithoutAccess = "TestProjectWithoutAccess";
 
@@ -33,9 +35,9 @@ public class AccessValidatorTests
         _projectAccessCheckerMock.Setup(p => p.HasCurrentUserAccessToProject(_projectWithAccess)).Returns(true);
 
         var fooHelperMock = new Mock<IFooHelper>();
-        fooHelperMock.Setup(p => p.GetProjectNameAsync(_fooIdWithAccessToProject))
+        fooHelperMock.Setup(p => p.GetProjectNameAsync(_fooGuidWithAccessToProject))
             .ReturnsAsync(_projectWithAccess);
-        fooHelperMock.Setup(p => p.GetProjectNameAsync(_fooIdWithoutAccessToProject))
+        fooHelperMock.Setup(p => p.GetProjectNameAsync(_fooGuidWithoutAccessToProject))
             .ReturnsAsync(_projectWithoutAccess);
 
         _loggerMock = new Mock<ILogger<AccessValidator>>();
@@ -55,7 +57,7 @@ public class AccessValidatorTests
     {
         // Arrange
         var command = new CreateFooCommand("T", _projectWithAccess);
-            
+
         // act
         var result = await _dut.ValidateAsync(command);
 
@@ -68,26 +70,53 @@ public class AccessValidatorTests
     {
         // Arrange
         var command = new CreateFooCommand("T", _projectWithoutAccess);
-            
+
         // act
         var result = await _dut.ValidateAsync(command);
 
         // Assert
         Assert.IsFalse(result);
     }
+    #endregion
 
+    #region CreateLinkCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnCreateLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new CreateLinkCommand(_fooGuidWithAccessToProject, "T", "U");
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnCreateLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new CreateLinkCommand(_fooGuidWithoutAccessToProject, "T", "U");
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
     #endregion
 
     #endregion
 
     #region Queries
 
-    #region GetFooByIdQuery
+    #region GetFooByGuidQuery
     [TestMethod]
     public async Task ValidateAsync_OnGetFooByIdQuery_ShouldReturnTrue_WhenAccessToProject()
     {
         // Arrange
-        var query = new GetFooByIdQuery(_fooIdWithAccessToProject);
+        var query = new GetFooByGuidQuery(_fooGuidWithAccessToProject);
 
         // act
         var result = await _dut.ValidateAsync(query);
@@ -100,7 +129,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnGetFooByIdQuery_ShouldReturnFalse_WhenNoAccessToProject()
     {
         // Arrange
-        var query = new GetFooByIdQuery(_fooIdWithoutAccessToProject);
+        var query = new GetFooByGuidQuery(_fooGuidWithoutAccessToProject);
 
         // act
         var result = await _dut.ValidateAsync(query);

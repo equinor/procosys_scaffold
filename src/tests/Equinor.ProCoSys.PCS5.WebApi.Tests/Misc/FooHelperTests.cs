@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.Test.Common;
@@ -11,7 +12,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc;
 [TestClass]
 public class FooHelperTests : ReadOnlyTestsBase
 {
-    private int _fooId;
+    private Guid _fooGuid;
 
     protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
     {
@@ -23,7 +24,7 @@ public class FooHelperTests : ReadOnlyTestsBase
         var foo = new Foo(TestPlantA, _projectA, "Title");
         context.Foos.Add(foo);
         context.SaveChangesAsync().Wait();
-        _fooId = foo.Id;
+        _fooGuid = foo.Guid;
     }
 
     [TestMethod]
@@ -34,7 +35,7 @@ public class FooHelperTests : ReadOnlyTestsBase
         var dut = new FooHelper(context);
 
         // Act
-        var projectName = await dut.GetProjectNameAsync(_fooId);
+        var projectName = await dut.GetProjectNameAsync(_fooGuid);
 
         // Assert
         Assert.AreEqual(_projectA.Name, projectName);
@@ -48,7 +49,7 @@ public class FooHelperTests : ReadOnlyTestsBase
         var dut = new FooHelper(context);
 
         // Act
-        var projectName = await dut.GetProjectNameAsync(0);
+        var projectName = await dut.GetProjectNameAsync(Guid.Empty);
 
         // Assert
         Assert.IsNull(projectName);

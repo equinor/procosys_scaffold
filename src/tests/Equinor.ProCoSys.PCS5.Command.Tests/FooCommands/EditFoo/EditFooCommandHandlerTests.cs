@@ -4,7 +4,6 @@ using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -14,7 +13,6 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo;
 [TestClass]
 public class EditFooCommandHandlerTests : CommandHandlerTestsBase
 {
-    private readonly int _fooId = 1;
     private readonly string _newTitle = "newTitle";
     private readonly string _existingTitle = "existingTitle";
     private readonly string _newText = "newText";
@@ -31,12 +29,11 @@ public class EditFooCommandHandlerTests : CommandHandlerTestsBase
     {
         var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
         _existingFoo = new Foo(TestPlant, project, _existingTitle);
-        _existingFoo.SetProtectedIdForTesting(_fooId);
         _fooRepositoryMock = new Mock<IFooRepository>();
-        _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
+        _fooRepositoryMock.Setup(r => r.GetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);
 
-        _command = new EditFooCommand(_fooId, _newTitle, _newText, _rowVersion);
+        _command = new EditFooCommand(_existingFoo.Guid, _newTitle, _newText, _rowVersion);
 
         _dut = new EditFooCommandHandler(
             _fooRepositoryMock.Object,

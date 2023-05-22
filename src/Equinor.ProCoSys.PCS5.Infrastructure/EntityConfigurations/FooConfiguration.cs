@@ -24,10 +24,10 @@ internal class FooConfiguration : IEntityTypeConfiguration<Foo>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Property(x => x.Title)
-            .HasMaxLength(Foo.TitleMaxLength)
+            .HasMaxLength(Foo.TitleLengthMax)
             .IsRequired();
 
         builder.Property(x => x.Text)
-            .HasMaxLength(Foo.TextMaxLength);
+            .HasMaxLength(Foo.TextLengthMax);
     }
 }

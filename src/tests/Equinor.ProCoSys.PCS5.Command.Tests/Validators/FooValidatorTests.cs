@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.Test.Common;
@@ -11,8 +12,8 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.Validators;
 [TestClass]
 public class FooValidatorTests : ReadOnlyTestsBase
 {
-    private int _nonVoidedFooId;
-    private int _voidedFooId;
+    private Guid _nonVoidedFooGuid;
+    private Guid _voidedFooGuid;
 
     protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
     {
@@ -23,8 +24,8 @@ public class FooValidatorTests : ReadOnlyTestsBase
         context.Foos.Add(foo1);
         context.Foos.Add(foo2);
         context.SaveChangesAsync().Wait();
-        _nonVoidedFooId = foo1.Id;
-        _voidedFooId = foo2.Id;
+        _nonVoidedFooGuid = foo1.Guid;
+        _voidedFooGuid = foo2.Guid;
     }
 
     #region FooExists
@@ -34,7 +35,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         var dut = new FooValidator(context);
-        var result = await dut.FooExistsAsync(_nonVoidedFooId, default);
+        var result = await dut.FooExistsAsync(_nonVoidedFooGuid, default);
         Assert.IsTrue(result);
     }
 
@@ -44,7 +45,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         var dut = new FooValidator(context);
-        var result = await dut.FooExistsAsync(100, default);
+        var result = await dut.FooExistsAsync(Guid.Empty, default);
         Assert.IsFalse(result);
     }
     #endregion
@@ -56,7 +57,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         var dut = new FooValidator(context);
-        var result = await dut.FooIsVoidedAsync(_voidedFooId, default);
+        var result = await dut.FooIsVoidedAsync(_voidedFooGuid, default);
         Assert.IsTrue(result);
     }
 
@@ -66,7 +67,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         var dut = new FooValidator(context);
-        var result = await dut.FooExistsAsync(100, default);
+        var result = await dut.FooExistsAsync(Guid.Empty, default);
         Assert.IsFalse(result);
     }
     #endregion

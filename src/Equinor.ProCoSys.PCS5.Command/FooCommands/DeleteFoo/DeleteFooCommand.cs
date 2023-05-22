@@ -1,16 +1,18 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 
 public class DeleteFooCommand : IRequest<Result<Unit>>, IFooCommandRequest
 {
-    public DeleteFooCommand(int fooId, string? rowVersion)
+    // todo add tests in AccessValidatorTests
+    public DeleteFooCommand(Guid fooGuid, string? rowVersion)
     {
-        FooId = fooId;
+        FooGuid = fooGuid;
         RowVersion = rowVersion;
     }
 
-    public int FooId { get; }
+    public Guid FooGuid { get; }
     public string? RowVersion { get; }
 }

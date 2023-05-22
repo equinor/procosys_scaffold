@@ -1,6 +1,8 @@
-﻿namespace Equinor.ProCoSys.PCS5.Query;
+﻿using System;
+
+namespace Equinor.ProCoSys.PCS5.Query;
 
 public interface IFooQueryRequest
 {
-    int FooId { get; }
+    Guid FooGuid { get; }
 }

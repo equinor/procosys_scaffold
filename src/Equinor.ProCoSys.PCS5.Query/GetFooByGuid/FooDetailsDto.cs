@@ -1,9 +1,11 @@
-﻿namespace Equinor.ProCoSys.PCS5.Query.GetFooById;
+﻿using System;
+
+namespace Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
 
 public class FooDetailsDto
 {
     public FooDetailsDto(
-        int id,
+        Guid guid,
         string projectName,
         string title,
         string? text,
@@ -11,7 +13,7 @@ public class FooDetailsDto
         bool isVoided,
         string rowVersion)
     {
-        Id = id;
+        Guid = guid;
         ProjectName = projectName;
         Title = title;
         Text = text;
@@ -20,7 +22,7 @@ public class FooDetailsDto
         RowVersion = rowVersion;
     }
 
-    public int Id { get; }
+    public Guid Guid { get; }
     public string ProjectName { get; }
     public string Title { get; }
     public string? Text { get; }

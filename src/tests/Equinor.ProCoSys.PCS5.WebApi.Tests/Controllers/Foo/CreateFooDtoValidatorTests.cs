@@ -58,7 +58,7 @@ public class CreateFooDtoValidatorTests
         // Arrange
         var dto = new CreateFooDto
         {
-            Title = new string('x', Domain.AggregateModels.FooAggregate.Foo.TitleMaxLength + 1),
+            Title = new string('x', Domain.AggregateModels.FooAggregate.Foo.TitleLengthMax + 1),
             ProjectName = "P"
         };
 

@@ -1,16 +1,18 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 
 public class VoidFooCommand : IRequest<Result<string>>, IFooCommandRequest
 {
-    public VoidFooCommand(int fooId, string? rowVersion)
+    // todo add tests in AccessValidatorTests
+    public VoidFooCommand(Guid fooGuid, string? rowVersion)
     {
-        FooId = fooId;
+        FooGuid = fooGuid;
         RowVersion = rowVersion;
     }
 
-    public int FooId { get; }
+    public Guid FooGuid { get; }
     public string? RowVersion { get; }
 }

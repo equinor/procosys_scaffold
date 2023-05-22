@@ -28,10 +28,10 @@ public class EditFooCommandHandler : IRequestHandler<EditFooCommand, Result<stri
 
     public async Task<Result<string>> Handle(EditFooCommand request, CancellationToken cancellationToken)
     {
-        var foo = await _fooRepository.GetByIdAsync(request.FooId);
+        var foo = await _fooRepository.GetByGuidAsync(request.FooGuid);
         if (foo == null)
         {
-            throw new Exception($"Entity {nameof(Foo)} {request.FooId} not found");
+            throw new Exception($"Entity {nameof(Foo)} {request.FooGuid} not found");
         }
 
         foo.EditFoo(request.Title, request.Text);

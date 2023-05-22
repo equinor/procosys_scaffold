@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -14,11 +15,11 @@ public static class FoosControllerTestsHelper
     public static async Task<FooDetailsDto> GetFooAsync(
         UserType userType,
         string plant,
-        int id,
+        Guid guid,
         HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
         string expectedMessageOnBadRequest = null)
     {
-        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{id}");
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{guid}");
 
         await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
@@ -58,7 +59,7 @@ public static class FoosControllerTestsHelper
         return JsonConvert.DeserializeObject<List<FooDto>>(content);
     }
 
-    public static async Task<IdAndRowVersion> CreateFooAsync(
+    public static async Task<GuidAndRowVersion> CreateFooAsync(
         UserType userType,
         string plant,
         string title,
@@ -83,13 +84,13 @@ public static class FoosControllerTestsHelper
         }
 
         var jsonString = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<IdAndRowVersion>(jsonString);
+        return JsonConvert.DeserializeObject<GuidAndRowVersion>(jsonString);
     }
 
     public static async Task<string> UpdateFooAsync(
         UserType userType,
         string plant,
-        int id,
+        Guid guid,
         string title,
         string text,
         string rowVersion,
@@ -105,7 +106,7 @@ public static class FoosControllerTestsHelper
 
         var serializePayload = JsonConvert.SerializeObject(bodyPayload);
         var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
-        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{id}", content);
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{guid}", content);
 
         await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
@@ -120,7 +121,7 @@ public static class FoosControllerTestsHelper
     public static async Task<string> VoidFooAsync(
         UserType userType,
         string plant,
-        int id,
+        Guid guid,
         string rowVersion,
         HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
         string expectedMessageOnBadRequest = null)
@@ -132,7 +133,7 @@ public static class FoosControllerTestsHelper
 
         var serializePayload = JsonConvert.SerializeObject(bodyPayload);
         var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
-        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{id}/Void", content);
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{guid}/Void", content);
 
         await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
@@ -147,7 +148,7 @@ public static class FoosControllerTestsHelper
     public static async Task DeleteFooAsync(
         UserType userType,
         string plant,
-        int id,
+        Guid guid,
         string rowVersion,
         HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
         string expectedMessageOnBadRequest = null)
@@ -157,7 +158,7 @@ public static class FoosControllerTestsHelper
             rowVersion
         };
         var serializePayload = JsonConvert.SerializeObject(bodyPayload);
-        var request = new HttpRequestMessage(HttpMethod.Delete, $"{_route}/{id}")
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"{_route}/{guid}")
         {
             Content = new StringContent(serializePayload, Encoding.UTF8, "application/json")
         };
