@@ -20,7 +20,7 @@ public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificatio
         Url = url;
         Guid = Guid.NewGuid();
             
-        AddPostSaveDomainEvent(new LinkCreatedEvent(sourceType, SourceGuid, Guid));
+        AddPostSaveDomainEvent(new LinkCreatedEvent(sourceType, SourceGuid, Guid, Title));
     }
 
     // private set needed for EntityFramework
