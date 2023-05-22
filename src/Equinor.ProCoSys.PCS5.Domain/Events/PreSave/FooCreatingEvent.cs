@@ -5,11 +5,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.Events.PreSave;
 
 public class FooCreatingEvent : IPreSaveDomainEvent
 {
-    public FooCreatingEvent(string plant, Guid guid)
-    {
-        Plant = plant;
-        Guid = guid;
-    }
-    public string Plant { get; }
+    public FooCreatingEvent(Guid guid) => Guid = guid;
+    
     public Guid Guid { get; }
 }

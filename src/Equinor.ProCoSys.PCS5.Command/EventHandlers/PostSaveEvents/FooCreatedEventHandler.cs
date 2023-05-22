@@ -9,7 +9,7 @@ public class FooCreatedEventHandler : INotificationHandler<FooCreatedEvent>
 {
     public Task Handle(FooCreatedEvent notification, CancellationToken cancellationToken)
     {
-        // to something which should happen after a Foo is created and saved
+        // ToDo do something which should happen after a Foo is created and saved
         return Task.CompletedTask;
     }
 }

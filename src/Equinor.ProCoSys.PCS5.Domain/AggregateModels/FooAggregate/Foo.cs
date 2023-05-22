@@ -38,8 +38,8 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
 
         Guid = Guid.NewGuid();
 
-        AddPreSaveDomainEvent(new Events.PreSave.FooCreatingEvent(plant, Guid));
-        AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(plant, Guid));
+        AddPreSaveDomainEvent(new Events.PreSave.FooCreatingEvent(Guid));
+        AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(Guid));
     }
 
     // private set needed for EntityFramework

@@ -100,7 +100,8 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
     public async Task<IDbContextTransaction> BeginTransaction(CancellationToken cancellationToken = default) 
         => await base.Database.BeginTransactionAsync(cancellationToken);
 
-    public void Commit() => base.Database.CommitTransaction();
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+        => await base.Database.CommitTransactionAsync(cancellationToken);
 
     private void UpdateConcurrencyToken()
     {

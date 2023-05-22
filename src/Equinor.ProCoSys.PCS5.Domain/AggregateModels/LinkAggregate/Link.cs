@@ -3,6 +3,7 @@ using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.Common.Time;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Audit;
+using Equinor.ProCoSys.PCS5.Domain.Events.PostSave;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 
@@ -11,15 +12,19 @@ public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificatio
     public const int TitleLengthMax = 256;
     public const int UrlLengthMax = 2000;
 
-    public Link(Guid sourceGuid, string title, string url)
+    public Link(string sourceType, Guid sourceGuid, string title, string url)
     {
+        SourceType = sourceType;
+        SourceGuid = sourceGuid;
         Title = title;
         Url = url;
         Guid = Guid.NewGuid();
-        SourceGuid = sourceGuid;
+            
+        AddPostSaveDomainEvent(new LinkCreatedEvent(sourceType, SourceGuid, Guid));
     }
 
     // private set needed for EntityFramework
+    public string SourceType { get; private set; }
     public Guid SourceGuid { get; private set; }
     public string Title { get; private set; }
     public string Url { get; set; }

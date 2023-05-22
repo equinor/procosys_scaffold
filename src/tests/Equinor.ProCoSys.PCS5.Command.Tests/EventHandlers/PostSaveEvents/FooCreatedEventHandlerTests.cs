@@ -14,14 +14,13 @@ public class FooCreatedEventHandlerTests
     {
         // Arrange
         var objectGuid = Guid.NewGuid();
-        const string Plant = "TestPlant";
-        var fooCreatedEvent = new FooCreatedEvent(Plant, objectGuid);
+        var fooCreatedEvent = new FooCreatedEvent(objectGuid);
         var dut = new FooCreatedEventHandler();
 
         // Act
         await dut.Handle(fooCreatedEvent, default);
 
-        // Assert something
+        // ToDo Assert something
         Assert.IsTrue(true);
     }
 }

@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equinor.ProCoSys.PCS5.WebAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equinor.ProCoSys.PCS5.WebApi.IntegrationTests", "tests\Equinor.ProCoSys.PCS5.WebApi.IntegrationTests\Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.csproj", "{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equinor.ProCoSys.PCS5.Application", "Equinor.ProCoSys.PCS5.Core\Equinor.ProCoSys.PCS5.Application.csproj", "{C808174A-5DA6-4C14-99D4-8EBF085CAEC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C808174A-5DA6-4C14-99D4-8EBF085CAEC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C808174A-5DA6-4C14-99D4-8EBF085CAEC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C808174A-5DA6-4C14-99D4-8EBF085CAEC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C808174A-5DA6-4C14-99D4-8EBF085CAEC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
