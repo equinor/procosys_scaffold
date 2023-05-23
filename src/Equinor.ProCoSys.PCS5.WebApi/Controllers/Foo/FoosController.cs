@@ -47,6 +47,7 @@ public class FoosController : ControllerBase
         [Required]
         [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
         string plant,
+        [Required]
         [FromQuery] string projectName,
         [FromQuery] bool includeVoided = false)
     {

@@ -4,11 +4,14 @@ using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Audit;
 using Equinor.ProCoSys.Common.Time;
 using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.Domain.Events.PostSave;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 
 public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IVoidable
 {
+    private bool _isVoided;
+
     public const int TitleLengthMin = 3;
     public const int TitleLengthMax = 250;
     public const int TextLengthMax = 500;
@@ -38,8 +41,7 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
 
         Guid = Guid.NewGuid();
 
-        AddPreSaveDomainEvent(new Events.PreSave.FooCreatingEvent(Guid));
-        AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(Guid));
+        AddPostSaveDomainEvent(new FooCreatedEvent(Guid));
     }
 
     // private set needed for EntityFramework
@@ -54,10 +56,11 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
 
     public void EditFoo(string title, string? text)
     {
+
         Title = title;
         Text = text;
-        AddPreSaveDomainEvent(new Events.PreSave.FooEditingEvent(Guid));
-        AddPostSaveDomainEvent(new Events.PostSave.FooEditedEvent(Guid));
+
+        AddPostSaveDomainEvent(new FooEditedEvent(Guid));
     }
 
     public void SetCreated(Person createdBy)
@@ -80,15 +83,26 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
         ModifiedById = modifiedBy.Id;
     }
 
-    public void MoveToProject(Project toProject)
+    public bool IsVoided
     {
-        if (toProject is null)
+        get => _isVoided;
+        set
         {
-            throw new ArgumentNullException(nameof(toProject));
+            // do nothing if already set
+            if (_isVoided == value)
+            {
+                return;
+            }
+
+            _isVoided = value;
+            if (_isVoided)
+            {
+                AddPostSaveDomainEvent(new FooVoidedEvent(Guid));
+            }
+            else
+            {
+                AddPostSaveDomainEvent(new FooUnvoidedEvent(Guid));
+            }
         }
-
-        ProjectId = toProject.Id;
     }
-
-    public bool IsVoided { get; set; }
 }
