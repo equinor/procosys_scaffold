@@ -17,8 +17,8 @@ namespace Equinor.ProCoSys.PCS5.Application.Services;
 
 public class LinkService : ILinkService
 {
-    private readonly IReadOnlyContext _context;
-    private readonly ILinkRepository _linkRepository;
+    private readonly IReadOnlyContext _context; // for read
+    private readonly ILinkRepository _linkRepository; // for CUD
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<LinkService> _logger;
 
