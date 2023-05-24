@@ -81,10 +81,11 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await DispatchPreSaveEventsAsync(cancellationToken);
         await SetAuditDataAsync();
         UpdateConcurrencyToken();
-            
+
+        await DispatchDomainEventsAsync(cancellationToken);
+
         try
         {
             var result = await base.SaveChangesAsync(cancellationToken);
@@ -120,13 +121,13 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
         }
     }
 
-    private async Task DispatchPreSaveEventsAsync(CancellationToken cancellationToken = default)
+    private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken = default)
     {
         var entities = ChangeTracker
             .Entries<EntityBase>()
-            .Where(x => x.Entity.PreSaveDomainEvents != null && x.Entity.PreSaveDomainEvents.Any())
+            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any())
             .Select(x => x.Entity);
-        await _eventDispatcher.DispatchPreSaveAsync(entities, cancellationToken);
+        await _eventDispatcher.DispatchDomainEventsAsync(entities, cancellationToken);
     }
 
     private async Task DispatchPostSaveEventsAsync(CancellationToken cancellationToken = default)
@@ -135,7 +136,7 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
             .Entries<EntityBase>()
             .Where(x => x.Entity.PostSaveDomainEvents != null && x.Entity.PostSaveDomainEvents.Any())
             .Select(x => x.Entity);
-        await _eventDispatcher.DispatchPostSaveAsync(entities, cancellationToken);
+        await _eventDispatcher.DispatchPostSaveEventsAsync(entities, cancellationToken);
     }
 
     private async Task SetAuditDataAsync()

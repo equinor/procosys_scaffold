@@ -22,16 +22,16 @@ public class EventDispatcherTests
         for (var i = 0; i < 3; i++)
         {
             var entity = new Mock<TestableEntityBase>();
-            entity.Object.AddPreSaveDomainEvent(new Mock<IPreSaveDomainEvent>().Object);
+            entity.Object.AddDomainEvent(new TestableDomainEvent());
             entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
         }
-        await dut.DispatchPreSaveAsync(entities);
+        await dut.DispatchDomainEventsAsync(entities);
 
         mediator.Verify(x 
             => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
 
-        entities.ForEach(e => Assert.AreEqual(0, e.PreSaveDomainEvents.Count));
+        entities.ForEach(e => Assert.AreEqual(0, e.DomainEvents.Count));
         entities.ForEach(e => Assert.AreEqual(1, e.PostSaveDomainEvents.Count));
     }
 
@@ -45,21 +45,28 @@ public class EventDispatcherTests
         for (var i = 0; i < 3; i++)
         {
             var entity = new Mock<TestableEntityBase>();
-            entity.Object.AddPreSaveDomainEvent(new Mock<IPreSaveDomainEvent>().Object);
+            entity.Object.AddDomainEvent(new TestableDomainEvent());
             entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
         }
-        await dut.DispatchPostSaveAsync(entities);
+        await dut.DispatchPostSaveEventsAsync(entities);
 
         mediator.Verify(x
             => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
 
-        entities.ForEach(e => Assert.AreEqual(1, e.PreSaveDomainEvents.Count));
+        entities.ForEach(e => Assert.AreEqual(1, e.DomainEvents.Count));
         entities.ForEach(e => Assert.AreEqual(0, e.PostSaveDomainEvents.Count));
     }
 }
 
-public class TestableEntityBase : EntityBase
+// The base classes are abstract, therefor sub classes needed to test it.
+internal class TestableEntityBase : EntityBase
 {
-    // The base class is abstract, therefor a sub class is needed to test it.
+}
+
+internal class TestableDomainEvent : DomainEvent
+{
+    public TestableDomainEvent() : base("Test")
+    {
+    }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using ServiceResult;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 
@@ -35,6 +36,7 @@ public class VoidFooCommandHandler : IRequestHandler<VoidFooCommand, Result<stri
         }
 
         foo.IsVoided = true;
+        foo.AddDomainEvent(new FooVoidedEvent(foo));
         foo.SetRowVersion(request.RowVersion);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

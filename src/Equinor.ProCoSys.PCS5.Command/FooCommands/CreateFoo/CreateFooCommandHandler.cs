@@ -9,6 +9,7 @@ using MediatR;
 using ServiceResult;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 
@@ -44,6 +45,7 @@ public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<
 
         var foo = new Foo(_plantProvider.Plant, project, request.Title);
         _fooRepository.Add(foo);
+        foo.AddDomainEvent(new FooCreatedEvent(foo));
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

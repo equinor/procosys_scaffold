@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Command.EventHandlers.PostSaveEvents;
-using Equinor.ProCoSys.PCS5.Domain.Events.PostSave;
+using Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers.PostSaveEvents;
@@ -13,8 +15,8 @@ public class FooCreatedEventHandlerTests
     public async Task Handle_ShouldDoSomething()
     {
         // Arrange
-        var objectGuid = Guid.NewGuid();
-        var fooCreatedEvent = new FooCreatedEvent(objectGuid);
+        var foo = new Foo("X", new Project("X", Guid.NewGuid(), "Pro", "Desc"), "F");
+        var fooCreatedEvent = new FooCreatedEvent(foo);
         var dut = new FooCreatedEventHandler();
 
         // Act

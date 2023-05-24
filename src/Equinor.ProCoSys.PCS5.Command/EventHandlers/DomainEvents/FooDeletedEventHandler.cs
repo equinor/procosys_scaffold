@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Domain.Events.PreSave;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using MediatR;
 
-namespace Equinor.ProCoSys.PCS5.Command.EventHandlers.PreSaveEvents;
+namespace Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents;
 
 public class FooDeletedEventHandler : INotificationHandler<FooDeletedEvent>
 {

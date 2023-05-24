@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using ServiceResult;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain;
-using Equinor.ProCoSys.PCS5.Domain.Events.PreSave;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 
@@ -35,9 +35,8 @@ public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<
         }
 
         foo.SetRowVersion(request.RowVersion);
-        foo.AddPreSaveDomainEvent(new FooDeletedEvent(foo.Guid));
-
         _fooRepository.Remove(foo);
+        foo.AddDomainEvent(new FooDeletedEvent(foo));
 
         _logger.LogInformation($"Deleting Foo '{foo.Title}'");
 

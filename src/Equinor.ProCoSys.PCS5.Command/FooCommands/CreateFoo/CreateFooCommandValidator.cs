@@ -1,11 +1,10 @@
-﻿using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 
 public class CreateFooCommandValidator : AbstractValidator<CreateFooCommand>
 {
-    public CreateFooCommandValidator(IFooValidator fooValidator)
+    public CreateFooCommandValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
         ClassLevelCascadeMode = CascadeMode.Stop;
@@ -14,7 +13,7 @@ public class CreateFooCommandValidator : AbstractValidator<CreateFooCommand>
             .Must(_ => MustBeAValidFoo())
             .WithMessage("Not a OK Foo!");
 
-        bool MustBeAValidFoo()
-            => fooValidator.FooIsOk();
+        // some validation can go here
+        bool MustBeAValidFoo() => true;
     }
 }

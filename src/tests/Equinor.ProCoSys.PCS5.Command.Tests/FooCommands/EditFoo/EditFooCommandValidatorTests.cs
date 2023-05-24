@@ -22,7 +22,6 @@ public class EditFooCommandValidatorTests
     public void Setup_OkState()
     {
         _fooValidatorMock = new Mock<IFooValidator>();
-        _fooValidatorMock.Setup(x => x.FooIsOk()).Returns(true);
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
         _command = new EditFooCommand(_fooGuid, "New title", "New text", _rowVersion);
@@ -36,18 +35,6 @@ public class EditFooCommandValidatorTests
         var result = await _dut.ValidateAsync(_command);
 
         Assert.IsTrue(result.IsValid);
-    }
-
-    [TestMethod]
-    public async Task Validate_ShouldFail_When_FooNotOk()
-    {
-        _fooValidatorMock.Setup(inv => inv.FooIsOk()).Returns(false);
-
-        var result = await _dut.ValidateAsync(_command);
-
-        Assert.IsFalse(result.IsValid);
-        Assert.AreEqual(1, result.Errors.Count);
-        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Not a OK Foo!"));
     }
 
     [TestMethod]

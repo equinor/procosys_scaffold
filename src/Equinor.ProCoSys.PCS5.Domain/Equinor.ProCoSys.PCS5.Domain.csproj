@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Equinor.ProCoSys.Common" Version="1.0.10" />
+    <PackageReference Include="Equinor.ProCoSys.Common" Version="1.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Events\PostSave\" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.LinkEvents;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.LinkAggregate;
@@ -30,5 +31,5 @@ public class LinkTests
 
     [TestMethod]
     public void Constructor_ShouldAddLinkCreatedPostEvent()
-        => Assert.IsInstanceOfType(_dut.PostSaveDomainEvents.First(), typeof(Events.PostSave.LinkCreatedEvent));
+        => Assert.IsInstanceOfType(_dut.DomainEvents.First(), typeof(LinkCreatedEvent));
 }

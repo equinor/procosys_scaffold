@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Domain.Events.PostSave;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using MediatR;
 
-namespace Equinor.ProCoSys.PCS5.Command.EventHandlers.PostSaveEvents;
+namespace Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents;
 
 public class FooCreatedEventHandler : INotificationHandler<FooCreatedEvent>
 {

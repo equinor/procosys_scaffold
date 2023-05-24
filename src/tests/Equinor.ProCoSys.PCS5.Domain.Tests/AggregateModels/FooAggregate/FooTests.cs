@@ -3,7 +3,7 @@ using System.Linq;
 using Equinor.ProCoSys.Common.Time;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.Domain.Events.PostSave;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -50,8 +50,8 @@ public class FooTests
             new Foo(_testPlant, new Project("OtherPlant", Guid.NewGuid(), "P", "D"), _title));
 
     [TestMethod]
-    public void Constructor_ShouldAddFooCreatedPostEvent()
-        => Assert.IsInstanceOfType(_dut.PostSaveDomainEvents.First(), typeof(FooCreatedEvent));
+    public void Constructor_ShouldAddFooCreatedEvent()
+        => Assert.IsInstanceOfType(_dut.DomainEvents.First(), typeof(FooCreatedEvent));
     #endregion
 
     #region Edit
@@ -66,11 +66,11 @@ public class FooTests
     }
 
     [TestMethod]
-    public void EditFoo_ShouldAddFooEditedPostEvent()
+    public void EditFoo_ShouldAddFooEditedEvent()
     {
         _dut.EditFoo("New Title", "New Text");
 
-        Assert.IsInstanceOfType(_dut.PostSaveDomainEvents.Last(), typeof(FooEditedEvent));
+        Assert.IsInstanceOfType(_dut.DomainEvents.Last(), typeof(FooUpdatedEvent));
     }
     #endregion
 
@@ -87,8 +87,8 @@ public class FooTests
 
         // Assert
         Assert.IsTrue(_dut.IsVoided);
-        Assert.AreEqual(2, _dut.PostSaveDomainEvents.Count);
-        Assert.IsInstanceOfType(_dut.PostSaveDomainEvents.Last(), typeof(FooVoidedEvent));
+        Assert.AreEqual(2, _dut.DomainEvents.Count);
+        Assert.IsInstanceOfType(_dut.DomainEvents.Last(), typeof(FooVoidedEvent));
     }
 
     [TestMethod]
@@ -97,13 +97,13 @@ public class FooTests
         // Arrange
         _dut.IsVoided = true;
         Assert.IsTrue(_dut.IsVoided);
-        Assert.AreEqual(2, _dut.PostSaveDomainEvents.Count);
+        Assert.AreEqual(2, _dut.DomainEvents.Count);
 
         // Act
         _dut.IsVoided = true;
 
         // Assert
-        Assert.AreEqual(2, _dut.PostSaveDomainEvents.Count);
+        Assert.AreEqual(2, _dut.DomainEvents.Count);
     }
 
     #endregion
@@ -122,8 +122,8 @@ public class FooTests
 
         // Assert
         Assert.IsFalse(_dut.IsVoided);
-        Assert.AreEqual(3, _dut.PostSaveDomainEvents.Count);
-        Assert.IsInstanceOfType(_dut.PostSaveDomainEvents.Last(), typeof(FooUnvoidedEvent));
+        Assert.AreEqual(3, _dut.DomainEvents.Count);
+        Assert.IsInstanceOfType(_dut.DomainEvents.Last(), typeof(FooUnvoidedEvent));
     }
 
     [TestMethod]
@@ -133,13 +133,13 @@ public class FooTests
         _dut.IsVoided = true;
         _dut.IsVoided = false;
         Assert.IsFalse(_dut.IsVoided);
-        Assert.AreEqual(3, _dut.PostSaveDomainEvents.Count);
+        Assert.AreEqual(3, _dut.DomainEvents.Count);
 
         // Act
         _dut.IsVoided = false;
 
         // Assert
-        Assert.AreEqual(3, _dut.PostSaveDomainEvents.Count);
+        Assert.AreEqual(3, _dut.DomainEvents.Count);
     }
 
     #endregion

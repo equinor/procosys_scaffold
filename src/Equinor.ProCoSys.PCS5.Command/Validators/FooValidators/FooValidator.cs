@@ -27,10 +27,4 @@ public class FooValidator : IFooValidator
         return foo != null && foo.IsVoided;
 
     }
-
-    public bool FooIsOk()
-    {
-        // some business logic for foo here
-        return true;
-    }
 }

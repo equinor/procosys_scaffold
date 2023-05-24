@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using ServiceResult;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 
@@ -36,6 +37,7 @@ public class EditFooCommandHandler : IRequestHandler<EditFooCommand, Result<stri
 
         foo.EditFoo(request.Title, request.Text);
         foo.SetRowVersion(request.RowVersion);
+        foo.AddDomainEvent(new FooUpdatedEvent(foo));
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
             

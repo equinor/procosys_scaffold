@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.LinkEvents;
 using Microsoft.Extensions.Logging;
 
 namespace Equinor.ProCoSys.PCS5.Application.Services;
@@ -23,27 +24,15 @@ public class LinkService : ILinkService
     // todo create unit test
     public async Task<Link> AddAsync(string sourceType, Guid sourceGuid, string title, string url, CancellationToken cancellationToken)
     {
-        var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
-        try
-        {
-            var link = new Link(sourceType, sourceGuid, title, url);
-            _linkRepository.Add(link);
+        var link = new Link(sourceType, sourceGuid, title, url);
+        _linkRepository.Add(link);
+        link.AddDomainEvent(new LinkCreatedEvent(link));
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+        _logger.LogInformation($"Link '{title}' created for {sourceGuid}");
 
-            _logger.LogInformation($"Link '{title}' created for {sourceGuid}");
-
-            return link;
-        }
-        catch (Exception e)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            _logger.LogError(e, $"Error creating link '{title}' for {sourceGuid}");
-            throw;
-        }
-
+        return link;
     }
 
     public Task<Link> GetAllAsync(Guid sourceGuid, CancellationToken cancellationToken) => throw new NotImplementedException();

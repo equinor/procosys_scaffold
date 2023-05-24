@@ -14,7 +14,6 @@ public class VoidFooCommandValidator : AbstractValidator<VoidFooCommand>
         ClassLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(command => command)
-            //business validators
             .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooGuid, cancellationToken))
             .WithMessage(command => $"Foo with this ID does not exist! Id={command.FooGuid}")
             .MustAsync((command, cancellationToken) => NotBeAVoidedFoo(command.FooGuid, cancellationToken))
