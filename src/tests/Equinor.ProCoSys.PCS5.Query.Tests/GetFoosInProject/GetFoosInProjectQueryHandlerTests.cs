@@ -6,7 +6,7 @@ using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceResult;
-using Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 
 namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFoosInProject;
 

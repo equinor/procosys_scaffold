@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.Extensions.Logging;
@@ -65,7 +67,7 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
     }
 
     [TestMethod]
-    public async Task HandlingCommand_ShouldReturn_IdAndRowVersion()
+    public async Task HandlingCommand_ShouldReturn_GuidAndRowVersion()
     {
         // Act
         var result = await _dut.Handle(_command, default);
@@ -150,5 +152,15 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Exactly(2));
+    }
+
+    [TestMethod]
+    public async Task HandlingCommand_ShouldAddFooCreatedEvent()
+    {
+        // Act
+        await _dut.Handle(_command, default);
+
+        // Assert
+        Assert.IsInstanceOfType(_fooAddedToRepository.DomainEvents.First(), typeof(FooCreatedEvent));
     }
 }

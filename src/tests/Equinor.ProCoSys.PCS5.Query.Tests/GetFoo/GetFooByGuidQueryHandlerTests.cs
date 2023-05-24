@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure;
-using Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceResult;
 
-namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFooByGuid;
+namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFoo;
 
 [TestClass]
 public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
@@ -32,8 +32,8 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
     {
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
-        var query = new GetFooByGuidQuery(Guid.Empty);
-        var dut = new GetFooByGuidQueryHandler(context);
+        var query = new GetFooQuery(Guid.Empty);
+        var dut = new GetFooQueryHandler(context);
 
         var result = await dut.Handle(query, default);
 
@@ -47,8 +47,8 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
     {
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
-        var query = new GetFooByGuidQuery(_fooGuid);
-        var dut = new GetFooByGuidQueryHandler(context);
+        var query = new GetFooQuery(_fooGuid);
+        var dut = new GetFooQueryHandler(context);
 
         var result = await dut.Handle(query, default);
 

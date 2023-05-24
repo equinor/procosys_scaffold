@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Command;
-using Equinor.ProCoSys.PCS5.Query;
+using Equinor.ProCoSys.PCS5.Query.FooQueries;
 using Equinor.ProCoSys.PCS5.WebApi.Misc;
 using MediatR;
 using Microsoft.Extensions.Logging;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.Query;
+namespace Equinor.ProCoSys.PCS5.Query.FooQueries;
 
 public interface IFooQueryRequest
 {

@@ -2,11 +2,11 @@
 using MediatR;
 using ServiceResult;
 
-namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateLink;
+namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 
-public class CreateLinkCommand : IRequest<Result<GuidAndRowVersion>>, IFooCommandRequest
+public class CreateFooLinkCommand : IRequest<Result<GuidAndRowVersion>>, IFooCommandRequest
 {
-    public CreateLinkCommand(Guid fooGuid, string title, string url)
+    public CreateFooLinkCommand(Guid fooGuid, string title, string url)
     {
         FooGuid = fooGuid;
         Title = title;

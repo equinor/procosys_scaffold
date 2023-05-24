@@ -48,10 +48,6 @@ public class FooTests
     public void Constructor_ShouldThrowException_WhenProjectInOtherPlant()
         => Assert.ThrowsException<ArgumentException>(() =>
             new Foo(_testPlant, new Project("OtherPlant", Guid.NewGuid(), "P", "D"), _title));
-
-    [TestMethod]
-    public void Constructor_ShouldAddFooCreatedEvent()
-        => Assert.IsInstanceOfType(_dut.DomainEvents.First(), typeof(FooCreatedEvent));
     #endregion
 
     #region Edit
@@ -64,83 +60,5 @@ public class FooTests
         Assert.AreEqual("New Title", _dut.Title);
         Assert.AreEqual("New Text", _dut.Text);
     }
-
-    [TestMethod]
-    public void EditFoo_ShouldAddFooEditedEvent()
-    {
-        _dut.EditFoo("New Title", "New Text");
-
-        Assert.IsInstanceOfType(_dut.DomainEvents.Last(), typeof(FooUpdatedEvent));
-    }
-    #endregion
-
-    #region Void
-
-    [TestMethod]
-    public void Void_ShouldAddFooVoidedEvent_WhenNotAlreadyVoided()
-    {
-        // Arrange
-        Assert.IsFalse(_dut.IsVoided);
-
-        // Act
-        _dut.IsVoided = true;
-
-        // Assert
-        Assert.IsTrue(_dut.IsVoided);
-        Assert.AreEqual(2, _dut.DomainEvents.Count);
-        Assert.IsInstanceOfType(_dut.DomainEvents.Last(), typeof(FooVoidedEvent));
-    }
-
-    [TestMethod]
-    public void Void_ShouldNotAddAnotherFooVoidedEvent_WhenAlreadyVoided()
-    {
-        // Arrange
-        _dut.IsVoided = true;
-        Assert.IsTrue(_dut.IsVoided);
-        Assert.AreEqual(2, _dut.DomainEvents.Count);
-
-        // Act
-        _dut.IsVoided = true;
-
-        // Assert
-        Assert.AreEqual(2, _dut.DomainEvents.Count);
-    }
-
-    #endregion
-
-    #region Unvoid
-
-    [TestMethod]
-    public void Unvoid_ShouldAddFooUnvoidedEvent_WhenUnvoided()
-    {
-        // Arrange
-        _dut.IsVoided = true;
-        Assert.IsTrue(_dut.IsVoided);
-
-        // Act
-        _dut.IsVoided = false;
-
-        // Assert
-        Assert.IsFalse(_dut.IsVoided);
-        Assert.AreEqual(3, _dut.DomainEvents.Count);
-        Assert.IsInstanceOfType(_dut.DomainEvents.Last(), typeof(FooUnvoidedEvent));
-    }
-
-    [TestMethod]
-    public void Unvoid_ShouldNotAddAnotherFooUnvoidedEvent_WhenAlreadyUnvoided()
-    {
-        // Arrange
-        _dut.IsVoided = true;
-        _dut.IsVoided = false;
-        Assert.IsFalse(_dut.IsVoided);
-        Assert.AreEqual(3, _dut.DomainEvents.Count);
-
-        // Act
-        _dut.IsVoided = false;
-
-        // Assert
-        Assert.AreEqual(3, _dut.DomainEvents.Count);
-    }
-
     #endregion
 }

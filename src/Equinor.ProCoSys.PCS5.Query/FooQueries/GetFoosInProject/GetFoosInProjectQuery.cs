@@ -3,7 +3,7 @@ using Equinor.ProCoSys.Common;
 using MediatR;
 using ServiceResult;
 
-namespace Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
+namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 
 public class GetFoosInProjectQuery : IRequest<Result<IEnumerable<FooDto>>>, IProjectRequest
 {

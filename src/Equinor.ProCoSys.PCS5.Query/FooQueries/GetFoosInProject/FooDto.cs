@@ -1,23 +1,19 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
+namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 
-public class FooDetailsDto
+public class FooDto
 {
-    public FooDetailsDto(
+    public FooDto(
         Guid guid,
         string projectName,
         string title,
-        string? text,
-        PersonDto createdBy,
         bool isVoided,
         string rowVersion)
     {
         Guid = guid;
         ProjectName = projectName;
         Title = title;
-        Text = text;
-        CreatedBy = createdBy;
         IsVoided = isVoided;
         RowVersion = rowVersion;
     }
@@ -25,8 +21,6 @@ public class FooDetailsDto
     public Guid Guid { get; }
     public string ProjectName { get; }
     public string Title { get; }
-    public string? Text { get; }
-    public PersonDto CreatedBy { get; }
     public bool IsVoided { get; }
     public string RowVersion { get; }
 }

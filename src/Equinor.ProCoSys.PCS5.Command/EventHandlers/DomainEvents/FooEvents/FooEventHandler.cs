@@ -1,15 +1,14 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
-using MediatR;
 
-namespace Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents;
+namespace Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents.FooEvents;
 
-public class FooEventHandler : INotificationHandler<FooEvent>
+public abstract class FooEventHandler
 {
     public Task Handle(FooEvent notification, CancellationToken cancellationToken)
     {
-        // ToDo do something which should happen after a Foo is created and saved
+        // ToDo Send event to the bus
         return Task.CompletedTask;
     }
 }

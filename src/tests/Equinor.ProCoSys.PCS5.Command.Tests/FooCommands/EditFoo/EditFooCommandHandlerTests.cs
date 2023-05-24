@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -71,5 +73,14 @@ public class EditFooCommandHandlerTests : CommandHandlerTestsBase
         // Since UnitOfWorkMock is a Mock this will not happen here, so we assert that RowVersion is set from command
         Assert.AreEqual(_rowVersion, result.Data);
         Assert.AreEqual(_rowVersion, _existingFoo.RowVersion.ConvertToString());
+    }
+
+    [TestMethod]
+    public async Task HandlingCommand_ShouldAddFooEditedEvent()
+    {
+        // Act
+        var result = await _dut.Handle(_command, default);
+
+        Assert.IsInstanceOfType(_existingFoo.DomainEvents.Last(), typeof(FooUpdatedEvent));
     }
 }

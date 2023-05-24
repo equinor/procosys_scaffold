@@ -7,8 +7,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Equinor.ProCoSys.Common.Misc;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateLink;
-using Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations;
 
@@ -79,12 +80,12 @@ public class AccessValidatorTests
     }
     #endregion
 
-    #region CreateLinkCommand
+    #region CreateFooLinkCommand
     [TestMethod]
-    public async Task ValidateAsync_OnCreateLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    public async Task ValidateAsync_OnCreateFooLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new CreateLinkCommand(_fooGuidWithAccessToProject, "T", "U");
+        var command = new CreateFooLinkCommand(_fooGuidWithAccessToProject, "T", "U");
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -94,10 +95,10 @@ public class AccessValidatorTests
     }
 
     [TestMethod]
-    public async Task ValidateAsync_OnCreateLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    public async Task ValidateAsync_OnCreateFooLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new CreateLinkCommand(_fooGuidWithoutAccessToProject, "T", "U");
+        var command = new CreateFooLinkCommand(_fooGuidWithoutAccessToProject, "T", "U");
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -111,12 +112,12 @@ public class AccessValidatorTests
 
     #region Queries
 
-    #region GetFooByGuidQuery
+    #region GetFooQuery
     [TestMethod]
-    public async Task ValidateAsync_OnGetFooByIdQuery_ShouldReturnTrue_WhenAccessToProject()
+    public async Task ValidateAsync_OnGetFooQuery_ShouldReturnTrue_WhenAccessToProject()
     {
         // Arrange
-        var query = new GetFooByGuidQuery(_fooGuidWithAccessToProject);
+        var query = new GetFooQuery(_fooGuidWithAccessToProject);
 
         // act
         var result = await _dut.ValidateAsync(query);
@@ -126,10 +127,39 @@ public class AccessValidatorTests
     }
 
     [TestMethod]
-    public async Task ValidateAsync_OnGetFooByIdQuery_ShouldReturnFalse_WhenNoAccessToProject()
+    public async Task ValidateAsync_OnGetFooQuery_ShouldReturnFalse_WhenNoAccessToProject()
     {
         // Arrange
-        var query = new GetFooByGuidQuery(_fooGuidWithoutAccessToProject);
+        var query = new GetFooQuery(_fooGuidWithoutAccessToProject);
+
+        // act
+        var result = await _dut.ValidateAsync(query);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+
+    #region GetFooQuery
+    [TestMethod]
+    public async Task ValidateAsync_OnGetFooLinksQuery_ShouldReturnTrue_WhenAccessToProject()
+    {
+        // Arrange
+        var query = new GetFooLinksQuery(_fooGuidWithAccessToProject);
+
+        // act
+        var result = await _dut.ValidateAsync(query);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnGetFooLinksQuery_ShouldReturnFalse_WhenNoAccessToProject()
+    {
+        // Arrange
+        var query = new GetFooLinksQuery(_fooGuidWithoutAccessToProject);
 
         // act
         var result = await _dut.ValidateAsync(query);

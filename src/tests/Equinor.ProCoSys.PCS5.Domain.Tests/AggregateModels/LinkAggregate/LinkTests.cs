@@ -28,8 +28,4 @@ public class LinkTests
         Assert.AreNotEqual(_sourceGuid, _dut.Guid);
         Assert.AreNotEqual(Guid.Empty, _dut.Guid);
     }
-
-    [TestMethod]
-    public void Constructor_ShouldAddLinkCreatedPostEvent()
-        => Assert.IsInstanceOfType(_dut.DomainEvents.First(), typeof(LinkCreatedEvent));
 }

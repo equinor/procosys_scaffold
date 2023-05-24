@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using FluentValidation;
 
-namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateLink;
+namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 
-public class CreateLinkCommandValidator : AbstractValidator<CreateLinkCommand>
+public class CreateFooLinkCommandValidator : AbstractValidator<CreateFooLinkCommand>
 {
     // todo create unit test
-    public CreateLinkCommandValidator(IFooValidator fooValidator)
+    public CreateFooLinkCommandValidator(IFooValidator fooValidator)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
         ClassLevelCascadeMode = CascadeMode.Stop;

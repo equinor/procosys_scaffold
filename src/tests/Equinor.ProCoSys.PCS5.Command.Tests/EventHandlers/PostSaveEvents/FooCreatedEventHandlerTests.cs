@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents;
+using Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents.FooEvents;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;

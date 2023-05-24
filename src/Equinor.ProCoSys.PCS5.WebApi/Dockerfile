@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 # Copy project files separately and restore NuGet packages to create layers. Skip test projects!
+COPY Equinor.ProCoSys.PCS5.Application/*.csproj ./Equinor.ProCoSys.PCS5.Application/
 COPY Equinor.ProCoSys.PCS5.Command/*.csproj ./Equinor.ProCoSys.PCS5.Command/
 COPY Equinor.ProCoSys.PCS5.Domain/*.csproj ./Equinor.ProCoSys.PCS5.Domain/
 COPY Equinor.ProCoSys.PCS5.Infrastructure/*.csproj ./Equinor.ProCoSys.PCS5.Infrastructure/

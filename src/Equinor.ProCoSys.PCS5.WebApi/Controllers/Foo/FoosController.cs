@@ -6,16 +6,18 @@ using Equinor.ProCoSys.Auth;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateLink;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
-using Equinor.ProCoSys.PCS5.Query.GetFooByGuid;
-using Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServiceResult.ApiExtensions;
+using Equinor.ProCoSys.PCS5.Application.Dtos;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
 
@@ -36,7 +38,7 @@ public class FoosController : ControllerBase
         string plant,
         [FromRoute] Guid guid)
     {
-        var result = await _mediator.Send(new GetFooByGuidQuery(guid));
+        var result = await _mediator.Send(new GetFooQuery(guid));
         return this.FromResult(result);
     }
 
@@ -114,8 +116,8 @@ public class FoosController : ControllerBase
 
     // todo create integration test
     [AuthorizeAny(Permissions.FOO_ATTACH, Permissions.APPLICATION_TESTER)]
-    [HttpPost("{guid}/Link")]
-    public async Task<ActionResult<GuidAndRowVersion>> CreateLink(
+    [HttpPost("{guid}/Links")]
+    public async Task<ActionResult<GuidAndRowVersion>> CreateFooLink(
         [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
         [Required]
         [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
@@ -123,21 +125,23 @@ public class FoosController : ControllerBase
         [FromRoute] Guid guid,
         [FromBody] CreateLinkDto dto)
     {
-        var result = await _mediator.Send(new CreateLinkCommand(guid, dto.Title, dto.Url));
+        var result = await _mediator.Send(new CreateFooLinkCommand(guid, dto.Title, dto.Url));
         return this.FromResult(result);
     }
 
-    //[HttpGet]
-    //public async Task<ActionResult<IEnumerable<LinkDto>>> GetLinksForProCoSysGuid(
-    //    [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
-    //    [Required]
-    //    [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
-    //    string plant,
-    //    [FromQuery] Guid proCoSysGuid)
-    //{
-    //    var result = await _mediator.Send(new GetLinksForProCoSysGuidQuery(proCoSysGuid));
-    //    return this.FromResult(result);
-    //}
+    // todo create integration test
+    [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
+    [HttpGet("{guid}/Links")]
+    public async Task<ActionResult<IEnumerable<LinkDto>>> GetFooLinks(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid)
+    {
+        var result = await _mediator.Send(new GetFooLinksQuery(guid));
+        return this.FromResult(result);
+    }
 
     //[HttpPut("{id}")]
     //public async Task<ActionResult<string>> EditLink(

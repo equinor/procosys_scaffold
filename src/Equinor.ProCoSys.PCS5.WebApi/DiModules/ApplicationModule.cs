@@ -23,6 +23,7 @@ using Equinor.ProCoSys.Common.Telemetry;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.PCS5.Application.Services;
 using Equinor.ProCoSys.PCS5.WebApi.Controllers;
+using Equinor.ProCoSys.PCS5.Application.Interfaces;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.DIModules;
 

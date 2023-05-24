@@ -6,7 +6,7 @@ using Equinor.ProCoSys.PCS5.Domain.Audit;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 
-public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable
+public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IBelongToSource
 {
     public const int TitleLengthMax = 256;
     public const int UrlLengthMax = 2000;

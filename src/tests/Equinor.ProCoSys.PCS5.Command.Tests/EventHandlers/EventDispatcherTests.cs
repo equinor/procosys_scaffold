@@ -60,11 +60,11 @@ public class EventDispatcherTests
 }
 
 // The base classes are abstract, therefor sub classes needed to test it.
-internal class TestableEntityBase : EntityBase
+public class TestableEntityBase : EntityBase
 {
 }
 
-internal class TestableDomainEvent : DomainEvent
+public class TestableDomainEvent : DomainEvent
 {
     public TestableDomainEvent() : base("Test")
     {
