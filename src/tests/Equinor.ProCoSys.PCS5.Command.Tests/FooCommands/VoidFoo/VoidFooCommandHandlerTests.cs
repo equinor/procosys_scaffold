@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -10,7 +11,7 @@ using Moq;
 namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.VoidFoo;
 
 [TestClass]
-public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
+public class VoidFooCommandHandlerTests : TestsBase
 {
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
@@ -23,8 +24,8 @@ public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
     [TestInitialize]
     public void Setup()
     {
-        var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
-        _existingFoo = new Foo(TestPlant, project, "Foo");
+        var project = new Project(TestPlantA, Guid.NewGuid(), "P", "D");
+        _existingFoo = new Foo(TestPlantA, project, "Foo");
         _fooRepositoryMock = new Mock<IFooRepository>();
         _fooRepositoryMock.Setup(r => r.GetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);

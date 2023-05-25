@@ -34,6 +34,9 @@ public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<
             throw new Exception($"Entity {nameof(Foo)} {request.FooGuid} not found");
         }
 
+        // Setting RowVersion before delete has 2 missions:
+        // 1) Set correct Concurrency
+        // 2) Trigger the update of modifiedBy / modifiedAt to be able to log who performed the deletion
         foo.SetRowVersion(request.RowVersion);
         _fooRepository.Remove(foo);
         foo.AddDomainEvent(new FooDeletedEvent(foo));

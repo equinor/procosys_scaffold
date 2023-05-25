@@ -6,6 +6,7 @@ using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
+using Equinor.ProCoSys.PCS5.Test.Common;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ using Moq;
 namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo;
 
 [TestClass]
-public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
+public class CreateFooCommandHandlerTests : TestsBase
 {
     private Mock<IFooRepository> _fooRepositoryMock;
     private Mock<IProjectApiService> _projectApiServiceMock;
@@ -52,7 +53,7 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
         _proCoSysProject = new ProCoSysProject {Name = _projectName, Description = _projectDescription };
         _projectApiServiceMock = new Mock<IProjectApiService>();
         _projectApiServiceMock
-            .Setup(x => x.TryGetProjectAsync(TestPlant, _projectName))
+            .Setup(x => x.TryGetProjectAsync(TestPlantA, _projectName))
             .ReturnsAsync(_proCoSysProject);
 
         _command = new CreateFooCommand("Foo", _projectName);
@@ -91,7 +92,7 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
     public async Task HandlingCommand_ShouldAddFooToRepository_WhenProjectExists()
     {
         // Arrange
-        var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
+        var project = new Project(TestPlantA, Guid.NewGuid(), _projectName, "");
         var projectIdOnExisting = 10;
         project.SetProtectedIdForTesting(projectIdOnExisting);
         _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
@@ -120,7 +121,7 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
     public async Task HandlingCommand_ShouldNotAddAnyProjectToRepository_WhenProjectAlreadyExists()
     {
         // Arrange
-        var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
+        var project = new Project(TestPlantA, Guid.NewGuid(), _projectName, "");
         _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
 
         // Act
@@ -134,7 +135,7 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
     public async Task HandlingCommand_ShouldSaveOnce_WhenProjectAlreadyExists()
     {
         // Arrange
-        var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
+        var project = new Project(TestPlantA, Guid.NewGuid(), _projectName, "");
         _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
 
         // Act

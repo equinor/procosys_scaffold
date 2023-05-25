@@ -6,6 +6,7 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
+using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -13,7 +14,7 @@ using Moq;
 namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo;
 
 [TestClass]
-public class EditFooCommandHandlerTests : CommandHandlerTestsBase
+public class EditFooCommandHandlerTests : TestsBase
 {
     private readonly string _newTitle = "newTitle";
     private readonly string _existingTitle = "existingTitle";
@@ -29,8 +30,8 @@ public class EditFooCommandHandlerTests : CommandHandlerTestsBase
     [TestInitialize]
     public void Setup()
     {
-        var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
-        _existingFoo = new Foo(TestPlant, project, _existingTitle);
+        var project = new Project(TestPlantA, Guid.NewGuid(), "P", "D");
+        _existingFoo = new Foo(TestPlantA, project, _existingTitle);
         _fooRepositoryMock = new Mock<IFooRepository>();
         _fooRepositoryMock.Setup(r => r.GetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);

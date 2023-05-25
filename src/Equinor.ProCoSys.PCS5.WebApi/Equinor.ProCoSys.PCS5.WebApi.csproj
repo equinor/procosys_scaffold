@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Application\Equinor.ProCoSys.PCS5.Application.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Command\Equinor.ProCoSys.PCS5.Command.csproj" />
-    <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Core\Equinor.ProCoSys.PCS5.Application.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Domain\Equinor.ProCoSys.PCS5.Domain.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Infrastructure\Equinor.ProCoSys.PCS5.Infrastructure.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Query\Equinor.ProCoSys.PCS5.Query.csproj" />

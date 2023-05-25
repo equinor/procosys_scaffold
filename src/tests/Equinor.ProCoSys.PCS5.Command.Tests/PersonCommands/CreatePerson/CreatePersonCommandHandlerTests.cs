@@ -5,6 +5,7 @@ using Equinor.ProCoSys.Auth.Person;
 using Equinor.ProCoSys.PCS5.Command.PersonCommands.CreatePerson;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
+using Equinor.ProCoSys.PCS5.Test.Common;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,7 @@ using Moq;
 namespace Equinor.ProCoSys.PCS5.Command.Tests.PersonCommands.CreatePerson;
 
 [TestClass]
-public class CreatePersonCommandHandlerTests : CommandHandlerTestsBase
+public class CreatePersonCommandHandlerTests : TestsBase
 {
     private Mock<IPersonCache> _personCacheMock;
     private Mock<IPersonRepository> _personRepositoryMock;

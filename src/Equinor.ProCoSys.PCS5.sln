@@ -42,7 +42,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equinor.ProCoSys.PCS5.WebAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equinor.ProCoSys.PCS5.WebApi.IntegrationTests", "tests\Equinor.ProCoSys.PCS5.WebApi.IntegrationTests\Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.csproj", "{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equinor.ProCoSys.PCS5.Application", "Equinor.ProCoSys.PCS5.Application\Equinor.ProCoSys.PCS5.Application.csproj", "{EC70D98E-9D3F-4FBC-BCA4-C5C962670ADE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equinor.ProCoSys.PCS5.Application", "Equinor.ProCoSys.PCS5.Application\Equinor.ProCoSys.PCS5.Application.csproj", "{6D192ACF-B4E2-4602-B5D0-DCA85EA4257D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equinor.ProCoSys.PCS5.Application.Tests", "tests\Equinor.ProCoSys.PCS5.Application.Tests\Equinor.ProCoSys.PCS5.Application.Tests.csproj", "{65447B2D-4F86-4729-9CC3-8E21DAE07D72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,10 +108,14 @@ Global
 		{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC70D98E-9D3F-4FBC-BCA4-C5C962670ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC70D98E-9D3F-4FBC-BCA4-C5C962670ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC70D98E-9D3F-4FBC-BCA4-C5C962670ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC70D98E-9D3F-4FBC-BCA4-C5C962670ADE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D192ACF-B4E2-4602-B5D0-DCA85EA4257D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D192ACF-B4E2-4602-B5D0-DCA85EA4257D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D192ACF-B4E2-4602-B5D0-DCA85EA4257D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D192ACF-B4E2-4602-B5D0-DCA85EA4257D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65447B2D-4F86-4729-9CC3-8E21DAE07D72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65447B2D-4F86-4729-9CC3-8E21DAE07D72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65447B2D-4F86-4729-9CC3-8E21DAE07D72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65447B2D-4F86-4729-9CC3-8E21DAE07D72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +129,7 @@ Global
 		{EA6B1348-E392-4AAF-BFED-8DAE787F075A} = {DFB50BC5-5201-42FD-A049-CF0259AA7AE8}
 		{D5E807A2-A6FB-4583-8D4C-1EBAB61B1CAF} = {DFB50BC5-5201-42FD-A049-CF0259AA7AE8}
 		{75BF00C3-7FC9-49AD-9EF5-51DB36CEDE60} = {DFB50BC5-5201-42FD-A049-CF0259AA7AE8}
+		{65447B2D-4F86-4729-9CC3-8E21DAE07D72} = {DFB50BC5-5201-42FD-A049-CF0259AA7AE8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C79730D0-E4C2-474A-9D04-1C07256B6DF3}

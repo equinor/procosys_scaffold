@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
+namespace Equinor.ProCoSys.PCS5.Query;
 
 public class PersonDto
 {

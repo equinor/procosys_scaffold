@@ -13,18 +13,26 @@ namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFoo;
 [TestClass]
 public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
 {
-    private Foo _foo;
-    private Guid _fooGuid;
+    private Foo _createdFoo;
+    private Guid _createdFooGuid;
+    private Foo _modifiedFoo;
+    private Guid _modifiedFooGuid;
 
     protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
     {
         using var context = new PCS5Context(dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
-        _foo = new Foo(TestPlantA, _projectA, "Title");
+        _createdFoo = new Foo(TestPlantA, _projectA, "TitleA");
+        _modifiedFoo = new Foo(TestPlantA, _projectA, "TitleB");
 
-        context.Foos.Add(_foo);
+        context.Foos.Add(_createdFoo);
+        context.Foos.Add(_modifiedFoo);
         context.SaveChangesAsync().Wait();
-        _fooGuid = _foo.Guid;
+        _createdFooGuid = _createdFoo.Guid;
+
+        _modifiedFoo.EditFoo("TitleB modified", "Modified");
+        context.SaveChangesAsync().Wait();
+        _modifiedFooGuid = _modifiedFoo.Guid;
     }
 
     [TestMethod]
@@ -43,11 +51,11 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task Handler_ShouldReturnCorrectFoo()
+    public async Task Handler_ShouldReturnCorrectCreatedFoo()
     {
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
-        var query = new GetFooQuery(_fooGuid);
+        var query = new GetFooQuery(_createdFooGuid);
         var dut = new GetFooQueryHandler(context);
 
         var result = await dut.Handle(query, default);
@@ -55,7 +63,32 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
         Assert.IsNotNull(result);
         Assert.AreEqual(ResultType.Ok, result.ResultType);
 
-        AssertFoo(result.Data, _foo);
+        var fooDetailsDto = result.Data;
+        AssertFoo(fooDetailsDto, _createdFoo);
+        Assert.IsNull(fooDetailsDto.ModifiedBy);
+        Assert.IsNull(fooDetailsDto.ModifiedAtUtc);
+    }
+
+    [TestMethod]
+    public async Task Handler_ShouldReturnCorrectModifiedFoo()
+    {
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
+
+        var query = new GetFooQuery(_modifiedFooGuid);
+        var dut = new GetFooQueryHandler(context);
+
+        var result = await dut.Handle(query, default);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(ResultType.Ok, result.ResultType);
+
+        var fooDetailsDto = result.Data;
+        AssertFoo(fooDetailsDto, _modifiedFoo);
+        var modifiedBy = fooDetailsDto.ModifiedBy;
+        Assert.IsNotNull(modifiedBy);
+        Assert.AreEqual(CurrentUserOid, modifiedBy.AzureOid);
+        Assert.IsNotNull(fooDetailsDto.ModifiedAtUtc);
+        Assert.AreEqual(_modifiedFoo.ModifiedAtUtc, fooDetailsDto.ModifiedAtUtc);
     }
 
     private void AssertFoo(FooDetailsDto fooDetailsDto, Foo foo)
@@ -68,5 +101,6 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
         var createdBy = fooDetailsDto.CreatedBy;
         Assert.IsNotNull(createdBy);
         Assert.AreEqual(CurrentUserOid, createdBy.AzureOid);
+        Assert.AreEqual(foo.CreatedAtUtc, fooDetailsDto.CreatedAtUtc);
     }
 }

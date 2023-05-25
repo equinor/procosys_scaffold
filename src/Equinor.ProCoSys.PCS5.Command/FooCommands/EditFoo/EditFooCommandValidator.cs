@@ -15,7 +15,7 @@ public class EditFooCommandValidator : AbstractValidator<EditFooCommand>
 
         RuleFor(command => command)
             .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooGuid, cancellationToken))
-            .WithMessage(command => $"Foo with this ID does not exist! Id={command.FooGuid}")
+            .WithMessage(command => $"Foo with this guid does not exist! Guid={command.FooGuid}")
             .MustAsync((command, cancellationToken) => NotBeAVoidedFoo(command.FooGuid, cancellationToken))
             .WithMessage("Foo is voided!");
 

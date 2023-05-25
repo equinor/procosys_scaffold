@@ -16,7 +16,7 @@ public class GetFooLinksQueryHandler : IRequestHandler<GetFooLinksQuery, Result<
 
     public async Task<Result<IEnumerable<LinkDto>>> Handle(GetFooLinksQuery request, CancellationToken cancellationToken)
     {
-        var linkDtos = await _linkService.GetAllAsync(request.FooGuid, cancellationToken);
+        var linkDtos = await _linkService.GetAllForSourceAsync(request.FooGuid, cancellationToken);
         return new SuccessResult<IEnumerable<LinkDto>>(linkDtos);
     }
 }

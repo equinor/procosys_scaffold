@@ -4,14 +4,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Domain;
-using Equinor.ProCoSys.PCS5.Test.Common;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests;
+namespace Equinor.ProCoSys.PCS5.Test.Common;
 
 [TestClass]
-public abstract class CommandHandlerTestsBase
+public abstract class TestsBase
 {
-    protected const string TestPlant = "TestPlant";
+    protected readonly string TestPlantA = "PCS$PlantA";
     protected Mock<IUnitOfWork> _unitOfWorkMock;
     protected Mock<IPlantProvider> _plantProviderMock;
     protected ManualTimeProvider _timeProvider;
@@ -24,7 +23,7 @@ public abstract class CommandHandlerTestsBase
         _plantProviderMock = new Mock<IPlantProvider>();
         _plantProviderMock
             .Setup(x => x.Plant)
-            .Returns(TestPlant);
+            .Returns(TestPlantA);
         _utcNow = new DateTime(2020, 1, 1, 1, 1, 1, DateTimeKind.Utc);
         _timeProvider = new ManualTimeProvider(_utcNow);
         TimeService.SetProvider(_timeProvider);

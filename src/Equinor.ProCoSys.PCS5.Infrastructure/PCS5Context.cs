@@ -147,7 +147,8 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
             .ToList();
         var modifiedEntries = ChangeTracker
             .Entries<IModificationAuditable>()
-            .Where(x => x.State == EntityState.Modified)
+            // Also update modifiedBy / modifiedAt when deleting. This to be able to log who performed the deletion
+            .Where(x => x.State == EntityState.Modified || x.State == EntityState.Deleted)
             .ToList();
 
         if (addedEntries.Any() || modifiedEntries.Any())

@@ -12,9 +12,8 @@ using Equinor.ProCoSys.PCS5.Infrastructure;
 
 namespace Equinor.ProCoSys.PCS5.Test.Common;
 
-public abstract class ReadOnlyTestsBase
+public abstract class ReadOnlyTestsBase : TestsBase
 {
-    protected readonly string TestPlantA = "PCS$PlantA";
     protected readonly string ProjectNameA = "ProA";
     protected readonly string ProjectNameB = "ProB";
     protected static readonly Guid ProjectGuidA = Guid.NewGuid();
@@ -24,17 +23,13 @@ public abstract class ReadOnlyTestsBase
     protected Person _currentPerson;
     protected readonly Guid CurrentUserOid = new ("12345678-1234-1234-1234-123456789123");
     protected DbContextOptions<PCS5Context> _dbContextOptions;
-    protected Mock<IPlantProvider> _plantProviderMock;
     protected IPlantProvider _plantProvider;
     protected ICurrentUserProvider _currentUserProvider;
     protected IEventDispatcher _eventDispatcher;
-    protected ManualTimeProvider _timeProvider;
 
     [TestInitialize]
     public void SetupBase()
     {
-        _plantProviderMock = new Mock<IPlantProvider>();
-        _plantProviderMock.SetupGet(x => x.Plant).Returns(TestPlantA);
         _plantProvider = _plantProviderMock.Object;
 
         var currentUserProviderMock = new Mock<ICurrentUserProvider>();
@@ -43,9 +38,6 @@ public abstract class ReadOnlyTestsBase
 
         var eventDispatcher = new Mock<IEventDispatcher>();
         _eventDispatcher = eventDispatcher.Object;
-
-        _timeProvider = new ManualTimeProvider(new DateTime(2020, 2, 1, 0, 0, 0, DateTimeKind.Utc));
-        TimeService.SetProvider(_timeProvider);
 
         _dbContextOptions = new DbContextOptionsBuilder<PCS5Context>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())

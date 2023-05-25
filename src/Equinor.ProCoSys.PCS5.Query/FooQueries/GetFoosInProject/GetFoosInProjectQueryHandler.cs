@@ -32,7 +32,7 @@ public class GetFoosInProjectQueryHandler : IRequestHandler<GetFoosInProjectQuer
                        foo.IsVoided,
                        foo.RowVersion.ConvertToString())
                 )
-                .TagWith($"{nameof(GetFoosInProjectQueryHandler)}: foos")
+                .TagWith($"{nameof(GetFoosInProjectQueryHandler)}.{nameof(Handle)}")
                 .ToListAsync(cancellationToken);
 
         return new SuccessResult<IEnumerable<FooDto>>(foos);
