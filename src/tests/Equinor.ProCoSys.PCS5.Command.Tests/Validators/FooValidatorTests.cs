@@ -32,20 +32,28 @@ public class FooValidatorTests : ReadOnlyTestsBase
     [TestMethod]
     public async Task FooExistsAsync_ExistingFoo_ReturnsTrue()
     {
-        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);            
         var dut = new FooValidator(context);
+
+        // Act
         var result = await dut.FooExistsAsync(_nonVoidedFooGuid, default);
+
+        // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
     public async Task FooExistsAsync_NonExistingFoo_ReturnsFalse()
     {
-        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
         var dut = new FooValidator(context);
+
+        // Act
         var result = await dut.FooExistsAsync(Guid.Empty, default);
+
+        // Assert
         Assert.IsFalse(result);
     }
     #endregion
@@ -54,20 +62,28 @@ public class FooValidatorTests : ReadOnlyTestsBase
     [TestMethod]
     public async Task FooIsVoidedAsync_VoidedFoo_ReturnsTrue()
     {
-        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
         var dut = new FooValidator(context);
+
+        // Act
         var result = await dut.FooIsVoidedAsync(_voidedFooGuid, default);
+
+        // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
     public async Task FooIsVoidedAsync_NonVoidedFoo_ReturnsFalse()
     {
-        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);  
         var dut = new FooValidator(context);
+
+        // Act
         var result = await dut.FooExistsAsync(Guid.Empty, default);
+
+        // Assert
         Assert.IsFalse(result);
     }
     #endregion

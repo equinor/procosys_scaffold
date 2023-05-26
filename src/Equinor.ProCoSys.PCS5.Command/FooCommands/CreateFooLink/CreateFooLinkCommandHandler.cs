@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using ServiceResult;
 using Equinor.ProCoSys.PCS5.Application.Interfaces;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 
@@ -12,10 +13,9 @@ public class CreateFooLinkCommandHandler : IRequestHandler<CreateFooLinkCommand,
 
     public CreateFooLinkCommandHandler(ILinkService linkService) => _linkService = linkService;
 
-    // todo create unit test
     public async Task<Result<GuidAndRowVersion>> Handle(CreateFooLinkCommand request, CancellationToken cancellationToken)
     {
-        var linkDto = await _linkService.AddAsync("Foo", request.FooGuid, request.Title, request.Url, cancellationToken);
+        var linkDto = await _linkService.AddAsync(nameof(Foo), request.FooGuid, request.Title, request.Url, cancellationToken);
 
         return new SuccessResult<GuidAndRowVersion>(new GuidAndRowVersion(linkDto.Guid, linkDto.RowVersion));
     }

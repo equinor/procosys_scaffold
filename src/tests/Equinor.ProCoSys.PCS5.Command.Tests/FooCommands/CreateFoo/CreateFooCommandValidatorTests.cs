@@ -22,8 +22,10 @@ public class CreateFooCommandValidatorTests
     [TestMethod]
     public async Task Validate_ShouldBeValid_WhenOkState()
     {
+        // Act
         var result = await _dut.ValidateAsync(_command);
 
+        // Assert
         Assert.IsTrue(result.IsValid);
     }
 }

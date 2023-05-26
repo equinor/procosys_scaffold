@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.UpdateFoo;
+namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFooLink;
 
 [TestClass]
-public class UpdateFooCommandValidatorTests
+public class CreateFooLinkCommandValidatorTests
 {
     private readonly Guid _fooGuid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    private readonly string _rowVersion = "AAAAAAAAABA=";
-
-    private UpdateFooCommandValidator _dut;
+    private CreateFooLinkCommandValidator _dut;
     private Mock<IFooValidator> _fooValidatorMock;
-
-    private UpdateFooCommand _command;
+    private CreateFooLinkCommand _command;
+    private readonly string _url = "Test url";
+    private readonly string _title = "Test title";
 
     [TestInitialize]
     public void Setup_OkState()
@@ -24,18 +23,15 @@ public class UpdateFooCommandValidatorTests
         _fooValidatorMock = new Mock<IFooValidator>();
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
-        _command = new UpdateFooCommand(_fooGuid, "New title", "New text", _rowVersion);
-
-        _dut = new UpdateFooCommandValidator(_fooValidatorMock.Object);
+        _command = new CreateFooLinkCommand(_fooGuid, _title, _url);
+        _dut = new CreateFooLinkCommandValidator(_fooValidatorMock.Object);
     }
 
     [TestMethod]
     public async Task Validate_ShouldBeValid_WhenOkState()
     {
-        // Act
         var result = await _dut.ValidateAsync(_command);
 
-        // Assert
         Assert.IsTrue(result.IsValid);
     }
 
