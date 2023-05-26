@@ -231,15 +231,25 @@ public class FoosControllerTests : TestBase
         // Arrange
         var (fooGuidAndRowVersion, linkGuidAndRowVersion)
             = await CreateFooLinkAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+        var links = await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+        Assert.AreEqual(1, links.Count);
 
         // Act
         await FoosControllerTestsHelper.DeleteFooLinkAsync(
             UserType.Writer, TestFactory.PlantWithAccess,
-            idAndRowVersion.Guid,
-            newRowVersion);
+            fooGuidAndRowVersion.Guid,
+            linkGuidAndRowVersion.Guid,
+            linkGuidAndRowVersion.RowVersion);
 
         // Assert
-        await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Guid, HttpStatusCode.NotFound);
+        links = await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+        Assert.AreEqual(0, links.Count);
     }
 
     private async Task<(GuidAndRowVersion fooGuidAndRowVersion, GuidAndRowVersion linkGuidAndRowVersion)> CreateFooLinkAsync(
