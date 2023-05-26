@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,7 +30,7 @@ public class DeleteFooCommandHandlerTests : TestsBase
         var project = new Project(TestPlantA, Guid.NewGuid(), "P", "D");
         _existingFoo = new Foo(TestPlantA, project, "Foo");
         _fooRepositoryMock = new Mock<IFooRepository>();
-        _fooRepositoryMock.Setup(r => r.GetByGuidAsync(_existingFoo.Guid))
+        _fooRepositoryMock.Setup(r => r.TryGetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);
 
         _command = new DeleteFooCommand(_existingFoo.Guid, _rowVersion);
@@ -56,5 +59,27 @@ public class DeleteFooCommandHandlerTests : TestsBase
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task HandlingCommand_ShouldSetAndReturnRowVersion()
+    {
+        // Act
+        await _dut.Handle(_command, default);
+
+        // Assert
+        // In real life EF Core will create a new RowVersion when save.
+        // Since UnitOfWorkMock is a Mock this will not happen here, so we assert that RowVersion is set from command
+        Assert.AreEqual(_rowVersion, _existingFoo.RowVersion.ConvertToString());
+    }
+
+    [TestMethod]
+    public async Task HandlingCommand_ShouldAddFooDeletedEvent()
+    {
+        // Act
+        await _dut.Handle(_command, default);
+
+        // Assert
+        Assert.IsInstanceOfType(_existingFoo.DomainEvents.Last(), typeof(FooDeletedEvent));
     }
 }

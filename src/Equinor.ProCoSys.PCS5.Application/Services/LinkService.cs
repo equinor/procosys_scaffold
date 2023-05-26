@@ -42,13 +42,15 @@ public class LinkService : ILinkService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation($"Link '{title}' created for {sourceGuid}");
+        _logger.LogDebug($"Link '{link.Title}' with guid {link.Guid} created for {link.SourceGuid}");
 
         return new LinkDto(link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
     }
 
-    // todo create unit test
-    public Task DeleteAsync(Guid guid, CancellationToken cancellationToken) => throw new NotImplementedException();
+    public async Task<bool> ExistsAsync(
+        Guid guid,
+        CancellationToken cancellationToken)
+        => await TryGetAsync(guid, cancellationToken) != null;
 
     public async Task<IEnumerable<LinkDto>> GetAllForSourceAsync(
         Guid sourceGuid,
@@ -62,6 +64,69 @@ public class LinkService : ILinkService
         return linkDtos;
     }
 
-    // todo create unit test
-    public Task<string> UpdateAsync(Guid guid, string title, string url, CancellationToken cancellationToken) => throw new NotImplementedException();
+    public async Task<LinkDto?> TryGetAsync(
+        Guid guid,
+        CancellationToken cancellationToken)
+    {
+        var link = await _linkRepository.TryGetByGuidAsync(guid);
+
+        if (link == null)
+        {
+            return null;
+        }
+
+        return new LinkDto(link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
+    }
+
+    public async Task<string> UpdateAsync(
+        Guid guid,
+        string title,
+        string url,
+        string rowVersion,
+        CancellationToken cancellationToken)
+    {
+        var link = await _linkRepository.TryGetByGuidAsync(guid);
+
+        if (link == null)
+        {
+            throw new Exception($"Link with guid {guid} not found when updating");
+        }
+
+        link.SetRowVersion(rowVersion);
+        link.Url = url;
+        link.Title = title;
+        link.AddDomainEvent(new LinkUpdatedEvent(link));
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogDebug($"Link '{link.Title}' with guid {link.Guid} updated for {link.SourceGuid}");
+
+        return link.RowVersion.ConvertToString();
+    }
+
+    public async Task DeleteAsync(
+        Guid guid,
+        string rowVersion,
+        CancellationToken cancellationToken)
+    {
+        var link = await _linkRepository.TryGetByGuidAsync(guid);
+
+        if (link == null)
+        {
+            throw new Exception($"Link with guid {guid} not found when updating");
+        }
+
+        // Setting RowVersion before delete has 2 missions:
+        // 1) Set correct Concurrency
+        // 2) Trigger the update of modifiedBy / modifiedAt to be able to log who performed the deletion
+        link.SetRowVersion(rowVersion);
+        _linkRepository.Remove(link);
+        link.AddDomainEvent(new LinkDeletedEvent(link));
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogDebug($"Link '{link.Title}' with guid {link.Guid} deleted for {link.SourceGuid}");
+
+        return;
+    }
 }

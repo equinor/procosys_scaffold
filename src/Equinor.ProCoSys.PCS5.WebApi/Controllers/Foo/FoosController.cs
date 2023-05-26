@@ -1,23 +1,25 @@
-﻿using System;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using ServiceResult.ApiExtensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Auth;
 using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.Application.Dtos;
 using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using ServiceResult.ApiExtensions;
-using Equinor.ProCoSys.PCS5.Application.Dtos;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
 
@@ -29,6 +31,7 @@ public class FoosController : ControllerBase
 
     public FoosController(IMediator mediator) => _mediator = mediator;
 
+    #region Foos
     [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
     [HttpGet("{guid}")]
     public async Task<ActionResult<FooDetailsDto>> GetFooByGuid(
@@ -72,16 +75,16 @@ public class FoosController : ControllerBase
 
     [AuthorizeAny(Permissions.FOO_WRITE, Permissions.APPLICATION_TESTER)]
     [HttpPut("{guid}")]
-    public async Task<ActionResult<string>> EditFoo(
+    public async Task<ActionResult<string>> UpdateFoo(
         [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
         [Required]
         [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
         string plant,
         [FromRoute] Guid guid,
-        [FromBody] EditFooDto dto)
+        [FromBody] UpdateFooDto dto)
     {
         var result = await _mediator.Send(
-            new EditFooCommand(guid, dto.Title, dto.Text, dto.RowVersion));
+            new UpdateFooCommand(guid, dto.Title, dto.Text, dto.RowVersion));
         return this.FromResult(result);
     }
 
@@ -113,7 +116,9 @@ public class FoosController : ControllerBase
         var result = await _mediator.Send(new DeleteFooCommand(guid, dto.RowVersion));
         return this.FromResult(result);
     }
+    #endregion
 
+    #region Links
     // todo create integration test
     [AuthorizeAny(Permissions.FOO_ATTACH, Permissions.APPLICATION_TESTER)]
     [HttpPost("{guid}/Links")]
@@ -143,29 +148,32 @@ public class FoosController : ControllerBase
         return this.FromResult(result);
     }
 
-    //[HttpPut("{id}")]
-    //public async Task<ActionResult<string>> EditLink(
-    //    [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
-    //    [Required]
-    //    [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
-    //    string plant,
-    //    [FromRoute] Guid proCoSysGuid,
-    //    [FromBody] EditLinkDto dto)
-    //{
-    //    var result = await _mediator.Send(new EditLinkCommand(proCoSysGuid, dto.Title, dto.Url, dto.RowVersion));
-    //    return this.FromResult(result);
-    //}
+    [HttpPut("{guid}/Links/{linkGuid}")]
+    public async Task<ActionResult<string>> UpdateFooLink(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid,
+        [FromRoute] Guid linkGuid,
+        [FromBody] UpdateLinkDto dto)
+    {
+        var result = await _mediator.Send(new UpdateFooLinkCommand(guid, linkGuid, dto.Title, dto.Url, dto.RowVersion));
+        return this.FromResult(result);
+    }
 
-    //[HttpDelete("{id}")]
-    //public async Task<ActionResult> DeleteLink(
-    //    [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
-    //    [Required]
-    //    [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
-    //    string plant,
-    //    [FromRoute] Guid proCoSysGuid,
-    //    [FromBody] RowVersionDto dto)
-    //{
-    //    var result = await _mediator.Send(new DeleteLinkCommand(proCoSysGuid, dto.RowVersion));
-    //    return this.FromResult(result);
-    //}
+    [HttpDelete("{guid}/Links/{linkGuid}")]
+    public async Task<ActionResult> DeleteLink(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid,
+        [FromRoute] Guid linkGuid,
+        [FromBody] RowVersionDto dto)
+    {
+        var result = await _mediator.Send(new DeleteFooLinkCommand(guid, linkGuid, dto.RowVersion));
+        return this.FromResult(result);
+    }
+    #endregion
 }

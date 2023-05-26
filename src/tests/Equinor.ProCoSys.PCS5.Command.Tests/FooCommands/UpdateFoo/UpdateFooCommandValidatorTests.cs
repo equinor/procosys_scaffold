@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo;
+namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.UpdateFoo;
 
 [TestClass]
-public class EditFooCommandValidatorTests
+public class UpdateFooCommandValidatorTests
 {
     private readonly Guid _fooGuid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
-    private EditFooCommandValidator _dut;
+    private UpdateFooCommandValidator _dut;
     private Mock<IFooValidator> _fooValidatorMock;
 
-    private EditFooCommand _command;
+    private UpdateFooCommand _command;
 
     [TestInitialize]
     public void Setup_OkState()
@@ -24,9 +24,9 @@ public class EditFooCommandValidatorTests
         _fooValidatorMock = new Mock<IFooValidator>();
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
-        _command = new EditFooCommand(_fooGuid, "New title", "New text", _rowVersion);
+        _command = new UpdateFooCommand(_fooGuid, "New title", "New text", _rowVersion);
 
-        _dut = new EditFooCommandValidator(_fooValidatorMock.Object);
+        _dut = new UpdateFooCommandValidator(_fooValidatorMock.Object);
     }
 
     [TestMethod]

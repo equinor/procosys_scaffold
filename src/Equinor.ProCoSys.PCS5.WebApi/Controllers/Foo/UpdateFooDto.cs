@@ -2,7 +2,7 @@
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
 
-public class EditFooDto
+public class UpdateFooDto
 {
     [Required]
     public string Title { get; set; } = null!;

@@ -11,9 +11,9 @@ public interface IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
 
     Task<bool> Exists(int id);
 
-    Task<TEntity?> GetByIdAsync(int id);
+    Task<TEntity?> TryGetByIdAsync(int id);
 
-    Task<TEntity?> GetByGuidAsync(Guid guid);
+    Task<TEntity?> TryGetByGuidAsync(Guid guid);
 
     Task<List<TEntity>> GetByIdsAsync(IEnumerable<int> id);
 

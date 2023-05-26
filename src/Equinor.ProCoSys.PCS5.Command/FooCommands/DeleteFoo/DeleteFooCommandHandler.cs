@@ -28,7 +28,7 @@ public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<
 
     public async Task<Result<Unit>> Handle(DeleteFooCommand request, CancellationToken cancellationToken)
     {
-        var foo = await _fooRepository.GetByGuidAsync(request.FooGuid);
+        var foo = await _fooRepository.TryGetByGuidAsync(request.FooGuid);
         if (foo == null)
         {
             throw new Exception($"Entity {nameof(Foo)} {request.FooGuid} not found");

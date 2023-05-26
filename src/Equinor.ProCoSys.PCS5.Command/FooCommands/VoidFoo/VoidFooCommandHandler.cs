@@ -29,7 +29,7 @@ public class VoidFooCommandHandler : IRequestHandler<VoidFooCommand, Result<stri
 
     public async Task<Result<string>> Handle(VoidFooCommand request, CancellationToken cancellationToken)
     {
-        var foo = await _fooRepository.GetByGuidAsync(request.FooGuid);
+        var foo = await _fooRepository.TryGetByGuidAsync(request.FooGuid);
         if (foo == null)
         {
             throw new Exception($"Entity {nameof(Foo)} {request.FooGuid} not found");

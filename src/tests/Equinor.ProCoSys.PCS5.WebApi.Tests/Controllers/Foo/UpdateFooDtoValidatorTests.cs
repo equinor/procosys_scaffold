@@ -7,11 +7,11 @@ using Moq;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Controllers.Foo;
 
 [TestClass]
-public class EditFooDtoValidatorTests
+public class UpdateFooDtoValidatorTests
 {
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
-    private EditFooDtoValidator _dut;
+    private UpdateFooDtoValidator _dut;
     private Mock<IRowVersionValidator> _rowVersionValidatorMock;
 
     [TestInitialize]
@@ -20,14 +20,14 @@ public class EditFooDtoValidatorTests
         _rowVersionValidatorMock = new Mock<IRowVersionValidator>();
         _rowVersionValidatorMock.Setup(x => x.IsValid(_rowVersion)).Returns(true);
 
-        _dut = new EditFooDtoValidator(_rowVersionValidatorMock.Object);
+        _dut = new UpdateFooDtoValidator(_rowVersionValidatorMock.Object);
     }
 
     [TestMethod]
     public async Task Validate_ShouldBeValid_WhenOkState()
     {
         // Arrange
-        var dto = new EditFooDto { Title = "New title", RowVersion = _rowVersion };
+        var dto = new UpdateFooDto { Title = "New title", RowVersion = _rowVersion };
         
         // Act
         var result = await _dut.ValidateAsync(dto);
@@ -40,7 +40,7 @@ public class EditFooDtoValidatorTests
     public async Task Validate_ShouldFail_WhenTitleNotGiven()
     {
         // Arrange
-        var dto = new EditFooDto { RowVersion = _rowVersion };
+        var dto = new UpdateFooDto { RowVersion = _rowVersion };
 
         // Act
         var result = await _dut.ValidateAsync(dto);
@@ -55,7 +55,7 @@ public class EditFooDtoValidatorTests
     public async Task Validate_ShouldFail_WhenTitleIsTooShort()
     {
         // Arrange
-        var dto = new EditFooDto { Title = "N", Text = "New text", RowVersion = _rowVersion };
+        var dto = new UpdateFooDto { Title = "N", Text = "New text", RowVersion = _rowVersion };
 
         // Act
         var result = await _dut.ValidateAsync(dto);
@@ -70,7 +70,7 @@ public class EditFooDtoValidatorTests
     public async Task Validate_ShouldFail_WhenTitleIsTooLongAsync()
     {
         // Arrange
-        var dto = new EditFooDto
+        var dto = new UpdateFooDto
         {
             Title = new string('x', Domain.AggregateModels.FooAggregate.Foo.TitleLengthMax + 1),
             RowVersion = _rowVersion
@@ -89,7 +89,7 @@ public class EditFooDtoValidatorTests
     public async Task Validate_ShouldFail_WhenRowVersionNotGiven()
     {
         // Arrange
-        var dto = new EditFooDto { Title = "New title" };
+        var dto = new UpdateFooDto { Title = "New title" };
 
         // Act
         var result = await _dut.ValidateAsync(dto);
@@ -105,7 +105,7 @@ public class EditFooDtoValidatorTests
     {
         // Arrange
         _rowVersionValidatorMock.Setup(x => x.IsValid(_rowVersion)).Returns(false);
-        var dto = new EditFooDto { Title = "New title", RowVersion = _rowVersion };
+        var dto = new UpdateFooDto { Title = "New title", RowVersion = _rowVersion };
 
         // Act
         var result = await _dut.ValidateAsync(dto);

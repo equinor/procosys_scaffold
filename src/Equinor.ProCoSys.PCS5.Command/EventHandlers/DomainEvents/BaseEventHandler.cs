@@ -26,7 +26,7 @@ public abstract class BaseEventHandler
 
     internal async Task<Guid> GetPersonOidAsync(int personId)
     {
-        var person = await _personRepository.GetByIdAsync(personId);
+        var person = await _personRepository.TryGetByIdAsync(personId);
 
         if (person is null)
         {

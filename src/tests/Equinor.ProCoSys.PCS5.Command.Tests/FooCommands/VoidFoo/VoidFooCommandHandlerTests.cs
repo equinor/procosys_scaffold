@@ -27,7 +27,7 @@ public class VoidFooCommandHandlerTests : TestsBase
         var project = new Project(TestPlantA, Guid.NewGuid(), "P", "D");
         _existingFoo = new Foo(TestPlantA, project, "Foo");
         _fooRepositoryMock = new Mock<IFooRepository>();
-        _fooRepositoryMock.Setup(r => r.GetByGuidAsync(_existingFoo.Guid))
+        _fooRepositoryMock.Setup(r => r.TryGetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);
 
         _command = new VoidFooCommand(_existingFoo.Guid, _rowVersion);

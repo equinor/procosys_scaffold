@@ -75,7 +75,7 @@ public class FooRepositoryTests : RepositoryTestBase
     [TestMethod]
     public async Task GetById_KnownId_ShouldReturnFoo()
     {
-        var result = await _dut.GetByIdAsync(_fooGuid);
+        var result = await _dut.TryGetByIdAsync(_fooGuid);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(_fooGuid, result.Id);
@@ -84,7 +84,7 @@ public class FooRepositoryTests : RepositoryTestBase
     [TestMethod]
     public async Task GetById_UnknownId_ShouldReturnNull()
     {
-        var result = await _dut.GetByIdAsync(1234);
+        var result = await _dut.TryGetByIdAsync(1234);
 
         Assert.IsNull(result);
     }

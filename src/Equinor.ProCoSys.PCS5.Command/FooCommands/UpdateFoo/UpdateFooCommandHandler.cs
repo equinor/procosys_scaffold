@@ -9,27 +9,27 @@ using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 
-namespace Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
+namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 
-public class EditFooCommandHandler : IRequestHandler<EditFooCommand, Result<string>>
+public class UpdateFooCommandHandler : IRequestHandler<UpdateFooCommand, Result<string>>
 {
     private readonly IFooRepository _fooRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<EditFooCommandHandler> _logger;
+    private readonly ILogger<UpdateFooCommandHandler> _logger;
 
-    public EditFooCommandHandler(
+    public UpdateFooCommandHandler(
         IFooRepository fooRepository,
         IUnitOfWork unitOfWork,
-        ILogger<EditFooCommandHandler> logger)
+        ILogger<UpdateFooCommandHandler> logger)
     {
         _fooRepository = fooRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
-    public async Task<Result<string>> Handle(EditFooCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(UpdateFooCommand request, CancellationToken cancellationToken)
     {
-        var foo = await _fooRepository.GetByGuidAsync(request.FooGuid);
+        var foo = await _fooRepository.TryGetByGuidAsync(request.FooGuid);
         if (foo == null)
         {
             throw new Exception($"Entity {nameof(Foo)} {request.FooGuid} not found");

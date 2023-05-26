@@ -34,10 +34,10 @@ public abstract class RepositoryBase<TEntity> : Domain.IRepository<TEntity> wher
     public virtual Task<List<TEntity>> GetAllAsync() =>
         DefaultQuery.ToListAsync();
 
-    public virtual Task<TEntity?> GetByIdAsync(int id) =>
+    public virtual Task<TEntity?> TryGetByIdAsync(int id) =>
         DefaultQuery.SingleOrDefaultAsync(x => x.Id == id);
 
-    public virtual Task<TEntity?> GetByGuidAsync(Guid guid) =>
+    public virtual Task<TEntity?> TryGetByGuidAsync(Guid guid) =>
         DefaultQuery.SingleOrDefaultAsync(x => x.Guid == guid);
 
     public Task<List<TEntity>> GetByIdsAsync(IEnumerable<int> ids) =>

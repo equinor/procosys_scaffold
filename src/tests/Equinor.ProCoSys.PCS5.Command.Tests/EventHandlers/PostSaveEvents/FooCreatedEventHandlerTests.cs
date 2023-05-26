@@ -21,7 +21,7 @@ public class FooCreatedEventHandlerTests
         var foo = new Foo("X", new Project("X", Guid.NewGuid(), "Pro", "Desc"), "F");
         var fooCreatedEvent = new FooCreatedEvent(foo);
         var personRepoositoryMock = new Mock<IPersonRepository>();
-        personRepoositoryMock.Setup(p => p.GetByIdAsync(foo.CreatedById))
+        personRepoositoryMock.Setup(p => p.TryGetByIdAsync(foo.CreatedById))
             .ReturnsAsync(new Person(personOid, "P", "S", "ps", "ps@pcs.com"));
         var dut = new FooCreatedEventHandler(personRepoositoryMock.Object);
 

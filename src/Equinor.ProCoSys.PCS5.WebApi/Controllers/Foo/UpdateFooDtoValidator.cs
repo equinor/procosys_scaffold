@@ -2,9 +2,9 @@
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
 {
-    public class EditFooDtoValidator : AbstractValidator<EditFooDto>
+    public class UpdateFooDtoValidator : AbstractValidator<UpdateFooDto>
     {
-        public EditFooDtoValidator(IRowVersionValidator rowVersionValidator)
+        public UpdateFooDtoValidator(IRowVersionValidator rowVersionValidator)
         {
             RuleLevelCascadeMode = CascadeMode.Stop;
             ClassLevelCascadeMode = CascadeMode.Stop;

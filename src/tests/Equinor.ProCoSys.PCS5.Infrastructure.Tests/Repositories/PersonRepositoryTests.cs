@@ -83,7 +83,7 @@ public class PersonRepositoryTests : RepositoryTestBase
     [TestMethod]
     public async Task GetById_KnownId_ShouldReturnPerson()
     {
-        var result = await _dut.GetByIdAsync(_personId);
+        var result = await _dut.TryGetByIdAsync(_personId);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(_personId, result.Id);
@@ -92,7 +92,7 @@ public class PersonRepositoryTests : RepositoryTestBase
     [TestMethod]
     public async Task GetById_UnknownId_ShouldReturnNull()
     {
-        var result = await _dut.GetByIdAsync(1234);
+        var result = await _dut.TryGetByIdAsync(1234);
 
         Assert.IsNull(result);
     }

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
@@ -11,10 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.EditFoo;
+namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.UpdateFoo;
 
 [TestClass]
-public class EditFooCommandHandlerTests : TestsBase
+public class UpdateFooCommandHandlerTests : TestsBase
 {
     private readonly string _newTitle = "newTitle";
     private readonly string _existingTitle = "existingTitle";
@@ -24,8 +24,8 @@ public class EditFooCommandHandlerTests : TestsBase
     private Mock<IFooRepository> _fooRepositoryMock;
     private Foo _existingFoo;
 
-    private EditFooCommand _command;
-    private EditFooCommandHandler _dut;
+    private UpdateFooCommand _command;
+    private UpdateFooCommandHandler _dut;
 
     [TestInitialize]
     public void Setup()
@@ -33,24 +33,27 @@ public class EditFooCommandHandlerTests : TestsBase
         var project = new Project(TestPlantA, Guid.NewGuid(), "P", "D");
         _existingFoo = new Foo(TestPlantA, project, _existingTitle);
         _fooRepositoryMock = new Mock<IFooRepository>();
-        _fooRepositoryMock.Setup(r => r.GetByGuidAsync(_existingFoo.Guid))
+        _fooRepositoryMock.Setup(r => r.TryGetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);
 
-        _command = new EditFooCommand(_existingFoo.Guid, _newTitle, _newText, _rowVersion);
+        _command = new UpdateFooCommand(_existingFoo.Guid, _newTitle, _newText, _rowVersion);
 
-        _dut = new EditFooCommandHandler(
+        _dut = new UpdateFooCommandHandler(
             _fooRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            new Mock<ILogger<EditFooCommandHandler>>().Object);
+            new Mock<ILogger<UpdateFooCommandHandler>>().Object);
     }
 
     [TestMethod]
     public async Task HandlingCommand_ShouldUpdateFoo()
     {
+        // Arrange
         Assert.AreEqual(_existingTitle, _existingFoo.Title);
 
+        // Act
         await _dut.Handle(_command, default);
 
+        // Assert
         Assert.AreEqual(_newTitle, _existingFoo.Title);
         Assert.AreEqual(_newText, _existingFoo.Text);
     }
@@ -58,8 +61,10 @@ public class EditFooCommandHandlerTests : TestsBase
     [TestMethod]
     public async Task HandlingCommand_ShouldSave()
     {
+        // Act
         await _dut.Handle(_command, default);
 
+        // Assert
         _unitOfWorkMock.Verify(r => r.SaveChangesAsync(default), Times.Once);
     }
 
@@ -80,8 +85,9 @@ public class EditFooCommandHandlerTests : TestsBase
     public async Task HandlingCommand_ShouldAddFooEditedEvent()
     {
         // Act
-        var result = await _dut.Handle(_command, default);
+        await _dut.Handle(_command, default);
 
+        // Assert
         Assert.IsInstanceOfType(_existingFoo.DomainEvents.Last(), typeof(FooUpdatedEvent));
     }
 }

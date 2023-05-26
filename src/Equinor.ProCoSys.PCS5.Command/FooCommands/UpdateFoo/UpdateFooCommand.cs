@@ -2,12 +2,12 @@
 using MediatR;
 using ServiceResult;
 
-namespace Equinor.ProCoSys.PCS5.Command.FooCommands.EditFoo;
+namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 
-public class EditFooCommand : IRequest<Result<string>>, IFooCommandRequest
+public class UpdateFooCommand : IRequest<Result<string>>, IFooCommandRequest
 {
     // todo add tests in AccessValidatorTests
-    public EditFooCommand(Guid fooGuid, string title, string? text, string rowVersion)
+    public UpdateFooCommand(Guid fooGuid, string title, string? text, string rowVersion)
     {
         FooGuid = fooGuid;
         Title = title;

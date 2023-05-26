@@ -22,7 +22,7 @@ public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificatio
     // private set needed for EntityFramework
     public string SourceType { get; private set; }
     public Guid SourceGuid { get; private set; }
-    public string Title { get; private set; }
+    public string Title { get; set; }
     public string Url { get; set; }
     public DateTime CreatedAtUtc { get; private set; }
     public int CreatedById { get; private set; }
