@@ -44,7 +44,7 @@ public class LinkService : ILinkService
 
         _logger.LogDebug($"Link '{link.Title}' with guid {link.Guid} created for {link.SourceGuid}");
 
-        return new LinkDto(link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
+        return new LinkDto(link.SourceGuid, link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
     }
 
     public async Task<bool> ExistsAsync(
@@ -59,7 +59,7 @@ public class LinkService : ILinkService
         var links = await _linkRepository.GetAllForSourceAsync(sourceGuid);
 
         var linkDtos = links
-            .Select(l => new LinkDto(l.Guid, l.Title, l.Url, l.RowVersion.ConvertToString()));
+            .Select(l => new LinkDto(l.SourceGuid, l.Guid, l.Title, l.Url, l.RowVersion.ConvertToString()));
 
         return linkDtos;
     }
@@ -75,7 +75,7 @@ public class LinkService : ILinkService
             return null;
         }
 
-        return new LinkDto(link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
+        return new LinkDto(link.SourceGuid, link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
     }
 
     public async Task<string> UpdateAsync(

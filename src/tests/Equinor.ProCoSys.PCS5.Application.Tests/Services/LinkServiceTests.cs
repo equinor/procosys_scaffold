@@ -94,9 +94,10 @@ public class LinkServiceTests : TestsBase
         // Assert
         Assert.AreEqual(1, result.Count());
         var linkDto = result.ElementAt(0);
+        Assert.AreEqual(_existingLink.SourceGuid, linkDto.SourceGuid);
+        Assert.AreEqual(_existingLink.Guid, linkDto.Guid);
         Assert.AreEqual(_existingLink.Title, linkDto.Title);
         Assert.AreEqual(_existingLink.Url, linkDto.Url);
-        Assert.AreEqual(_existingLink.Guid, linkDto.Guid);
     }
     #endregion
 
@@ -108,9 +109,10 @@ public class LinkServiceTests : TestsBase
         var result = await _dut.TryGetAsync(_linkGuid, default);
 
         // Assert
+        Assert.AreEqual(_existingLink.SourceGuid, result.SourceGuid);
+        Assert.AreEqual(_existingLink.Guid, result.Guid);
         Assert.AreEqual(_existingLink.Title, result.Title);
         Assert.AreEqual(_existingLink.Url, result.Url);
-        Assert.AreEqual(_existingLink.Guid, result.Guid);
     }
 
     [TestMethod]

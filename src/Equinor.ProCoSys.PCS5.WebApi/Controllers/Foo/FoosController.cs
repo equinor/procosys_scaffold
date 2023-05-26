@@ -119,7 +119,6 @@ public class FoosController : ControllerBase
     #endregion
 
     #region Links
-    // todo create integration test
     [AuthorizeAny(Permissions.FOO_ATTACH, Permissions.APPLICATION_TESTER)]
     [HttpPost("{guid}/Links")]
     public async Task<ActionResult<GuidAndRowVersion>> CreateFooLink(
@@ -134,7 +133,6 @@ public class FoosController : ControllerBase
         return this.FromResult(result);
     }
 
-    // todo create integration test
     [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
     [HttpGet("{guid}/Links")]
     public async Task<ActionResult<IEnumerable<LinkDto>>> GetFooLinks(

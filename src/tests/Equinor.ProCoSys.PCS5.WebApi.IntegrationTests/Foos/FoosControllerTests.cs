@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
@@ -36,8 +38,7 @@ public class FoosControllerTests : TestBase
             TestFactory.ProjectWithAccess);
 
         // Assert
-        Assert.IsNotNull(guidAndRowVersion);
-        IsAValidRowVersion(guidAndRowVersion.RowVersion);
+        AssertValidGuidAndRowVersion(guidAndRowVersion);
         var newFoo = await FoosControllerTestsHelper
             .GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, guidAndRowVersion.Guid);
         Assert.IsNotNull(newFoo);
@@ -106,23 +107,23 @@ public class FoosControllerTests : TestBase
     public async Task VoidFoo_AsWriter_ShouldVoidFoo()
     {
         // Arrange
-        var idAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
+        var guidAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
             Guid.NewGuid().ToString(),
             TestFactory.ProjectWithAccess);
-        var initialRowVersion = idAndRowVersion.RowVersion;
+        var initialRowVersion = guidAndRowVersion.RowVersion;
 
         // Act
         var newRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Guid,
-            idAndRowVersion.RowVersion);
+            guidAndRowVersion.Guid,
+            guidAndRowVersion.RowVersion);
 
         // Assert
         AssertRowVersionChange(initialRowVersion, newRowVersion);
-        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Guid);
+        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, guidAndRowVersion.Guid);
         Assert.IsTrue(foo.IsVoided);
         Assert.AreEqual(newRowVersion, foo.RowVersion);
     }
@@ -131,7 +132,7 @@ public class FoosControllerTests : TestBase
     public async Task DeleteFoo_AsWriter_ShouldDeleteFoo()
     {
         // Arrange
-        var idAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
+        var guidAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
             Guid.NewGuid().ToString(),
@@ -139,18 +140,143 @@ public class FoosControllerTests : TestBase
         var newRowVersion = await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Guid,
-            idAndRowVersion.RowVersion);
-        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Guid);
+            guidAndRowVersion.Guid,
+            guidAndRowVersion.RowVersion);
+        var foo = await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, guidAndRowVersion.Guid);
         Assert.IsNotNull(foo);
 
         // Act
         await FoosControllerTestsHelper.DeleteFooAsync(
+            UserType.Writer, TestFactory.PlantWithAccess,
+            guidAndRowVersion.Guid,
+            newRowVersion);
+
+        // Assert
+        await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, guidAndRowVersion.Guid, HttpStatusCode.NotFound);
+    }
+
+    [TestMethod]
+    public async Task CreateFooLink_AsWriter_ShouldCreateFooLink()
+    {
+        // Arrange and Act
+        var (_, linkGuidAndRowVersion)
+            = await CreateFooLinkAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+
+        // Assert
+        AssertValidGuidAndRowVersion(linkGuidAndRowVersion);
+    }
+
+    [TestMethod]
+    public async Task GetFooLinksAsync_AsWriter_ShouldGetFooLinks()
+    {
+        // Arrange and Act
+        var title = Guid.NewGuid().ToString();
+        var url = Guid.NewGuid().ToString();
+        var (fooGuidAndRowVersion, linkGuidAndRowVersion) = await CreateFooLinkAsync(title, url);
+
+        // Act
+        var links = await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+
+        // Assert
+        AssertFirstLink(
+            fooGuidAndRowVersion.Guid,
+            linkGuidAndRowVersion.Guid,
+            linkGuidAndRowVersion.RowVersion,
+            title,
+            url,
+            links);
+    }
+
+    [TestMethod]
+    public async Task UpdateFooLink_AsWriter_ShouldUpdateFooLinkAndRowVersion()
+    {
+        // Arrange
+        var newTitle = Guid.NewGuid().ToString();
+        var newUrl = Guid.NewGuid().ToString();
+        var (fooGuidAndRowVersion, linkGuidAndRowVersion) =
+            await CreateFooLinkAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+
+        // Act
+        var newRowVersion = await FoosControllerTestsHelper.UpdateFooLinkAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid,
+            linkGuidAndRowVersion.Guid,
+            newTitle,
+            newUrl,
+            linkGuidAndRowVersion.RowVersion);
+
+        // Assert
+        var links = await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+
+        AssertRowVersionChange(linkGuidAndRowVersion.RowVersion, newRowVersion);
+        AssertFirstLink(
+            fooGuidAndRowVersion.Guid,
+            linkGuidAndRowVersion.Guid,
+            newRowVersion,
+            newTitle, 
+            newUrl,
+            links);
+    }
+
+    [TestMethod]
+    public async Task DeleteFooLink_AsWriter_ShouldDeleteFooLink()
+    {
+        // Arrange
+        var (fooGuidAndRowVersion, linkGuidAndRowVersion)
+            = await CreateFooLinkAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+
+        // Act
+        await FoosControllerTestsHelper.DeleteFooLinkAsync(
             UserType.Writer, TestFactory.PlantWithAccess,
             idAndRowVersion.Guid,
             newRowVersion);
 
         // Assert
         await FoosControllerTestsHelper.GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, idAndRowVersion.Guid, HttpStatusCode.NotFound);
+    }
+
+    private async Task<(GuidAndRowVersion fooGuidAndRowVersion, GuidAndRowVersion linkGuidAndRowVersion)> CreateFooLinkAsync(
+        string title,
+        string url)
+    {
+        var fooGuidAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            Guid.NewGuid().ToString(),
+            TestFactory.ProjectWithAccess);
+
+        var linkGuidAndRowVersion = await FoosControllerTestsHelper.CreateFooLinkAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid,
+            title,
+            url);
+
+        return (fooGuidAndRowVersion, linkGuidAndRowVersion);
+    }
+
+    private static void AssertFirstLink(
+        Guid fooGuid,
+        Guid linkGuid,
+        string linkRowVersion,
+        string title,
+        string url,
+        List<LinkDto> links)
+    {
+        Assert.IsNotNull(links);
+        Assert.AreEqual(1, links.Count);
+        var newLink = links[0];
+        Assert.AreEqual(fooGuid, newLink.SourceGuid);
+        Assert.AreEqual(linkGuid, newLink.Guid);
+        Assert.AreEqual(linkRowVersion, newLink.RowVersion);
+        Assert.AreEqual(title, newLink.Title);
+        Assert.AreEqual(url, newLink.Url);
     }
 }

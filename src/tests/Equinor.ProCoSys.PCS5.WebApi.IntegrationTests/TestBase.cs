@@ -1,4 +1,5 @@
-﻿using Equinor.ProCoSys.PCS5.WebApi.Controllers;
+﻿using System;
+using Equinor.ProCoSys.PCS5.WebApi.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests;
@@ -13,12 +14,20 @@ public abstract class TestBase
 
     public void AssertRowVersionChange(string oldRowVersion, string newRowVersion)
     {
-        Assert.IsTrue(IsAValidRowVersion(oldRowVersion));
-        Assert.IsTrue(IsAValidRowVersion(newRowVersion));
+        AssertValidRowVersion(oldRowVersion);
+        AssertValidRowVersion(newRowVersion);
         Assert.AreNotEqual(oldRowVersion, newRowVersion);
     }
 
-    public bool IsAValidRowVersion(string oldRowVersion) => _rowVersionValidator.IsValid(oldRowVersion);
+    public void AssertValidGuidAndRowVersion(GuidAndRowVersion guidAndRowVersion)
+    {
+        Assert.IsNotNull(guidAndRowVersion);
+        AssertValidRowVersion(guidAndRowVersion.RowVersion);
+        Assert.AreNotEqual(Guid.Empty, guidAndRowVersion.Guid);
+    }
+
+    public void AssertValidRowVersion(string rowVersion)
+        => Assert.IsTrue(_rowVersionValidator.IsValid(rowVersion));
 
     protected void AssertCreatedBy(UserType userType, PersonDto personDto)
     {

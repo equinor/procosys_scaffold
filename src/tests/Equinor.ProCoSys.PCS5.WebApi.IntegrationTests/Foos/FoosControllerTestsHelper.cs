@@ -32,6 +32,26 @@ public static class FoosControllerTestsHelper
         return JsonConvert.DeserializeObject<FooDetailsDto>(content);
     }
 
+    public static async Task<List<LinkDto>> GetFooLinksAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{guid}/Links");
+
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (expectedStatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<List<LinkDto>>(content);
+    }
+
     public static async Task<List<FooDto>> GetAllFoosInProjectAsync(
         UserType userType,
         string plant,
@@ -87,6 +107,35 @@ public static class FoosControllerTestsHelper
         return JsonConvert.DeserializeObject<GuidAndRowVersion>(jsonString);
     }
 
+    public static async Task<GuidAndRowVersion> CreateFooLinkAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        string title,
+        string url,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
+        {
+            title,
+            url
+        };
+
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PostAsync($"{_route}/{guid}/Links", content);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<GuidAndRowVersion>(jsonString);
+    }
+
     public static async Task<string> UpdateFooAsync(
         UserType userType,
         string plant,
@@ -107,6 +156,38 @@ public static class FoosControllerTestsHelper
         var serializePayload = JsonConvert.SerializeObject(bodyPayload);
         var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
         var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{guid}", content);
+
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public static async Task<string> UpdateFooLinkAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        Guid linkGuid,
+        string title,
+        string url,
+        string rowVersion,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
+        {
+            title,
+            url,
+            rowVersion
+        };
+
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{guid}/Links/{linkGuid}", content);
 
         await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
 
@@ -159,6 +240,29 @@ public static class FoosControllerTestsHelper
         };
         var serializePayload = JsonConvert.SerializeObject(bodyPayload);
         var request = new HttpRequestMessage(HttpMethod.Delete, $"{_route}/{guid}")
+        {
+            Content = new StringContent(serializePayload, Encoding.UTF8, "application/json")
+        };
+
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).SendAsync(request);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+    }
+
+    public static async Task DeleteFooLinkAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        Guid linkGuid,
+        string rowVersion,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
+        {
+            rowVersion
+        };
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"{_route}/{guid}/Links/{linkGuid}")
         {
             Content = new StringContent(serializePayload, Encoding.UTF8, "application/json")
         };

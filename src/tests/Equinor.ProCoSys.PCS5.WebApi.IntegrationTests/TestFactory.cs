@@ -377,6 +377,8 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
                 {
                     Permissions.FOO_CREATE,
                     Permissions.FOO_WRITE,
+                    Permissions.FOO_ATTACH,
+                    Permissions.FOO_DETACH,
                     Permissions.FOO_DELETE,
                     Permissions.FOO_READ
                 },
