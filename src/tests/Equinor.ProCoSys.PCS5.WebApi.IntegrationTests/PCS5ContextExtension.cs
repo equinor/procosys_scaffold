@@ -2,6 +2,7 @@
 using System.Linq;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure;
@@ -56,6 +57,9 @@ public static class PCS5ContextExtension
             KnownTestData.ProjectDescriptionB);
         foo = SeedFoo(dbContext, plant, project, KnownTestData.FooB);
         knownTestData.FooBGuid = foo.Guid;
+
+        var link = SeedLink(dbContext, "Foo", foo.Guid, "VG", "www.vg.no");
+        knownTestData.LinkInFooAGuid = link.Guid;
     }
 
     private static void EnsureCurrentUserIsSeeded(PCS5Context dbContext, ICurrentUserProvider userProvider)
@@ -97,5 +101,14 @@ public static class PCS5ContextExtension
         fooRepository.Add(foo);
         dbContext.SaveChangesAsync().Wait();
         return foo;
+    }
+
+    private static Link SeedLink(PCS5Context dbContext, string sourceType, Guid sourceGuid, string title, string url)
+    {
+        var linkRepository = new LinkRepository(dbContext); 
+        var link = new Link(sourceType, sourceGuid, title, url);
+        linkRepository.Add(link);
+        dbContext.SaveChangesAsync().Wait();
+        return link;
     }
 }

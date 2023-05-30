@@ -146,6 +146,7 @@ public class FoosController : ControllerBase
         return this.FromResult(result);
     }
 
+    [AuthorizeAny(Permissions.FOO_WRITE, Permissions.APPLICATION_TESTER)]
     [HttpPut("{guid}/Links/{linkGuid}")]
     public async Task<ActionResult<string>> UpdateFooLink(
         [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
@@ -160,6 +161,7 @@ public class FoosController : ControllerBase
         return this.FromResult(result);
     }
 
+    [AuthorizeAny(Permissions.FOO_DELETE, Permissions.APPLICATION_TESTER)]
     [HttpDelete("{guid}/Links/{linkGuid}")]
     public async Task<ActionResult> DeleteLink(
         [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
