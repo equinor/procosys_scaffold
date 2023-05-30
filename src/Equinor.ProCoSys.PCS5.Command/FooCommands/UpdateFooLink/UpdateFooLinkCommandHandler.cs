@@ -12,7 +12,6 @@ public class UpdateFooLinkCommandHandler : IRequestHandler<UpdateFooLinkCommand,
 
     public UpdateFooLinkCommandHandler(ILinkService linkService) => _linkService = linkService;
 
-    // todo create unit test
     public async Task<Result<string>> Handle(UpdateFooLinkCommand request, CancellationToken cancellationToken)
     {
         var rowVersion = await _linkService.UpdateAsync(

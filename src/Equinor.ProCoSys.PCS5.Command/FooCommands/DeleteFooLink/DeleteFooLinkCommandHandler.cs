@@ -12,7 +12,6 @@ public class DeleteFooLinkCommandHandler : IRequestHandler<DeleteFooLinkCommand,
 
     public DeleteFooLinkCommandHandler(ILinkService linkService) => _linkService = linkService;
 
-    // todo create unit test
     public async Task<Result<Unit>> Handle(DeleteFooLinkCommand request, CancellationToken cancellationToken)
     {
         await _linkService.DeleteAsync(

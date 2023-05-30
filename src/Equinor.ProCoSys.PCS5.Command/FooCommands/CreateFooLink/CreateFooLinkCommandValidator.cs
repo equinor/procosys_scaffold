@@ -8,7 +8,6 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 
 public class CreateFooLinkCommandValidator : AbstractValidator<CreateFooLinkCommand>
 {
-    // todo create unit test
     public CreateFooLinkCommandValidator(IFooValidator fooValidator)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;

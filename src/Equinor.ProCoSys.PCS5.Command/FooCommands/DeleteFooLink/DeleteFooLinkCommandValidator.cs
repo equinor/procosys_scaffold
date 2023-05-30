@@ -9,7 +9,6 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
 
 public class DeleteFooLinkCommandValidator : AbstractValidator<DeleteFooLinkCommand>
 {
-    // todo create unit test
     public DeleteFooLinkCommandValidator(IFooValidator fooValidator, ILinkService linkService)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;

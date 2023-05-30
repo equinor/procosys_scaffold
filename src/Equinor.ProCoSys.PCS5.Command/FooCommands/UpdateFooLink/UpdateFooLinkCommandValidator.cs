@@ -9,7 +9,6 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 
 public class UpdateFooLinkCommandValidator : AbstractValidator<UpdateFooLinkCommand>
 {
-    // todo create unit test
     public UpdateFooLinkCommandValidator(IFooValidator fooValidator, ILinkService linkService)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;

@@ -13,6 +13,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers.PostSaveEvents;
 [TestClass]
 public class FooCreatedEventHandlerTests
 {
+    // ToDo Rename to better test name
     [TestMethod]
     public async Task Handle_ShouldDoSomething()
     {

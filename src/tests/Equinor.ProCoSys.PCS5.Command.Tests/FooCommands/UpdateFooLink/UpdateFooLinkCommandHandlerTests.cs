@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Application.Interfaces;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
-using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -20,7 +19,7 @@ public class UpdateFooLinkCommandHandlerTests : TestsBase
     [TestInitialize]
     public void Setup()
     {
-        _command = new UpdateFooLinkCommand(Guid.NewGuid(), Guid.NewGuid(), "T", "U", "R");
+        _command = new UpdateFooLinkCommand(Guid.NewGuid(), Guid.NewGuid(), "T", "U", _rowVersion);
 
         _linkServiceMock = new Mock<ILinkService>();
         _linkServiceMock.Setup(l => l.UpdateAsync(
