@@ -6,7 +6,6 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 
 public class VoidFooCommand : IRequest<Result<string>>, IFooCommandRequest
 {
-    // todo add tests in AccessValidatorTests
     public VoidFooCommand(Guid fooGuid, string? rowVersion)
     {
         FooGuid = fooGuid;

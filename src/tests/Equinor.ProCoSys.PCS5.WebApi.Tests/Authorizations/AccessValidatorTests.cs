@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.WebApi.Authorizations;
 using Equinor.ProCoSys.PCS5.WebApi.Misc;
 using Microsoft.Extensions.Logging;
@@ -10,6 +9,12 @@ using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations;
 
@@ -80,12 +85,96 @@ public class AccessValidatorTests
     }
     #endregion
 
+    #region DeleteFooCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnDeleteFooCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new DeleteFooCommand(_fooGuidWithAccessToProject, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnDeleteFooCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new DeleteFooCommand(_fooGuidWithoutAccessToProject, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region UpdateFooCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnUpdateFooCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new UpdateFooCommand(_fooGuidWithAccessToProject, null, null, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnUpdateFooCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new UpdateFooCommand(_fooGuidWithoutAccessToProject, null, null, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region VoidFooCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnVoidFooCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new VoidFooCommand(_fooGuidWithAccessToProject, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnVoidFooCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new VoidFooCommand(_fooGuidWithoutAccessToProject, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
     #region CreateFooLinkCommand
     [TestMethod]
     public async Task ValidateAsync_OnCreateFooLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new CreateFooLinkCommand(_fooGuidWithAccessToProject, "T", "U");
+        var command = new CreateFooLinkCommand(_fooGuidWithAccessToProject, null, null);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -98,7 +187,63 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnCreateFooLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new CreateFooLinkCommand(_fooGuidWithoutAccessToProject, "T", "U");
+        var command = new CreateFooLinkCommand(_fooGuidWithoutAccessToProject, null, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region UpdateFooLinkCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnUpdateFooLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new UpdateFooLinkCommand(_fooGuidWithAccessToProject, Guid.Empty, null, null, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnUpdateFooLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new UpdateFooLinkCommand(_fooGuidWithoutAccessToProject, Guid.Empty, null, null, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region DeleteFooLinkCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnDeleteFooLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new DeleteFooLinkCommand(_fooGuidWithAccessToProject, Guid.Empty, null);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnDeleteFooLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new DeleteFooLinkCommand(_fooGuidWithoutAccessToProject, Guid.Empty, null);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -141,7 +286,7 @@ public class AccessValidatorTests
     #endregion
 
 
-    #region GetFooQuery
+    #region GetFooLinksQuery
     [TestMethod]
     public async Task ValidateAsync_OnGetFooLinksQuery_ShouldReturnTrue_WhenAccessToProject()
     {

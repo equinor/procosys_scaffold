@@ -6,7 +6,6 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 
 public class UpdateFooCommand : IRequest<Result<string>>, IFooCommandRequest
 {
-    // todo add tests in AccessValidatorTests
     public UpdateFooCommand(Guid fooGuid, string title, string? text, string rowVersion)
     {
         FooGuid = fooGuid;
