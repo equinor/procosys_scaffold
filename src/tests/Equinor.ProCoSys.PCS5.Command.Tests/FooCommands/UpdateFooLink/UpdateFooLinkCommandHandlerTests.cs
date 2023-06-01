@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Application.Interfaces;
+using Equinor.ProCoSys.PCS5.Command.Links;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

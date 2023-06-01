@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Equinor.ProCoSys.PCS5.Application.Dtos;
+using Equinor.ProCoSys.PCS5.Query.Links;
 using MediatR;
 using ServiceResult;
 

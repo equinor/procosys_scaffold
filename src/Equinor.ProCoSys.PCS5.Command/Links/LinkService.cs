@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
-using Equinor.ProCoSys.PCS5.Application.Dtos;
-using Equinor.ProCoSys.PCS5.Application.Interfaces;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.LinkEvents;
 using Microsoft.Extensions.Logging;
 
-namespace Equinor.ProCoSys.PCS5.Application.Services;
+namespace Equinor.ProCoSys.PCS5.Command.Links;
 
 public class LinkService : ILinkService
 {
@@ -44,38 +40,15 @@ public class LinkService : ILinkService
 
         _logger.LogDebug($"Link '{link.Title}' with guid {link.Guid} created for {link.SourceGuid}");
 
-        return new LinkDto(link.SourceGuid, link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
+        return new LinkDto(link.Guid, link.RowVersion.ConvertToString());
     }
 
     public async Task<bool> ExistsAsync(
         Guid guid,
         CancellationToken cancellationToken)
-        => await TryGetAsync(guid, cancellationToken) != null;
-
-    public async Task<IEnumerable<LinkDto>> GetAllForSourceAsync(
-        Guid sourceGuid,
-        CancellationToken cancellationToken)
-    {
-        var links = await _linkRepository.GetAllForSourceAsync(sourceGuid);
-
-        var linkDtos = links
-            .Select(l => new LinkDto(l.SourceGuid, l.Guid, l.Title, l.Url, l.RowVersion.ConvertToString()));
-
-        return linkDtos;
-    }
-
-    public async Task<LinkDto?> TryGetAsync(
-        Guid guid,
-        CancellationToken cancellationToken)
     {
         var link = await _linkRepository.TryGetByGuidAsync(guid);
-
-        if (link == null)
-        {
-            return null;
-        }
-
-        return new LinkDto(link.SourceGuid, link.Guid, link.Title, link.Url, link.RowVersion.ConvertToString());
+        return link != null;
     }
 
     public async Task<string> UpdateAsync(
@@ -126,7 +99,5 @@ public class LinkService : ILinkService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogDebug($"Link '{link.Title}' with guid {link.Guid} deleted for {link.SourceGuid}");
-
-        return;
     }
 }

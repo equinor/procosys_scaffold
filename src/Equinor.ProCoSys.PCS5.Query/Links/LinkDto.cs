@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.Application.Dtos;
+namespace Equinor.ProCoSys.PCS5.Query.Links;
 
 public class LinkDto
 {

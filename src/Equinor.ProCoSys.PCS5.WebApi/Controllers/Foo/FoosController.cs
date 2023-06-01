@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Auth;
 using Equinor.ProCoSys.Common;
-using Equinor.ProCoSys.PCS5.Application.Dtos;
 using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
@@ -19,6 +18,7 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
+using Equinor.ProCoSys.PCS5.Query.Links;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;

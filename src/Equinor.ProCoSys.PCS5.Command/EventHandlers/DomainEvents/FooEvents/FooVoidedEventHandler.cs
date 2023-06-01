@@ -16,6 +16,7 @@ public class FooVoidedEventHandler : BaseEventHandler, INotificationHandler<FooV
     public async Task Handle(FooVoidedEvent notification, CancellationToken cancellationToken)
     {
         var modifiedByOid = await GetModifiedByOidAsync(notification.Foo);
+        var sourceGuid = notification.Foo.Guid;
 
         // ToDo Send event to the bus
         return;

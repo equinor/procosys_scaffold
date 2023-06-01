@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Application.Interfaces;
+using Equinor.ProCoSys.PCS5.Command.Links;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using FluentValidation;
 

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Application.Dtos;
-using Equinor.ProCoSys.PCS5.Application.Interfaces;
+using Equinor.ProCoSys.PCS5.Query.Links;
 using MediatR;
 using ServiceResult;
 

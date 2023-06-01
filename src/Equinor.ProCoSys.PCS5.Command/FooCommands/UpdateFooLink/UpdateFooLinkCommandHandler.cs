@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Equinor.ProCoSys.PCS5.Command.Links;
 using MediatR;
 using ServiceResult;
-using Equinor.ProCoSys.PCS5.Application.Interfaces;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 

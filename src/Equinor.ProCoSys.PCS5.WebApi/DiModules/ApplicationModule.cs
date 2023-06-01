@@ -21,9 +21,7 @@ using Equinor.ProCoSys.Common.Caches;
 using Equinor.ProCoSys.Common.Email;
 using Equinor.ProCoSys.Common.Telemetry;
 using Equinor.ProCoSys.Common;
-using Equinor.ProCoSys.PCS5.Application.Services;
 using Equinor.ProCoSys.PCS5.WebApi.Controllers;
-using Equinor.ProCoSys.PCS5.Application.Interfaces;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.DIModules;
 
@@ -63,7 +61,8 @@ public static class ApplicationModule
         services.AddScoped<IFooRepository, FooRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<ILinkRepository, LinkRepository>();
-        services.AddScoped<ILinkService, LinkService>();
+        services.AddScoped<Command.Links.ILinkService, Command.Links.LinkService>();
+        services.AddScoped<Query.Links.ILinkService, Query.Links.LinkService>();
 
         services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
         services.AddScoped<IProjectApiService, MainApiProjectService>();

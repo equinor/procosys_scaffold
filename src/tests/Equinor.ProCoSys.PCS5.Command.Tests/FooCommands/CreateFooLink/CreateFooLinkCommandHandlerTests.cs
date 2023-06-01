@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Application.Dtos;
-using Equinor.ProCoSys.PCS5.Application.Interfaces;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
+using Equinor.ProCoSys.PCS5.Command.Links;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,7 +29,7 @@ public class CreateFooLinkCommandHandlerTests : TestsBase
             _command.FooGuid,
             _command.Title,
             _command.Url, 
-            default)).ReturnsAsync(new LinkDto(_command.FooGuid, _guid, _command.Title, _command.Url, _rowVersion));
+            default)).ReturnsAsync(new LinkDto(_guid, _rowVersion));
 
         _dut = new CreateFooLinkCommandHandler(_linkServiceMock.Object);
     }

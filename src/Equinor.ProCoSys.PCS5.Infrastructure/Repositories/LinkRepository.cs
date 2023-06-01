@@ -1,9 +1,4 @@
-﻿using System.Threading.Tasks;
-using System;
-using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 
@@ -13,7 +8,4 @@ public class LinkRepository : RepositoryBase<Link>, ILinkRepository
         : base(context, context.Links, context.Links)
     {
     }
-
-    public Task<List<Link>> GetAllForSourceAsync(Guid sourceGuid)
-        => DefaultQuery.Where(l => l.SourceGuid == sourceGuid).ToListAsync();
 }

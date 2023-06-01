@@ -46,6 +46,7 @@ public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<
         var foo = new Foo(_plantProvider.Plant, project, request.Title);
         _fooRepository.Add(foo);
         foo.AddDomainEvent(new FooCreatedEvent(foo));
+        foo.AddDomainEvent(new FooCreatedEvent(foo));
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

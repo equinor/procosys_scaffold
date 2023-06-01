@@ -20,6 +20,7 @@ public class FooDeletedEventHandler : BaseEventHandler, INotificationHandler<Foo
 #pragma warning disable CS8629 // Nullable value type may be null.
         var deletedAtUtc = notification.Foo.ModifiedAtUtc.Value;
 #pragma warning restore CS8629 // Nullable value type may be null.
+        var sourceGuid = notification.Foo.Guid;
 
         // ToDo Send event to the bus
         return;

@@ -16,6 +16,7 @@ public class FooCreatedEventHandler : BaseEventHandler, INotificationHandler<Foo
     public async Task Handle(FooCreatedEvent notification, CancellationToken cancellationToken)
     {
         var createdByOid = await GetCreatedByOidAsync(notification.Foo);
+        var sourceGuid = notification.Foo.Guid;
 
         // ToDo Send event to the bus
         return;
