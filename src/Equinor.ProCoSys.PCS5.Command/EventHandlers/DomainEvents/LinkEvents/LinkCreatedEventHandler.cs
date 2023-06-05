@@ -6,18 +6,14 @@ using MediatR;
 
 namespace Equinor.ProCoSys.PCS5.Command.EventHandlers.DomainEvents.LinkEvents;
 
-public class LinkCreatedEventHandler : BaseEventHandler, INotificationHandler<LinkCreatedEvent>
+public class LinkCreatedEventHandler : INotificationHandler<LinkCreatedEvent>
 {
-    public LinkCreatedEventHandler(IPersonRepository personRepository) : base(personRepository)
-    {
-    }
-
     // todo unit test
-    public async Task Handle(LinkCreatedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(LinkCreatedEvent notification, CancellationToken cancellationToken)
     {
-        var createdByOid = await GetCreatedByOidAsync(notification.Link);
+        var sourceGuid = notification.Link.SourceGuid;
 
         // ToDo Send event to the bus
-        return;
+        return Task.CompletedTask;
     }
 }
