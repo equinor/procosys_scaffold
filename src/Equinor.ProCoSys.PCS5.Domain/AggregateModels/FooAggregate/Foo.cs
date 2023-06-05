@@ -7,7 +7,7 @@ using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 
-public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IVoidable
+public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IVoidable, IHaveGuid
 {
     public const int TitleLengthMin = 3;
     public const int TitleLengthMax = 250;
@@ -35,6 +35,7 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
         ProjectId = project.Id;
 
         Title = title;
+        Guid = Guid.NewGuid();
     }
 
     // private set needed for EntityFramework
@@ -47,6 +48,7 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
     public int CreatedById { get; private set; }
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
+    public Guid Guid { get; private set; }
 
     public void EditFoo(string title, string? text)
     {

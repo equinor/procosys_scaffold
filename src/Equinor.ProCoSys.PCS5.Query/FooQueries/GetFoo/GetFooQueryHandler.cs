@@ -48,7 +48,7 @@ public class GetFooQueryHandler : IRequestHandler<GetFooQuery, Result<FooDetails
             dto.CreatedByUser.FirstName,
             dto.CreatedByUser.LastName,
             dto.CreatedByUser.UserName,
-            dto.CreatedByUser.Oid,
+            dto.CreatedByUser.Guid,
             dto.CreatedByUser.Email);
         
         PersonDto? modifiedBy = null;
@@ -59,7 +59,7 @@ public class GetFooQueryHandler : IRequestHandler<GetFooQuery, Result<FooDetails
                 dto.ModifiedByUser.FirstName,
                 dto.ModifiedByUser.LastName,
                 dto.ModifiedByUser.UserName,
-                dto.ModifiedByUser.Oid,
+                dto.ModifiedByUser.Guid,
                 dto.ModifiedByUser.Email);
         }
 

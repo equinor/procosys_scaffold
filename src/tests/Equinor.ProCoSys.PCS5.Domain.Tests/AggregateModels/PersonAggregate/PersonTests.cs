@@ -13,7 +13,7 @@ public class PersonTests
     public void Constructor_SetsProperties()
     {
         var dut = new Person(_oid, "FirstName", "LastName", "UserName", "EmailAddress");
-        Assert.AreEqual(_oid, dut.Oid);
+        Assert.AreEqual(_oid, dut.Guid);
         Assert.AreEqual("FirstName", dut.FirstName);
         Assert.AreEqual("LastName", dut.LastName);
         Assert.AreEqual("UserName", dut.UserName);

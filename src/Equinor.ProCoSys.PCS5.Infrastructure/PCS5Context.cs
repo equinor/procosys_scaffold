@@ -154,7 +154,7 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
         if (addedEntries.Any() || modifiedEntries.Any())
         {
             var currentUserOid = _currentUserProvider.GetCurrentUserOid();
-            var currentUser = await Persons.SingleOrDefaultAsync(p => p.Oid == currentUserOid);
+            var currentUser = await Persons.SingleOrDefaultAsync(p => p.Guid == currentUserOid);
             if (currentUser == null)
             {
                 throw new Exception(

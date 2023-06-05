@@ -6,7 +6,7 @@ using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 
-public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable
+public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IHaveGuid
 {
     public const int NameLengthMax = 30;
     public const int DescriptionLengthMax = 1000;
@@ -34,6 +34,7 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
     public int CreatedById { get; private set; }
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
+    public Guid Guid { get; private set; }
 
     public void SetCreated(Person createdBy)
     {

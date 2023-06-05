@@ -6,7 +6,7 @@ using Equinor.ProCoSys.PCS5.Domain.Audit;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 
-public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IBelongToSource
+public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IBelongToSource, IHaveGuid
 {
     public const int TitleLengthMax = 256;
     public const int UrlLengthMax = 2000;
@@ -17,6 +17,7 @@ public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificatio
         SourceGuid = sourceGuid;
         Title = title;
         Url = url;
+        Guid = Guid.NewGuid();
     }
 
     // private set needed for EntityFramework
@@ -28,6 +29,7 @@ public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificatio
     public int CreatedById { get; private set; }
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
+    public Guid Guid { get; private set; }
 
     public void SetCreated(Person createdBy)
     {

@@ -11,5 +11,5 @@ public class PersonRepository : RepositoryBase<Person>, IPersonRepository
         : base(context, context.Persons) { }
 
     public Task<Person?> GetByOidAsync(Guid oid)
-        => DefaultQuery.SingleOrDefaultAsync(p => p.Oid == oid);
+        => DefaultQuery.SingleOrDefaultAsync(p => p.Guid == oid);
 }
