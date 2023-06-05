@@ -65,7 +65,7 @@ public static class PCS5ContextExtension
     private static void EnsureCurrentUserIsSeeded(PCS5Context dbContext, ICurrentUserProvider userProvider)
     {
         var personRepository = new PersonRepository(dbContext);
-        var seeder = personRepository.GetByOidAsync(userProvider.GetCurrentUserOid()).Result;
+        var seeder = personRepository.TryGetByGuidAsync(userProvider.GetCurrentUserOid()).Result;
         if (seeder == null)
         {
             SeedCurrentUserAsPerson(dbContext, userProvider);

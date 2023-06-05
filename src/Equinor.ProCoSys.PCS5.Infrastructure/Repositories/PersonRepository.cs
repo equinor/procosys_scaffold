@@ -1,15 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
-using Microsoft.EntityFrameworkCore;
+﻿using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 
-public class PersonRepository : RepositoryBase<Person>, IPersonRepository
+public class PersonRepository : RepositoryBaseWithGuid<Person>, IPersonRepository
 {
     public PersonRepository(PCS5Context context)
         : base(context, context.Persons) { }
-
-    public Task<Person?> GetByOidAsync(Guid oid)
-        => DefaultQuery.SingleOrDefaultAsync(p => p.Guid == oid);
 }
