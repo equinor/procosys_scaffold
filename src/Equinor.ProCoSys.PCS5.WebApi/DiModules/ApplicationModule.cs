@@ -3,6 +3,7 @@ using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
@@ -63,6 +64,9 @@ public static class ApplicationModule
         services.AddScoped<ILinkRepository, LinkRepository>();
         services.AddScoped<Command.Links.ILinkService, Command.Links.LinkService>();
         services.AddScoped<Query.Links.ILinkService, Query.Links.LinkService>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<Command.Comments.ICommentService, Command.Comments.CommentService>();
+        services.AddScoped<Query.Comments.ICommentService, Query.Comments.CommentService>();
 
         services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
         services.AddScoped<IProjectApiService, MainApiProjectService>();

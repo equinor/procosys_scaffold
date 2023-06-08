@@ -9,13 +9,16 @@ using Equinor.ProCoSys.Auth;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooComment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
+using Equinor.ProCoSys.PCS5.Query.Comments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooComments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
 using Equinor.ProCoSys.PCS5.Query.Links;
@@ -173,6 +176,35 @@ public class FoosController : ControllerBase
         [FromBody] RowVersionDto dto)
     {
         var result = await _mediator.Send(new DeleteFooLinkCommand(guid, linkGuid, dto.RowVersion));
+        return this.FromResult(result);
+    }
+    #endregion
+
+    #region Comments
+    [AuthorizeAny(Permissions.FOO_WRITE, Permissions.APPLICATION_TESTER)]
+    [HttpPost("{guid}/Comments")]
+    public async Task<ActionResult<GuidAndRowVersion>> CreateFooComment(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid,
+        [FromBody] CreateCommentDto dto)
+    {
+        var result = await _mediator.Send(new CreateFooCommentCommand(guid, dto.Text));
+        return this.FromResult(result);
+    }
+
+    [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
+    [HttpGet("{guid}/Comments")]
+    public async Task<ActionResult<IEnumerable<CommentDto>>> GetFooComments(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid)
+    {
+        var result = await _mediator.Send(new GetFooCommentsQuery(guid));
         return this.FromResult(result);
     }
     #endregion

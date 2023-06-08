@@ -15,7 +15,7 @@ internal class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .HasConversion(PCS5Context.DateTimeKindConverter);
 
         builder.Property(comment => comment.Text)
-            .HasMaxLength(Comment.TextMaxLength)
+            .HasMaxLength(Comment.TextLengthMax)
             .IsRequired();
 
         builder
