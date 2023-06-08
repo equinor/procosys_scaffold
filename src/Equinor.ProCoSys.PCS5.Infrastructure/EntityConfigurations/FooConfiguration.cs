@@ -52,7 +52,6 @@ internal class FooConfiguration : IEntityTypeConfiguration<Foo>
             .IncludeProperties(x => new
             {
                 x.Title,
-                x.ProjectId,
                 x.IsVoided,
                 x.RowVersion
             });
