@@ -13,7 +13,7 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers;
 public class EventDispatcherTests
 {
     [TestMethod]
-    public async Task DispatchPreSaveAsync_SendsOutEvents_Test()
+    public async Task DispatchPreSaveAsync_ShouldSendsOutEvents()
     {
         var mediator = new Mock<IMediator>();
         var dut = new EventDispatcher(mediator.Object);
@@ -36,7 +36,7 @@ public class EventDispatcherTests
     }
 
     [TestMethod]
-    public async Task DispatchPostSaveAsync_SendsOutEvents_Test()
+    public async Task DispatchPostSaveAsync_ShouldSendsOutEvents()
     {
         var mediator = new Mock<IMediator>();
         var dut = new EventDispatcher(mediator.Object);
