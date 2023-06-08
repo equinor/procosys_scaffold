@@ -22,5 +22,16 @@ internal class LinkConfiguration : IEntityTypeConfiguration<Link>
         builder.Property(x => x.Url)
             .HasMaxLength(Link.UrlLengthMax)
             .IsRequired();
+
+        builder
+            .HasIndex(link=> link.SourceGuid)
+            .HasDatabaseName("IX_Links_SourceGuid")
+            .IncludeProperties(link => new
+            {
+                link.Guid,
+                link.Url,
+                link.Title,
+                link.RowVersion
+            });
     }
 }

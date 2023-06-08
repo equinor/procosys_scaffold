@@ -17,5 +17,4 @@ public interface IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
     void Remove(TEntity entity);
 
     Task<List<TEntity>> GetAllAsync();
-
 }
