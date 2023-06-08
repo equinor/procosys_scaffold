@@ -8,6 +8,7 @@ internal class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
+        builder.ConfigureCreationAudit();
         builder.ConfigureConcurrencyToken();
 
         builder
@@ -23,9 +24,11 @@ internal class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .HasDatabaseName("IX_Comments_SourceGuid")
             .IncludeProperties(comment => new
             {
+                comment.Guid,
                 comment.Text,
+                comment.CreatedById,
                 comment.CreatedAtUtc,
-                comment.CreatedById
+                comment.RowVersion
             });
     }
 }

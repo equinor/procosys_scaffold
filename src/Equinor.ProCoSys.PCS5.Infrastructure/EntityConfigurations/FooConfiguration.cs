@@ -29,5 +29,32 @@ internal class FooConfiguration : IEntityTypeConfiguration<Foo>
 
         builder.Property(x => x.Text)
             .HasMaxLength(Foo.TextLengthMax);
+
+        builder
+            .HasIndex(x => x.Guid)
+            .HasDatabaseName("IX_Foos_Guid")
+            .IncludeProperties(x => new
+            {
+                x.Title,
+                x.Text,
+                x.ProjectId,
+                x.CreatedById,
+                x.CreatedAtUtc,
+                x.ModifiedById,
+                x.ModifiedAtUtc,
+                x.IsVoided,
+                x.RowVersion
+            });
+
+        builder
+            .HasIndex(x => x.ProjectId)
+            .HasDatabaseName("IX_Foos_ProjectId")
+            .IncludeProperties(x => new
+            {
+                x.Title,
+                x.ProjectId,
+                x.IsVoided,
+                x.RowVersion
+            });
     }
 }

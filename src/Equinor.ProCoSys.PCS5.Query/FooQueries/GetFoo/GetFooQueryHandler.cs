@@ -23,11 +23,11 @@ public class GetFooQueryHandler : IRequestHandler<GetFooQuery, Result<FooDetails
         var dto =
             await (from foo in _context.QuerySet<Foo>()
                    join project in _context.QuerySet<Project>()
-                       on EF.Property<int>(foo, "ProjectId") equals project.Id
+                       on foo.ProjectId equals project.Id
                    join createdByUser in _context.QuerySet<Person>()
-                       on EF.Property<int>(foo, "CreatedById") equals createdByUser.Id
+                       on foo.CreatedById equals createdByUser.Id
                    from modifiedByUser in _context.QuerySet<Person>()
-                       .Where(p => p.Id == EF.Property<int>(foo, "ModifiedById")).DefaultIfEmpty() //left join!
+                       .Where(p => p.Id == foo.ModifiedById).DefaultIfEmpty() //left join!
                    where foo.Guid == request.FooGuid
                    select new {
                        Foo = foo,
@@ -44,22 +44,20 @@ public class GetFooQueryHandler : IRequestHandler<GetFooQuery, Result<FooDetails
         }
 
         var createdBy = new PersonDto(
-            dto.CreatedByUser.Id,
+            dto.CreatedByUser.Guid,
             dto.CreatedByUser.FirstName,
             dto.CreatedByUser.LastName,
             dto.CreatedByUser.UserName,
-            dto.CreatedByUser.Guid,
             dto.CreatedByUser.Email);
         
         PersonDto? modifiedBy = null;
         if (dto.ModifiedByUser != null)
         {
             modifiedBy = new PersonDto(
-                dto.ModifiedByUser.Id,
+                dto.ModifiedByUser.Guid,
                 dto.ModifiedByUser.FirstName,
                 dto.ModifiedByUser.LastName,
                 dto.ModifiedByUser.UserName,
-                dto.ModifiedByUser.Guid,
                 dto.ModifiedByUser.Email);
         }
 

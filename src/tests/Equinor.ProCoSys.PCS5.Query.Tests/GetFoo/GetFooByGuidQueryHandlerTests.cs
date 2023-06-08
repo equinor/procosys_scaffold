@@ -86,7 +86,7 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
         AssertFoo(fooDetailsDto, _modifiedFoo);
         var modifiedBy = fooDetailsDto.ModifiedBy;
         Assert.IsNotNull(modifiedBy);
-        Assert.AreEqual(CurrentUserOid, modifiedBy.AzureOid);
+        Assert.AreEqual(CurrentUserOid, modifiedBy.Guid);
         Assert.IsNotNull(fooDetailsDto.ModifiedAtUtc);
         Assert.AreEqual(_modifiedFoo.ModifiedAtUtc, fooDetailsDto.ModifiedAtUtc);
     }
@@ -100,7 +100,7 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
 
         var createdBy = fooDetailsDto.CreatedBy;
         Assert.IsNotNull(createdBy);
-        Assert.AreEqual(CurrentUserOid, createdBy.AzureOid);
+        Assert.AreEqual(CurrentUserOid, createdBy.Guid);
         Assert.AreEqual(foo.CreatedAtUtc, fooDetailsDto.CreatedAtUtc);
     }
 }

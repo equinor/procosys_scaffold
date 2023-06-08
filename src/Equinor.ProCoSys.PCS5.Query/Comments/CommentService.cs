@@ -24,18 +24,17 @@ public class CommentService : ICommentService
         var comments =
             await (from c in _context.QuerySet<Comment>()
                     join createdByUser in _context.QuerySet<Person>()
-                        on EF.Property<int>(c, "CreatedById") equals createdByUser.Id
+                        on c.CreatedById equals createdByUser.Id
                    where c.SourceGuid == sourceGuid
                    select new CommentDto(
                        c.SourceGuid,
                        c.Guid,
                        c.Text,
                        new PersonDto(
-                           createdByUser.Id,
+                           createdByUser.Guid,
                            createdByUser.FirstName,
                            createdByUser.LastName,
                            createdByUser.UserName,
-                           createdByUser.Guid,
                            createdByUser.Email),
                        c.CreatedAtUtc,
                        c.RowVersion.ConvertToString()
