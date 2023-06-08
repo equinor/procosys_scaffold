@@ -9,15 +9,13 @@ public class CommentDto
         Guid guid,
         string text,
         PersonDto createdBy,
-        DateTime createdAtUtc,
-        string rowVersion)
+        DateTime createdAtUtc)
     {
         SourceGuid = sourceGuid;
         Guid = guid;
         Text = text;
         CreatedBy = createdBy;
         CreatedAtUtc = createdAtUtc;
-        RowVersion = rowVersion;
     }
 
     public Guid SourceGuid { get; }
@@ -25,5 +23,6 @@ public class CommentDto
     public string Text { get; }
     public PersonDto CreatedBy { get; }
     public DateTime CreatedAtUtc { get; }
-    public string RowVersion { get; }
+    
+    // No need for expose RowVersion since we don't support Update or Delete of Comments 
 }

@@ -8,6 +8,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 
 public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IBelongToSource, IHaveGuid
 {
+    public const int SourceTypeLengthMax = 256;
     public const int TitleLengthMax = 256;
     public const int UrlLengthMax = 2000;
 

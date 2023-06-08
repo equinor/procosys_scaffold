@@ -1,4 +1,5 @@
-﻿using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
+﻿using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure.EntityConfigurations.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,6 +16,10 @@ internal class LinkConfiguration : IEntityTypeConfiguration<Link>
 
         builder.ToTable(t => t.IsTemporal());
 
+        builder.Property(x => x.SourceType)
+            .HasMaxLength(Comment.SourceTypeLengthMax)
+            .IsRequired();
+
         builder.Property(x => x.Title)
             .HasMaxLength(Link.TitleLengthMax)
             .IsRequired();
@@ -24,14 +29,14 @@ internal class LinkConfiguration : IEntityTypeConfiguration<Link>
             .IsRequired();
 
         builder
-            .HasIndex(link=> link.SourceGuid)
+            .HasIndex(x => x.SourceGuid)
             .HasDatabaseName("IX_Links_SourceGuid")
-            .IncludeProperties(link => new
+            .IncludeProperties(x => new
             {
-                link.Guid,
-                link.Url,
-                link.Title,
-                link.RowVersion
+                x.Guid,
+                x.Url,
+                x.Title,
+                x.RowVersion
             });
     }
 }

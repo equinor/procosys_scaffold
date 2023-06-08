@@ -12,23 +12,26 @@ internal class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.ConfigureConcurrencyToken();
 
         builder
-            .Property(comment => comment.CreatedAtUtc)
+            .Property(x => x.CreatedAtUtc)
             .HasConversion(PCS5Context.DateTimeKindConverter);
 
-        builder.Property(comment => comment.Text)
+        builder.Property(x => x.SourceType)
+            .HasMaxLength(Comment.SourceTypeLengthMax)
+            .IsRequired();
+
+        builder.Property(x => x.Text)
             .HasMaxLength(Comment.TextLengthMax)
             .IsRequired();
 
         builder
-            .HasIndex(comment => comment.SourceGuid)
+            .HasIndex(x => x.SourceGuid)
             .HasDatabaseName("IX_Comments_SourceGuid")
-            .IncludeProperties(comment => new
+            .IncludeProperties(x => new
             {
-                comment.Guid,
-                comment.Text,
-                comment.CreatedById,
-                comment.CreatedAtUtc,
-                comment.RowVersion
+                x.Guid,
+                x.Text,
+                x.CreatedById,
+                x.CreatedAtUtc
             });
     }
 }

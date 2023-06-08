@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
-using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Microsoft.EntityFrameworkCore;
@@ -36,8 +35,7 @@ public class CommentService : ICommentService
                            createdByUser.LastName,
                            createdByUser.UserName,
                            createdByUser.Email),
-                       c.CreatedAtUtc,
-                       c.RowVersion.ConvertToString()
+                       c.CreatedAtUtc
                ))
                 .TagWith($"{nameof(CommentService)}.{nameof(GetAllForSourceAsync)}")
                 .ToListAsync(cancellationToken);

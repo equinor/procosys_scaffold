@@ -8,7 +8,7 @@ namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 
 public class Comment : EntityBase, IAggregateRoot, ICreationAuditable, IBelongToSource, IHaveGuid
 {
-    public const int TextLengthMin = 1;
+    public const int SourceTypeLengthMax = 256;
     public const int TextLengthMax = 4000;
 
     public Comment(string sourceType, Guid sourceGuid, string text)
