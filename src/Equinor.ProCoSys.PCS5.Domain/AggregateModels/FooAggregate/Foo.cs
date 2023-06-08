@@ -38,7 +38,7 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
         Guid = Guid.NewGuid();
     }
 
-    // private set needed for EntityFramework
+    // private setters needed for Entity Framework
     public int ProjectId { get; private set; }
     public string Title { get; set; }
     public string? Text { get; set; }

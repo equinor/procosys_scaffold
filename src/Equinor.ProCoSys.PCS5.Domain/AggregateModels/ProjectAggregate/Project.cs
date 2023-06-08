@@ -26,7 +26,7 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
         Description = description;
     }
 
-    // private set needed for EntityFramework
+    // private setters needed for Entity Framework
     public string Name { get; private set; }
     public string Description { get; set; }
     public bool IsClosed { get; set; }

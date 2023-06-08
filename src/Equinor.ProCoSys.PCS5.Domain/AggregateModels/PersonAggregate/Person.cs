@@ -21,7 +21,7 @@ public class Person : EntityBase, IAggregateRoot, IModificationAuditable, IHaveG
         Email = email ?? throw new ArgumentNullException(nameof(email));
     }
 
-    // private set needed for EntityFramework
+    // private setters needed for Entity Framework
     public Guid Guid { get; private set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }

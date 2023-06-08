@@ -20,7 +20,7 @@ public class Link : EntityBase, IAggregateRoot, ICreationAuditable, IModificatio
         Guid = Guid.NewGuid();
     }
 
-    // private set needed for EntityFramework
+    // private setters needed for Entity Framework
     public string SourceType { get; private set; }
     public Guid SourceGuid { get; private set; }
     public string Title { get; set; }
