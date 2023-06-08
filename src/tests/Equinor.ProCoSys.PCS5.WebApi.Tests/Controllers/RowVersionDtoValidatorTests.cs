@@ -3,7 +3,7 @@ using Equinor.ProCoSys.PCS5.WebApi.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Controllers.Foo;
+namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Controllers;
 
 [TestClass]
 public class RowVersionDtoValidatorTests
@@ -27,7 +27,7 @@ public class RowVersionDtoValidatorTests
     {
         // Arrange
         var dto = new RowVersionDto { RowVersion = _rowVersion };
-        
+
         // Act
         var result = await _dut.ValidateAsync(dto);
 

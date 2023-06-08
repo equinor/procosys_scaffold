@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
+namespace Equinor.ProCoSys.PCS5.WebApi.Controllers;
 
 public class CreateCommentDto
 {

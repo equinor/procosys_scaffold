@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo
+namespace Equinor.ProCoSys.PCS5.WebApi.Controllers
 {
     public class CreateCommentDtoValidator : AbstractValidator<CreateCommentDto>
     {
