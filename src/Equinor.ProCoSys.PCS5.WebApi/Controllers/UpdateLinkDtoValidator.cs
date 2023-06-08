@@ -16,6 +16,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Controllers
                 .MaximumLength(Domain.AggregateModels.LinkAggregate.Link.TitleLengthMax);
 
             RuleFor(dto => dto.Url)
+                .NotNull()
                 .MaximumLength(Domain.AggregateModels.LinkAggregate.Link.UrlLengthMax);
 
             RuleFor(dto => dto.RowVersion)
