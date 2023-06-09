@@ -8,7 +8,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers;
 
 [TestClass]
-// This test class implement the IDomainMarker to ensure that the Domain Assembly is loaded. Reflection is used in test
+// This test class implement the IDomainMarker to ensure that the Domain Assembly is loaded.
+// Reflection is used in test to find all classes implementing INotification
 public class INotificationHandlerTests : IDomainMarker
 {
     [TestMethod]

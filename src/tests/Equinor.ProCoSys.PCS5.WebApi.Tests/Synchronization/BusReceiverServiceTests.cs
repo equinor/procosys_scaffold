@@ -28,6 +28,7 @@ public class BusReceiverServiceTests
     private readonly string _plant = "Plant";
     private readonly Guid _projectProCoSysGuid = Guid.NewGuid();
     private Project _project1;
+    private Project _projectedAddedToRepository;
 
     [TestInitialize]
     public void Setup()
@@ -40,6 +41,12 @@ public class BusReceiverServiceTests
         _projectRepository = new Mock<IProjectRepository>();
         _projectRepository.Setup(p => p.TryGetByGuidAsync(_projectProCoSysGuid))
             .ReturnsAsync(_project1);
+        _projectRepository
+            .Setup(x => x.Add(It.IsAny<Project>()))
+            .Callback<Project>(project =>
+            {
+                _projectedAddedToRepository = project;
+            });
 
         var options = new Mock<IOptionsSnapshot<PCS5AuthenticatorOptions>>();
         options.Setup(s => s.Value).Returns(new PCS5AuthenticatorOptions { PCS5ApiObjectId = Guid.NewGuid() });
@@ -72,7 +79,7 @@ public class BusReceiverServiceTests
         Assert.IsFalse(_project1.IsClosed);
 
         // Act
-        await _dut.ProcessMessageAsync("Project", messageJson, default);
+        await _dut.ProcessMessageAsync(ProjectTopic.TopicName, messageJson, default);
 
         // Assert
         _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -84,7 +91,7 @@ public class BusReceiverServiceTests
     }
 
     [TestMethod]
-    public async Task HandlingProjectTopic_ShouldNotAffectProject_WhenUnknownGuid()
+    public async Task HandlingProjectTopic_ShouldCreateOpenProject_WhenUnknownGuid()
     {
         // Arrange
         var message = new ProjectTopic
@@ -92,7 +99,6 @@ public class BusReceiverServiceTests
             Behavior = "",
             ProjectName = Guid.NewGuid().ToString(),
             Description = Guid.NewGuid().ToString(),
-            IsClosed = true,
             Plant = _plant,
             ProCoSysGuid = _projectProCoSysGuid
         };
@@ -100,38 +106,49 @@ public class BusReceiverServiceTests
         _projectRepository.Setup(p => p.TryGetByGuidAsync(_projectProCoSysGuid))
             .ReturnsAsync((Project)null);
         Assert.IsFalse(_project1.IsClosed);
-        var oldName = _project1.Name;
-        var oldDescription = _project1.Description;
 
         // Act
-        await _dut.ProcessMessageAsync("Project", messageJson, default);
+        await _dut.ProcessMessageAsync(ProjectTopic.TopicName, messageJson, default);
 
         // Assert
         _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _plantSetter.Verify(p => p.SetPlant(_plant), Times.Once);
         _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectProCoSysGuid), Times.Once);
-        Assert.AreEqual(oldName, _project1.Name);
-        Assert.AreEqual(oldDescription, _project1.Description);
-        Assert.IsFalse(_project1.IsClosed);
+        Assert.IsNotNull(_projectedAddedToRepository);
+        Assert.AreEqual(message.ProCoSysGuid, _projectedAddedToRepository.Guid);
+        Assert.AreEqual(message.ProjectName, _projectedAddedToRepository.Name);
+        Assert.AreEqual(message.Description, _projectedAddedToRepository.Description);
+        Assert.IsFalse(_projectedAddedToRepository.IsClosed);
     }
 
     [TestMethod]
-    public async Task HandlingProjectTopic_ShouldSkipDeleteBehavior()
+    public async Task HandlingProjectTopic_ShouldMarkProjectedAsDeletedInSource()
     {
         // Arrange
         var message = new ProjectTopic
         {
-            Behavior = "delete"
+            Behavior = "delete",
+            Plant = _plant,
+            ProCoSysGuid = _projectProCoSysGuid
         };
         var messageJson = JsonSerializer.Serialize(message);
+        Assert.IsFalse(_project1.IsClosed);
+        Assert.IsFalse(_project1.IsDeletedInSource);
+        var oldName = _project1.Name;
+        var oldDescription = _project1.Description;
 
         // Act
-        await _dut.ProcessMessageAsync("Project", messageJson, default);
+        await _dut.ProcessMessageAsync(ProjectTopic.TopicName, messageJson, default);
 
         // Assert
         _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _plantSetter.Verify(p => p.SetPlant(It.IsAny<string>()), Times.Never);
-        _projectRepository.Verify(i => i.TryGetByGuidAsync(It.IsAny<Guid>()), Times.Never);
+        _plantSetter.Verify(p => p.SetPlant(_plant), Times.Once);
+        _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectProCoSysGuid), Times.Once);
+        _plantSetter.Verify(p => p.SetPlant(_plant), Times.Once);
+        Assert.AreEqual(oldName, _project1.Name);
+        Assert.AreEqual(oldDescription, _project1.Description);
+        Assert.IsTrue(_project1.IsDeletedInSource);
+        Assert.IsTrue(_project1.IsClosed);
     }
 
     [TestMethod]
@@ -150,7 +167,7 @@ public class BusReceiverServiceTests
         var messageJson = JsonSerializer.Serialize(message);
 
         // Act
-        await _dut.ProcessMessageAsync("Project", messageJson, default);
+        await _dut.ProcessMessageAsync(ProjectTopic.TopicName, messageJson, default);
     }
 
     [TestMethod]
@@ -161,7 +178,7 @@ public class BusReceiverServiceTests
         var messageJson = "{}";
 
         // Act
-        await _dut.ProcessMessageAsync("Project", messageJson, default);
+        await _dut.ProcessMessageAsync(ProjectTopic.TopicName, messageJson, default);
     }
 
     [TestMethod]
@@ -172,7 +189,7 @@ public class BusReceiverServiceTests
         var messageJson = "";
 
         // Act
-        await _dut.ProcessMessageAsync("Project", messageJson, default);
+        await _dut.ProcessMessageAsync(ProjectTopic.TopicName, messageJson, default);
     }
     #endregion
 }

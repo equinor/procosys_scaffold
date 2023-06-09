@@ -51,9 +51,9 @@ public class BusReceiverService : IBusReceiverService
         _mainApiAuthenticator.AuthenticationType = AuthenticationType.AsApplication;
         // <<
 
-        switch (pcsTopic)
+        switch (pcsTopic.ToLower())
         {
-            case "Project":
+            case ProjectTopic.TopicName:
                 await ProcessProjectEvent(messageJson);
                 break;
         }
@@ -64,11 +64,6 @@ public class BusReceiverService : IBusReceiverService
     private async Task ProcessProjectEvent(string messageJson)
     {
         var projectEvent = JsonSerializer.Deserialize<ProjectTopic>(messageJson);
-        if (projectEvent != null && projectEvent.Behavior == "delete")
-        {
-            TrackDeleteEvent("Project", projectEvent.ProCoSysGuid, false);
-            return;
-        }
         if (projectEvent == null || projectEvent.Plant.IsEmpty())
         {
             throw new ArgumentNullException($"Deserialized JSON is not a valid ProjectEvent {messageJson}");
@@ -81,12 +76,31 @@ public class BusReceiverService : IBusReceiverService
         var project = await _projectRepository.TryGetByGuidAsync(projectEvent.ProCoSysGuid);
         if (project != null)
         {
-            if (!string.IsNullOrEmpty(projectEvent.Description))
+            // todo The softstring "delete" should be defined in Equinor.ProCoSys.PcsServiceBus
+            if (projectEvent.Behavior == "delete")
             {
-                project.Name = projectEvent.ProjectName;
-                project.Description = projectEvent.Description;
+                project.IsDeletedInSource = true;
+                return;
             }
+
+            project.Name = projectEvent.ProjectName;
+            project.Description = projectEvent.Description;
             project.IsClosed = projectEvent.IsClosed;
+        }
+        else
+        {
+            if (projectEvent.Behavior == "delete")
+            {
+                return;
+            }
+
+            // todo add unit test
+            project = new Project(
+                projectEvent.Plant,
+                projectEvent.ProCoSysGuid,
+                projectEvent.ProjectName,
+                projectEvent.Description);
+            _projectRepository.Add(project);
         }
     }
 
@@ -95,18 +109,10 @@ public class BusReceiverService : IBusReceiverService
             new Dictionary<string, string?>
             {
                 {"Event", ProjectTopic.TopicName},
+                {nameof(projectEvent.Behavior), projectEvent.Behavior},
                 {nameof(projectEvent.ProCoSysGuid), projectEvent.ProCoSysGuid.ToString()},
                 {nameof(projectEvent.ProjectName), projectEvent.ProjectName},
                 {nameof(projectEvent.IsClosed), projectEvent.IsClosed.ToString()},
                 {nameof(projectEvent.Plant), projectEvent.Plant[4..]}
-            });
-
-    private void TrackDeleteEvent(string topic, Guid guid, bool supported) =>
-        _telemetryClient.TrackEvent(_fooBusReceiverTelemetryEvent,
-            new Dictionary<string, string?>
-            {
-                {"Event Delete", topic},
-                {"ProCoSysGuid", guid.ToString()},
-                {"Supported", supported.ToString()}
             });
 }

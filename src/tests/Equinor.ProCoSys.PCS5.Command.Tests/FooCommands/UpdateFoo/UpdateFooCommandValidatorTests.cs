@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
+using Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -15,18 +16,20 @@ public class UpdateFooCommandValidatorTests
 
     private UpdateFooCommandValidator _dut;
     private Mock<IFooValidator> _fooValidatorMock;
+    private Mock<IProjectValidator> _projectValidatorMock;
 
     private UpdateFooCommand _command;
 
     [TestInitialize]
     public void Setup_OkState()
     {
+        _projectValidatorMock = new Mock<IProjectValidator>();
         _fooValidatorMock = new Mock<IFooValidator>();
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
         _command = new UpdateFooCommand(_fooGuid, "New title", "New text", _rowVersion);
 
-        _dut = new UpdateFooCommandValidator(_fooValidatorMock.Object);
+        _dut = new UpdateFooCommandValidator(_projectValidatorMock.Object, _fooValidatorMock.Object);
     }
 
     [TestMethod]
@@ -69,5 +72,21 @@ public class UpdateFooCommandValidatorTests
         Assert.IsFalse(result.IsValid);
         Assert.AreEqual(1, result.Errors.Count);
         Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Foo is voided!"));
+    }
+
+    [TestMethod]
+    public async Task Validate_ShouldFail_When_ProjectIsClosed()
+    {
+        // Arrange
+        _projectValidatorMock.Setup(x => x.IsClosedForFoo(_fooGuid, default))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _dut.ValidateAsync(_command);
+
+        // Assert
+        Assert.IsFalse(result.IsValid);
+        Assert.AreEqual(1, result.Errors.Count);
+        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Project is closed!"));
     }
 }

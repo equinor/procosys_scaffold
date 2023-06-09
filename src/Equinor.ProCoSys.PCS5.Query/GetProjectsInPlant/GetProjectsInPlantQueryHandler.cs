@@ -25,6 +25,7 @@ public class GetProjectsInPlantQueryHandler : IRequestHandler<GetProjectsInPlant
     public async Task<Result<List<ProCoSysProjectDto>>> Handle(GetProjectsInPlantQuery request,
         CancellationToken cancellationToken)
     {
+        // todo refactor this to return open projects in local DB (not call main api) ... all projects must be synced in front
         var mainApiProjects = await _projectApiService.GetProjectsInPlantAsync(_plantProvider.Plant);
 
         var projectDtos = mainApiProjects

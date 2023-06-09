@@ -41,6 +41,7 @@ public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<
 
     public async Task<Result<GuidAndRowVersion>> Handle(CreateFooCommand request, CancellationToken cancellationToken)
     {
+        // todo refactor this to just get project ... not create ... all projects must be synced in front
         var project = await GetOrCreateProjectAsync(request, cancellationToken);
 
         var foo = new Foo(_plantProvider.Plant, project, request.Title);

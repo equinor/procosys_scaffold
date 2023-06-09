@@ -11,6 +11,8 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
     public const int NameLengthMax = 30;
     public const int DescriptionLengthMax = 1000;
 
+    private bool _isDeletedInSource;
+
 #pragma warning disable CS8618
     protected Project()
 #pragma warning restore CS8618
@@ -54,5 +56,29 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
             throw new ArgumentNullException(nameof(modifiedBy));
         }
         ModifiedById = modifiedBy.Id;
+    }
+
+    public bool IsDeletedInSource
+    {
+        get => _isDeletedInSource;
+        set
+        {
+            if (_isDeletedInSource && !value)
+            {
+                // this is an Undelete, which don't make sence
+                throw new Exception("Changing IsDeletedInSource from true to false is not supported!");
+            }
+
+            // do nothing if already set
+            if (_isDeletedInSource == value)
+            {
+                return;
+            }
+
+            _isDeletedInSource = value;
+
+            // Make sure to close when setting _isDeletedInSource
+            IsClosed = value;
+        }
     }
 }

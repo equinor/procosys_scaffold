@@ -5,6 +5,7 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators;
 
 namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.UpdateFooLink;
 
@@ -17,6 +18,7 @@ public class UpdateFooLinkCommandValidatorTests
 
     private UpdateFooLinkCommandValidator _dut;
     private Mock<IFooValidator> _fooValidatorMock;
+    private Mock<IProjectValidator> _projectValidatorMock;
     private Mock<ILinkService> _linkServiceMock;
 
     private UpdateFooLinkCommand _command;
@@ -24,6 +26,7 @@ public class UpdateFooLinkCommandValidatorTests
     [TestInitialize]
     public void Setup_OkState()
     {
+        _projectValidatorMock = new Mock<IProjectValidator>();
         _fooValidatorMock = new Mock<IFooValidator>();
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
@@ -32,7 +35,10 @@ public class UpdateFooLinkCommandValidatorTests
             .ReturnsAsync(true);
         _command = new UpdateFooLinkCommand(_fooGuid, _linkGuid, "New title", "New text", _rowVersion);
 
-        _dut = new UpdateFooLinkCommandValidator(_fooValidatorMock.Object, _linkServiceMock.Object);
+        _dut = new UpdateFooLinkCommandValidator(
+            _projectValidatorMock.Object,
+            _fooValidatorMock.Object,
+            _linkServiceMock.Object);
     }
 
     [TestMethod]
@@ -91,5 +97,21 @@ public class UpdateFooLinkCommandValidatorTests
         Assert.IsFalse(result.IsValid);
         Assert.AreEqual(1, result.Errors.Count);
         Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Foo is voided!"));
+    }
+
+    [TestMethod]
+    public async Task Validate_ShouldFail_When_ProjectIsClosed()
+    {
+        // Arrange
+        _projectValidatorMock.Setup(x => x.IsClosedForFoo(_fooGuid, default))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _dut.ValidateAsync(_command);
+
+        // Assert
+        Assert.IsFalse(result.IsValid);
+        Assert.AreEqual(1, result.Errors.Count);
+        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Project is closed!"));
     }
 }

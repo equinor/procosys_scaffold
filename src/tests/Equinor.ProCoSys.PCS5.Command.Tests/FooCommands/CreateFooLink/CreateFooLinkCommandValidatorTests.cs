@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
+using Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -13,6 +14,7 @@ public class CreateFooLinkCommandValidatorTests
     private readonly Guid _fooGuid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private CreateFooLinkCommandValidator _dut;
     private Mock<IFooValidator> _fooValidatorMock;
+    private Mock<IProjectValidator> _projectValidatorMock;
     private CreateFooLinkCommand _command;
     private readonly string _url = "Test url";
     private readonly string _title = "Test title";
@@ -20,11 +22,12 @@ public class CreateFooLinkCommandValidatorTests
     [TestInitialize]
     public void Setup_OkState()
     {
+        _projectValidatorMock = new Mock<IProjectValidator>();
         _fooValidatorMock = new Mock<IFooValidator>();
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
         _command = new CreateFooLinkCommand(_fooGuid, _title, _url);
-        _dut = new CreateFooLinkCommandValidator(_fooValidatorMock.Object);
+        _dut = new CreateFooLinkCommandValidator(_projectValidatorMock.Object, _fooValidatorMock.Object);
     }
 
     [TestMethod]
@@ -65,5 +68,21 @@ public class CreateFooLinkCommandValidatorTests
         Assert.IsFalse(result.IsValid);
         Assert.AreEqual(1, result.Errors.Count);
         Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Foo is voided!"));
+    }
+
+    [TestMethod]
+    public async Task Validate_ShouldFail_When_ProjectIsClosed()
+    {
+        // Arrange
+        _projectValidatorMock.Setup(x => x.IsClosedForFoo(_fooGuid, default))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _dut.ValidateAsync(_command);
+
+        // Assert
+        Assert.IsFalse(result.IsValid);
+        Assert.AreEqual(1, result.Errors.Count);
+        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Project is closed!"));
     }
 }
