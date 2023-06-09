@@ -22,6 +22,7 @@ using Equinor.ProCoSys.Common.Caches;
 using Equinor.ProCoSys.Common.Email;
 using Equinor.ProCoSys.Common.Telemetry;
 using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators;
 using Equinor.ProCoSys.PCS5.WebApi.Controllers;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.DIModules;
@@ -71,6 +72,7 @@ public static class ApplicationModule
         services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
         services.AddScoped<IProjectApiService, MainApiProjectService>();
 
+        services.AddScoped<IProjectValidator, ProjectValidator>();
         services.AddScoped<IFooValidator, FooValidator>();
         services.AddScoped<IRowVersionValidator, RowVersionValidator>();
 
