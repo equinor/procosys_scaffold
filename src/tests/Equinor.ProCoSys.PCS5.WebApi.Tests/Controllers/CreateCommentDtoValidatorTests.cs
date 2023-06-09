@@ -5,15 +5,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Controllers;
 
 [TestClass]
-public class CreateLinkDtoValidatorTests
+public class CreateCommentDtoValidatorTests
 {
-    private readonly CreateLinkDtoValidator _dut = new();
+    private readonly CreateCommentDtoValidator _dut = new();
 
     [TestMethod]
     public async Task Validate_ShouldBeValid_WhenOkState()
     {
         // Arrange
-        var dto = new CreateLinkDto { Title = "New title", Url = "U" };
+        var dto = new CreateCommentDto { Text = "New text" };
 
         // Act
         var result = await _dut.ValidateAsync(dto);
@@ -23,10 +23,10 @@ public class CreateLinkDtoValidatorTests
     }
 
     [TestMethod]
-    public async Task Validate_ShouldFail_WhenTitleNotGiven()
+    public async Task Validate_ShouldFail_WhenTextNotGiven()
     {
         // Arrange
-        var dto = new CreateLinkDto { Url = "U"};
+        var dto = new CreateCommentDto();
 
         // Act
         var result = await _dut.ValidateAsync(dto);
@@ -34,17 +34,17 @@ public class CreateLinkDtoValidatorTests
         // Assert
         Assert.IsFalse(result.IsValid);
         Assert.AreEqual(1, result.Errors.Count);
-        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("'Title' must not be empty."));
+        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("'Text' must not be empty."));
     }
 
     [TestMethod]
-    public async Task Validate_ShouldFail_WhenTitleIsTooLongAsync()
+    public async Task Validate_ShouldFail_WhenTextIsTooLongAsync()
     {
         // Arrange
-        var dto = new CreateLinkDto
+        var dto = new CreateCommentDto
         {
-            Title = new string('x', Domain.AggregateModels.LinkAggregate.Link.TitleLengthMax + 1),
-            Url = "U"
+            Text = new string('x', Domain.AggregateModels.CommentAggregate.Comment.TextLengthMax + 1),
+            
         };
 
         // Act
@@ -53,40 +53,6 @@ public class CreateLinkDtoValidatorTests
         // Assert
         Assert.IsFalse(result.IsValid);
         Assert.AreEqual(1, result.Errors.Count);
-        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("The length of 'Title' must be"));
-    }
-
-    [TestMethod]
-    public async Task Validate_ShouldFail_WhenUrlNotGiven()
-    {
-        // Arrange
-        var dto = new CreateLinkDto { Title = "New title"};
-
-        // Act
-        var result = await _dut.ValidateAsync(dto);
-
-        // Assert
-        Assert.IsFalse(result.IsValid);
-        Assert.AreEqual(1, result.Errors.Count);
-        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("'Url' must not be empty."));
-    }
-
-    [TestMethod]
-    public async Task Validate_ShouldFail_WhenUrlIsTooLongAsync()
-    {
-        // Arrange
-        var dto = new CreateLinkDto
-        {
-            Title = "New title",
-            Url = new string('x', Domain.AggregateModels.LinkAggregate.Link.UrlLengthMax + 1)
-        };
-
-        // Act
-        var result = await _dut.ValidateAsync(dto);
-
-        // Assert
-        Assert.IsFalse(result.IsValid);
-        Assert.AreEqual(1, result.Errors.Count);
-        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("The length of 'Url' must be"));
+        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("The length of 'Text' must be"));
     }
 }

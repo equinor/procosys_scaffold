@@ -13,8 +13,10 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooComment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooComments;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations;
 
@@ -90,7 +92,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnDeleteFooCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new DeleteFooCommand(_fooGuidWithAccessToProject, null);
+        var command = new DeleteFooCommand(_fooGuidWithAccessToProject, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -103,7 +105,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnDeleteFooCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new DeleteFooCommand(_fooGuidWithoutAccessToProject, null);
+        var command = new DeleteFooCommand(_fooGuidWithoutAccessToProject, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -118,7 +120,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnUpdateFooCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new UpdateFooCommand(_fooGuidWithAccessToProject, null, null, null);
+        var command = new UpdateFooCommand(_fooGuidWithAccessToProject, null!, null!, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -131,7 +133,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnUpdateFooCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new UpdateFooCommand(_fooGuidWithoutAccessToProject, null, null, null);
+        var command = new UpdateFooCommand(_fooGuidWithoutAccessToProject, null!, null!, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -146,7 +148,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnVoidFooCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new VoidFooCommand(_fooGuidWithAccessToProject, null);
+        var command = new VoidFooCommand(_fooGuidWithAccessToProject, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -159,7 +161,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnVoidFooCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new VoidFooCommand(_fooGuidWithoutAccessToProject, null);
+        var command = new VoidFooCommand(_fooGuidWithoutAccessToProject, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -174,7 +176,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnCreateFooLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new CreateFooLinkCommand(_fooGuidWithAccessToProject, null, null);
+        var command = new CreateFooLinkCommand(_fooGuidWithAccessToProject, null!, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -187,7 +189,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnCreateFooLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new CreateFooLinkCommand(_fooGuidWithoutAccessToProject, null, null);
+        var command = new CreateFooLinkCommand(_fooGuidWithoutAccessToProject, null!, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -202,7 +204,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnUpdateFooLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new UpdateFooLinkCommand(_fooGuidWithAccessToProject, Guid.Empty, null, null, null);
+        var command = new UpdateFooLinkCommand(_fooGuidWithAccessToProject, Guid.Empty, null!, null!, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -215,7 +217,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnUpdateFooLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new UpdateFooLinkCommand(_fooGuidWithoutAccessToProject, Guid.Empty, null, null, null);
+        var command = new UpdateFooLinkCommand(_fooGuidWithoutAccessToProject, Guid.Empty, null!, null!, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -230,7 +232,7 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnDeleteFooLinkCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = new DeleteFooLinkCommand(_fooGuidWithAccessToProject, Guid.Empty, null);
+        var command = new DeleteFooLinkCommand(_fooGuidWithAccessToProject, Guid.Empty, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -243,7 +245,35 @@ public class AccessValidatorTests
     public async Task ValidateAsync_OnDeleteFooLinkCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = new DeleteFooLinkCommand(_fooGuidWithoutAccessToProject, Guid.Empty, null);
+        var command = new DeleteFooLinkCommand(_fooGuidWithoutAccessToProject, Guid.Empty, null!);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region CreateFooCommentCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnCreateFooCommentCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new CreateFooCommentCommand(_fooGuidWithAccessToProject, null!);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnCreateFooCommentCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new CreateFooCommentCommand(_fooGuidWithoutAccessToProject, null!);
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -285,7 +315,6 @@ public class AccessValidatorTests
     }
     #endregion
 
-
     #region GetFooLinksQuery
     [TestMethod]
     public async Task ValidateAsync_OnGetFooLinksQuery_ShouldReturnTrue_WhenAccessToProject()
@@ -305,6 +334,34 @@ public class AccessValidatorTests
     {
         // Arrange
         var query = new GetFooLinksQuery(_fooGuidWithoutAccessToProject);
+
+        // act
+        var result = await _dut.ValidateAsync(query);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region GetFooCommentsQuery
+    [TestMethod]
+    public async Task ValidateAsync_OnGetFooCommentsQuery_ShouldReturnTrue_WhenAccessToProject()
+    {
+        // Arrange
+        var query = new GetFooCommentsQuery(_fooGuidWithAccessToProject);
+
+        // act
+        var result = await _dut.ValidateAsync(query);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnGetFooCommentsQuery_ShouldReturnFalse_WhenNoAccessToProject()
+    {
+        // Arrange
+        var query = new GetFooCommentsQuery(_fooGuidWithoutAccessToProject);
 
         // act
         var result = await _dut.ValidateAsync(query);
