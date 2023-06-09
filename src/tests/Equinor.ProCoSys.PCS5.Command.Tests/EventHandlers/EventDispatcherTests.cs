@@ -17,11 +17,11 @@ public class EventDispatcherTests
     {
         var mediator = new Mock<IMediator>();
         var dut = new EventDispatcher(mediator.Object);
-        var entities = new List<TestableEntityBase>();
+        var entities = new List<TestableEntity>();
 
         for (var i = 0; i < 3; i++)
         {
-            var entity = new Mock<TestableEntityBase>();
+            var entity = new Mock<TestableEntity>();
             entity.Object.AddDomainEvent(new TestableDomainEvent());
             entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
@@ -40,11 +40,11 @@ public class EventDispatcherTests
     {
         var mediator = new Mock<IMediator>();
         var dut = new EventDispatcher(mediator.Object);
-        var entities = new List<TestableEntityBase>();
+        var entities = new List<TestableEntity>();
 
         for (var i = 0; i < 3; i++)
         {
-            var entity = new Mock<TestableEntityBase>();
+            var entity = new Mock<TestableEntity>();
             entity.Object.AddDomainEvent(new TestableDomainEvent());
             entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
@@ -60,7 +60,7 @@ public class EventDispatcherTests
 }
 
 // The base classes are abstract, therefor sub classes needed to test it.
-public class TestableEntityBase : EntityBase
+public class TestableEntity : EntityBase
 {
 }
 

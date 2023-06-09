@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 
-public abstract class RepositoryBaseWithGuid<TEntity> : RepositoryBase<TEntity> where TEntity : EntityBase, IAggregateRoot, IHaveGuid
+public abstract class EntityWithGuidRepository<TEntity> : EntityRepository<TEntity> where TEntity : EntityBase, IAggregateRoot, IHaveGuid
 {
-    protected RepositoryBaseWithGuid(PCS5Context context, DbSet<TEntity> set)
+    protected EntityWithGuidRepository(PCS5Context context, DbSet<TEntity> set)
         : this(context, set, set)
     {
     }
 
-    protected RepositoryBaseWithGuid(PCS5Context context, DbSet<TEntity> set, IQueryable<TEntity> defaultQuery)
+    protected EntityWithGuidRepository(PCS5Context context, DbSet<TEntity> set, IQueryable<TEntity> defaultQuery)
     : base(context, set, defaultQuery)
     {
     }

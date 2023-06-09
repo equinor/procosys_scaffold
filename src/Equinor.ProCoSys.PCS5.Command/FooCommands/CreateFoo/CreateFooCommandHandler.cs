@@ -55,7 +55,7 @@ public class CreateFooCommandHandler : IRequestHandler<CreateFooCommand, Result<
     }
 
     private async Task<Project> GetOrCreateProjectAsync(CreateFooCommand request, CancellationToken cancellationToken) 
-        => await _projectRepository.GetProjectOnlyByNameAsync(request.ProjectName) ?? await AddProjectAsync(request, cancellationToken);
+        => await _projectRepository.TryGetProjectByNameAsync(request.ProjectName) ?? await AddProjectAsync(request, cancellationToken);
 
     private async Task<Project> AddProjectAsync(CreateFooCommand request, CancellationToken cancellationToken)
     {

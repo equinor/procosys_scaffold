@@ -7,18 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 
-public abstract class RepositoryBase<TEntity> : Domain.IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
+public abstract class EntityRepository<TEntity> : Domain.IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
 {
     protected readonly PCS5Context Context;
     protected readonly DbSet<TEntity> Set;
     protected readonly IQueryable<TEntity> DefaultQuery;
 
-    protected RepositoryBase(PCS5Context context, DbSet<TEntity> set)
+    protected EntityRepository(PCS5Context context, DbSet<TEntity> set)
         : this(context, set, set)
     {
     }
 
-    protected RepositoryBase(PCS5Context context, DbSet<TEntity> set, IQueryable<TEntity> defaultQuery)
+    protected EntityRepository(PCS5Context context, DbSet<TEntity> set, IQueryable<TEntity> defaultQuery)
     {
         Context = context;
         Set = set;

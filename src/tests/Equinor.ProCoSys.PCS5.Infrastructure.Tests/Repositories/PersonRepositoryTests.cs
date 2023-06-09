@@ -1,107 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
-using Moq;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Tests.Repositories;
 
 [TestClass]
-public class PersonRepositoryTests : RepositoryTestBase
+public class PersonRepositoryTests : EntityWithGuidRepositoryTestBase<Person>
 {
-    private readonly int _personId = 5;
-    private List<Person> _persons;
-    private Mock<DbSet<Person>> _dbPersonSetMock;
-
-    private PersonRepository _dut;
-    private Person _person;
-
-    [TestInitialize]
-    public void Setup()
+    protected override void SetupRepositoryWithOneKnownItem()
     {
-        _person = new Person(
-            new Guid("11111111-1111-2222-2222-333333333333"),
+        var person = new Person(
+            Guid.NewGuid(), 
             "FirstName",
             "LastName",
             "UNAME",
             "email@test.com");
-        _person.SetProtectedIdForTesting(_personId);
+        _knownGuid = person.Guid;
+        person.SetProtectedIdForTesting(_knownId);
 
-        _persons = new List<Person>
+        var persons = new List<Person>
         {
-            _person
+            person
         };
 
-        _dbPersonSetMock = _persons.AsQueryable().BuildMockDbSet();
+        _dbSetMock = persons.AsQueryable().BuildMockDbSet();
 
-        ContextHelper
+        _contextHelper
             .ContextMock
             .Setup(x => x.Persons)
-            .Returns(_dbPersonSetMock.Object);
+            .Returns(_dbSetMock.Object);
 
-        _dut = new PersonRepository(ContextHelper.ContextMock.Object);
+        _dut = new PersonRepository(_contextHelper.ContextMock.Object);
     }
 
-    [TestMethod]
-    public async Task GetAll_ShouldReturnAllItems()
-    {
-        var result = await _dut.GetAllAsync();
-
-        Assert.AreEqual(1, result.Count);
-    }
-
-    [TestMethod]
-    public async Task GetByIds_UnknownId_ShouldReturnEmptyList()
-    {
-        var result = await _dut.GetByIdsAsync(new List<int> { 1234 });
-
-        Assert.AreEqual(0, result.Count);
-    }
-
-    [TestMethod]
-    public async Task Exists_KnownId_ShouldReturnTrue()
-    {
-        var result = await _dut.Exists(_personId);
-
-        Assert.IsTrue(result);
-    }
-
-    [TestMethod]
-    public async Task Exists_UnknownId_ShouldReturnFalse()
-    {
-        var result = await _dut.Exists(1234);
-
-        Assert.IsFalse(result);
-    }
-
-    [TestMethod]
-    public async Task GetById_KnownId_ShouldReturnPerson()
-    {
-        var result = await _dut.TryGetByIdAsync(_personId);
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(_personId, result.Id);
-    }
-
-    [TestMethod]
-    public async Task GetById_UnknownId_ShouldReturnNull()
-    {
-        var result = await _dut.TryGetByIdAsync(1234);
-
-        Assert.IsNull(result);
-    }
-
-    [TestMethod]
-    public void Add_Person_ShouldCallAdd()
-    {
-        _dut.Add(_person);
-
-        _dbPersonSetMock.Verify(x => x.Add(_person), Times.Once);
-    }
+    protected override Person GetNewEntity() => new (Guid.NewGuid(), "New", "Person", "NP", "@");
 }

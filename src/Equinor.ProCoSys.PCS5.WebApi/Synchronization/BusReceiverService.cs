@@ -23,7 +23,7 @@ public class BusReceiverService : IBusReceiverService
     private readonly IMainApiAuthenticator _mainApiAuthenticator;
     private readonly ICurrentUserSetter _currentUserSetter;
     private readonly IProjectRepository _projectRepository;
-    private readonly Guid _fooApiOid;
+    private readonly Guid _fooApiObjectid;
     private readonly string _fooBusReceiverTelemetryEvent = "FOO Bus Receiver";
 
     public BusReceiverService(
@@ -41,13 +41,13 @@ public class BusReceiverService : IBusReceiverService
         _mainApiAuthenticator = mainApiAuthenticator;
         _currentUserSetter = currentUserSetter;
         _projectRepository = projectRepository;
-        _fooApiOid =  options.Value.PCS5ApiObjectId;
+        _fooApiObjectid =  options.Value.PCS5ApiObjectId;
     }
 
     public async Task ProcessMessageAsync(string pcsTopic, string messageJson, CancellationToken cancellationToken)
     {
         // >> next 2 lines needed if processing messages lead to requests to foreign api's
-        _currentUserSetter.SetCurrentUserOid(_fooApiOid);
+        _currentUserSetter.SetCurrentUserOid(_fooApiObjectid);
         _mainApiAuthenticator.AuthenticationType = AuthenticationType.AsApplication;
         // <<
 
@@ -69,7 +69,7 @@ public class BusReceiverService : IBusReceiverService
             TrackDeleteEvent("Project", projectEvent.ProCoSysGuid, false);
             return;
         }
-        if (projectEvent == null || projectEvent.Plant.IsEmpty() || projectEvent.ProjectName.IsEmpty())
+        if (projectEvent == null || projectEvent.Plant.IsEmpty())
         {
             throw new ArgumentNullException($"Deserialized JSON is not a valid ProjectEvent {messageJson}");
         }
@@ -78,11 +78,12 @@ public class BusReceiverService : IBusReceiverService
 
         _plantSetter.SetPlant(projectEvent.Plant);
 
-        var project = await _projectRepository.GetProjectOnlyByNameAsync(projectEvent.ProjectName);
+        var project = await _projectRepository.TryGetByGuidAsync(projectEvent.ProCoSysGuid);
         if (project != null)
         {
             if (!string.IsNullOrEmpty(projectEvent.Description))
             {
+                project.Name = projectEvent.ProjectName;
                 project.Description = projectEvent.Description;
             }
             project.IsClosed = projectEvent.IsClosed;

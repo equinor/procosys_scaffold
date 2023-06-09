@@ -2,7 +2,7 @@
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 
-public class FooRepository : RepositoryBaseWithGuid<Foo>, IFooRepository
+public class FooRepository : EntityWithGuidRepository<Foo>, IFooRepository
 {
     public FooRepository(PCS5Context context)
         : base(context, context.Foos)

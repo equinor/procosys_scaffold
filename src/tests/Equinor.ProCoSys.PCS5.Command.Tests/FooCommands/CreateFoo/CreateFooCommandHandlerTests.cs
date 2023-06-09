@@ -95,7 +95,7 @@ public class CreateFooCommandHandlerTests : TestsBase
         var project = new Project(TestPlantA, Guid.NewGuid(), _projectName, "");
         var projectIdOnExisting = 10;
         project.SetProtectedIdForTesting(projectIdOnExisting);
-        _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
+        _projectRepositoryMock.Setup(r => r.TryGetProjectByNameAsync(_projectName)).ReturnsAsync(project);
         // Act
         await _dut.Handle(_command, default);
 
@@ -122,7 +122,7 @@ public class CreateFooCommandHandlerTests : TestsBase
     {
         // Arrange
         var project = new Project(TestPlantA, Guid.NewGuid(), _projectName, "");
-        _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
+        _projectRepositoryMock.Setup(r => r.TryGetProjectByNameAsync(_projectName)).ReturnsAsync(project);
 
         // Act
         await _dut.Handle(_command, default);
@@ -136,7 +136,7 @@ public class CreateFooCommandHandlerTests : TestsBase
     {
         // Arrange
         var project = new Project(TestPlantA, Guid.NewGuid(), _projectName, "");
-        _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
+        _projectRepositoryMock.Setup(r => r.TryGetProjectByNameAsync(_projectName)).ReturnsAsync(project);
 
         // Act
         await _dut.Handle(_command, default);
