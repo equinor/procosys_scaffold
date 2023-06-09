@@ -136,6 +136,33 @@ public static class FoosControllerTestsHelper
         return JsonConvert.DeserializeObject<GuidAndRowVersion>(jsonString);
     }
 
+    public static async Task<GuidAndRowVersion> CreateFooCommentAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        string text,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
+        {
+            text
+        };
+
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var content = new StringContent(serializePayload, Encoding.UTF8, "application/json");
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PostAsync($"{_route}/{guid}/Comments", content);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<GuidAndRowVersion>(jsonString);
+    }
+
     public static async Task<string> UpdateFooAsync(
         UserType userType,
         string plant,
@@ -269,5 +296,25 @@ public static class FoosControllerTestsHelper
 
         var response = await TestFactory.Instance.GetHttpClient(userType, plant).SendAsync(request);
         await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+    }
+
+    public static async Task<List<CommentDto>> GetFooCommentsAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{guid}/Comments");
+
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (expectedStatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<List<CommentDto>>(content);
     }
 }

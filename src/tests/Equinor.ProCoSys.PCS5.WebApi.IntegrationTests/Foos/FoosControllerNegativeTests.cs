@@ -657,4 +657,106 @@ public class FoosControllerNegativeTests : TestBase
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
     #endregion
+
+    #region CreateFooComment
+    [TestMethod]
+    public async Task CreateFooComment_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task CreateFooComment_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task CreateFooComment_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task CreateFooComment_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task CreateFooComment_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task CreateFooComment_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region GetFooComments
+    [TestMethod]
+    public async Task GetFooComments_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task GetFooComments_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooComments_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooComments_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task GetFooComments_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+    #endregion
 }

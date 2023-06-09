@@ -19,7 +19,7 @@ public class FoosControllerTests : TestBase
     {
         _fooGuidUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAGuid;
         _initialFoosInProject = await FoosControllerTestsHelper
-            .GetAllFoosInProjectAsync(UserType.Writer, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
+            .GetAllFoosInProjectAsync(UserType.Reader, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
     }
 
     [TestMethod]
@@ -50,11 +50,11 @@ public class FoosControllerTests : TestBase
     }
 
     [TestMethod]
-    public async Task GetFoo_AsWriter_ShouldGetFoo()
+    public async Task GetFoo_AsReader_ShouldGetFoo()
     {
         // Act
         var foo = await FoosControllerTestsHelper
-            .GetFooAsync(UserType.Writer, TestFactory.PlantWithAccess, _fooGuidUnderTest);
+            .GetFooAsync(UserType.Reader, TestFactory.PlantWithAccess, _fooGuidUnderTest);
 
         // Assert
         Assert.AreEqual(_fooGuidUnderTest, foo.Guid);
@@ -62,11 +62,11 @@ public class FoosControllerTests : TestBase
     }
 
     [TestMethod]
-    public async Task GetAllFoos_AsWriter_ShouldGetAllFoos()
+    public async Task GetAllFoos_AsReader_ShouldGetAllFoos()
     {
         // Act
         var foos = await FoosControllerTestsHelper
-            .GetAllFoosInProjectAsync(UserType.Writer, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
+            .GetAllFoosInProjectAsync(UserType.Reader, TestFactory.PlantWithAccess, TestFactory.ProjectWithAccess);
 
         // Assert
         Assert.IsTrue(foos.Count > 0);
@@ -165,7 +165,7 @@ public class FoosControllerTests : TestBase
     }
 
     [TestMethod]
-    public async Task GetFooLinksAsync_AsWriter_ShouldGetFooLinks()
+    public async Task GetFooLinksAsync_AsReader_ShouldGetFooLinks()
     {
         // Arrange and Act
         var title = Guid.NewGuid().ToString();
@@ -174,12 +174,12 @@ public class FoosControllerTests : TestBase
 
         // Act
         var links = await FoosControllerTestsHelper.GetFooLinksAsync(
-            UserType.Writer,
+            UserType.Reader,
             TestFactory.PlantWithAccess,
             fooGuidAndRowVersion.Guid);
 
         // Assert
-        AssertFirstLink(
+        AssertFirstAndOnlyLink(
             fooGuidAndRowVersion.Guid,
             linkGuidAndRowVersion.Guid,
             linkGuidAndRowVersion.RowVersion,
@@ -214,7 +214,7 @@ public class FoosControllerTests : TestBase
             fooGuidAndRowVersion.Guid);
 
         AssertRowVersionChange(linkGuidAndRowVersion.RowVersion, newRowVersion);
-        AssertFirstLink(
+        AssertFirstAndOnlyLink(
             fooGuidAndRowVersion.Guid,
             linkGuidAndRowVersion.Guid,
             newRowVersion,
@@ -250,9 +250,40 @@ public class FoosControllerTests : TestBase
         Assert.AreEqual(0, links.Count);
     }
 
-    private async Task<(GuidAndRowVersion fooGuidAndRowVersion, GuidAndRowVersion linkGuidAndRowVersion)> CreateFooLinkAsync(
-        string title,
-        string url)
+    [TestMethod]
+    public async Task CreateFooComment_AsWriter_ShouldCreateFooComment()
+    {
+        // Arrange and Act
+        var (_, commentGuidAndRowVersion)
+            = await CreateFooCommentAsync(Guid.NewGuid().ToString());
+
+        // Assert
+        AssertValidGuidAndRowVersion(commentGuidAndRowVersion);
+    }
+
+    [TestMethod]
+    public async Task GetFooCommentsAsync_AsReader_ShouldGetFooComments()
+    {
+        // Arrange and Act
+        var text = Guid.NewGuid().ToString();
+        var (fooGuidAndRowVersion, commentGuidAndRowVersion) = await CreateFooCommentAsync(text);
+
+        // Act
+        var comments = await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+
+        // Assert
+        AssertFirstAndOnlyComment(
+            fooGuidAndRowVersion.Guid,
+            commentGuidAndRowVersion.Guid,
+            text,
+            comments);
+    }
+
+    private async Task<(GuidAndRowVersion fooGuidAndRowVersion, GuidAndRowVersion linkGuidAndRowVersion)>
+        CreateFooLinkAsync(string title, string url)
     {
         var fooGuidAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
             UserType.Writer,
@@ -270,7 +301,25 @@ public class FoosControllerTests : TestBase
         return (fooGuidAndRowVersion, linkGuidAndRowVersion);
     }
 
-    private static void AssertFirstLink(
+    private async Task<(GuidAndRowVersion fooGuidAndRowVersion, GuidAndRowVersion commentGuidAndRowVersion)>
+        CreateFooCommentAsync(string text)
+    {
+        var fooGuidAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            Guid.NewGuid().ToString(),
+            TestFactory.ProjectWithAccess);
+
+        var commentGuidAndRowVersion = await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid,
+            text);
+
+        return (fooGuidAndRowVersion, commentGuidAndRowVersion);
+    }
+
+    private static void AssertFirstAndOnlyLink(
         Guid fooGuid,
         Guid linkGuid,
         string linkRowVersion,
@@ -280,11 +329,25 @@ public class FoosControllerTests : TestBase
     {
         Assert.IsNotNull(links);
         Assert.AreEqual(1, links.Count);
-        var newLink = links[0];
-        Assert.AreEqual(fooGuid, newLink.SourceGuid);
-        Assert.AreEqual(linkGuid, newLink.Guid);
-        Assert.AreEqual(linkRowVersion, newLink.RowVersion);
-        Assert.AreEqual(title, newLink.Title);
-        Assert.AreEqual(url, newLink.Url);
+        var link = links[0];
+        Assert.AreEqual(fooGuid, link.SourceGuid);
+        Assert.AreEqual(linkGuid, link.Guid);
+        Assert.AreEqual(linkRowVersion, link.RowVersion);
+        Assert.AreEqual(title, link.Title);
+        Assert.AreEqual(url, link.Url);
+    }
+
+    private static void AssertFirstAndOnlyComment(
+        Guid fooGuid,
+        Guid commentGuid,
+        string text,
+        List<CommentDto> comments)
+    {
+        Assert.IsNotNull(comments);
+        Assert.AreEqual(1, comments.Count);
+        var comment = comments[0];
+        Assert.AreEqual(fooGuid, comment.SourceGuid);
+        Assert.AreEqual(commentGuid, comment.Guid);
+        Assert.AreEqual(text, comment.Text);
     }
 }

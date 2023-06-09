@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
+namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests;
 
 public class LinkDto
 {

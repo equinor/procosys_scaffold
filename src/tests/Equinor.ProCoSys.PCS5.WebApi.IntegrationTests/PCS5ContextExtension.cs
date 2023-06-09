@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Equinor.ProCoSys.Common.Misc;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
@@ -60,6 +61,9 @@ public static class PCS5ContextExtension
 
         var link = SeedLink(dbContext, "Foo", foo.Guid, "VG", "www.vg.no");
         knownTestData.LinkInFooAGuid = link.Guid;
+
+        var comment = SeedComment(dbContext, "Foo", foo.Guid, "Comment");
+        knownTestData.CommentInFooAGuid = comment.Guid;
     }
 
     private static void EnsureCurrentUserIsSeeded(PCS5Context dbContext, ICurrentUserProvider userProvider)
@@ -105,10 +109,19 @@ public static class PCS5ContextExtension
 
     private static Link SeedLink(PCS5Context dbContext, string sourceType, Guid sourceGuid, string title, string url)
     {
-        var linkRepository = new LinkRepository(dbContext); 
+        var linkRepository = new LinkRepository(dbContext);
         var link = new Link(sourceType, sourceGuid, title, url);
         linkRepository.Add(link);
         dbContext.SaveChangesAsync().Wait();
         return link;
+    }
+
+    private static Comment SeedComment(PCS5Context dbContext, string sourceType, Guid sourceGuid, string text)
+    {
+        var commentRepository = new CommentRepository(dbContext);
+        var comment = new Comment(sourceType, sourceGuid, text);
+        commentRepository.Add(comment);
+        dbContext.SaveChangesAsync().Wait();
+        return comment;
     }
 }

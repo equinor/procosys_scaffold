@@ -20,4 +20,5 @@ public class KnownTestData
     public Guid FooAGuid { get; set; }
     public Guid FooBGuid { get; set; }
     public Guid LinkInFooAGuid { get; set; }
+    public Guid CommentInFooAGuid { get; set; }
 }
