@@ -43,8 +43,10 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
         var query = new GetFooQuery(Guid.Empty);
         var dut = new GetFooQueryHandler(context);
 
+        // Act
         var result = await dut.Handle(query, default);
 
+        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(ResultType.NotFound, result.ResultType);
         Assert.IsNull(result.Data);
@@ -53,13 +55,16 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
     [TestMethod]
     public async Task Handler_ShouldReturnCorrectCreatedFoo()
     {
+        // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         var query = new GetFooQuery(_createdFooGuid);
         var dut = new GetFooQueryHandler(context);
 
+        // Act
         var result = await dut.Handle(query, default);
 
+        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(ResultType.Ok, result.ResultType);
 
@@ -72,13 +77,16 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
     [TestMethod]
     public async Task Handler_ShouldReturnCorrectModifiedFoo()
     {
+        // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
         var query = new GetFooQuery(_modifiedFooGuid);
         var dut = new GetFooQueryHandler(context);
 
+        // Act
         var result = await dut.Handle(query, default);
 
+        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(ResultType.Ok, result.ResultType);
 

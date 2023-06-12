@@ -12,10 +12,14 @@ public class CreateFooCommandValidator : AbstractValidator<CreateFooCommand>
         RuleLevelCascadeMode = CascadeMode.Stop;
         ClassLevelCascadeMode = CascadeMode.Stop;
 
-        // todo add rule to also check that project exists ... all projects must be synced in front
         RuleFor(command => command)
+            .MustAsync(BeAnExistingProjectAsync)
+            .WithMessage(command => $"Project with this name does not exist! Guid={command.ProjectName}")
             .MustAsync(NotBeAClosedProjectAsync)
             .WithMessage("Project is closed!");
+
+        async Task<bool> BeAnExistingProjectAsync(CreateFooCommand command, CancellationToken token)
+            => await projectValidator.ExistsAsync(command.ProjectName, token);
 
         async Task<bool> NotBeAClosedProjectAsync(CreateFooCommand command, CancellationToken token)
             => !await projectValidator.IsClosed(command.ProjectName, token);

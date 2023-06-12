@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.Auth.Permission;
 using Equinor.ProCoSys.Auth.Person;
 using Equinor.ProCoSys.Common.Misc;
-using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,7 +32,6 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
     private readonly List<IDisposable> _disposables = new();
 
     private readonly Mock<IPersonApiService> _personApiServiceMock = new();
-    private readonly Mock<IProjectApiService> _projectApiServiceMock = new();
     private readonly Mock<IPermissionApiService> _permissionApiServiceMock = new();
 
     public static string PlantWithAccess => KnownPlantData.PlantA;
@@ -134,7 +132,6 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
                 jwtBearerOptions.ForwardAuthenticate = IntegrationTestAuthHandler.TestAuthenticationScheme);
 
             services.AddScoped(_ => _personApiServiceMock.Object);
-            services.AddScoped(_ => _projectApiServiceMock.Object);
             services.AddScoped(_ => _permissionApiServiceMock.Object);
         });
 

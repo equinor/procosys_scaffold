@@ -19,13 +19,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Equinor.ProCoSys.Auth" Version="1.0.1" />
     <PackageReference Include="FluentValidation" Version="11.5.1" />
     <PackageReference Include="ServiceResult" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Domain\Equinor.ProCoSys.PCS5.Domain.csproj" />
-    <ProjectReference Include="..\Equinor.ProCoSys.PCS5.ForeignApi\Equinor.ProCoSys.PCS5.ForeignApi.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
-﻿namespace Equinor.ProCoSys.PCS5.Query.GetProjectsInPlant;
+﻿namespace Equinor.ProCoSys.PCS5.Query.Projects.GetOpenProjects;
 
-public class ProCoSysProjectDto
+public class ProjectDto
 {
-    public ProCoSysProjectDto(
+    public ProjectDto(
         int id,
         string name,
         string description)

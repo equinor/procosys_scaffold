@@ -19,6 +19,8 @@ public class CreateFooCommandValidatorTests
     public void Setup_OkState()
     {
         _projectValidatorMock = new Mock<IProjectValidator>();
+        _projectValidatorMock.Setup(x => x.ExistsAsync(_projectName, default))
+            .ReturnsAsync(true);
         _command = new CreateFooCommand(_title, _projectName);
         _dut = new CreateFooCommandValidator(_projectValidatorMock.Object);
     }
@@ -31,6 +33,22 @@ public class CreateFooCommandValidatorTests
 
         // Assert
         Assert.IsTrue(result.IsValid);
+    }
+
+    [TestMethod]
+    public async Task Validate_ShouldFail_When_ProjectNotExists()
+    {
+        // Arrange
+        _projectValidatorMock.Setup(x => x.ExistsAsync(_projectName, default))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _dut.ValidateAsync(_command);
+
+        // Assert
+        Assert.IsFalse(result.IsValid);
+        Assert.AreEqual(1, result.Errors.Count);
+        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("Project with this name does not exist!"));
     }
 
     [TestMethod]

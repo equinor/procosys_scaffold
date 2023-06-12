@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Domain\Equinor.ProCoSys.PCS5.Domain.csproj" />
-    <ProjectReference Include="..\Equinor.ProCoSys.PCS5.ForeignApi\Equinor.ProCoSys.PCS5.ForeignApi.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Infrastructure\Equinor.ProCoSys.PCS5.Infrastructure.csproj" />
   </ItemGroup>
 
