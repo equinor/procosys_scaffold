@@ -94,7 +94,6 @@ public class BusReceiverService : IBusReceiverService
                 return;
             }
 
-            // todo add unit test
             project = new Project(
                 projectEvent.Plant,
                 projectEvent.ProCoSysGuid,
