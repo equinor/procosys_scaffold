@@ -9,8 +9,6 @@ using Equinor.ProCoSys.PCS5.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Equinor.ProCoSys.PCS5.WebApi.Synchronization;
-using Equinor.ProCoSys.PCS5.WebApi.Authentication;
-using Microsoft.Extensions.Options;
 using Equinor.ProCoSys.PcsServiceBus.Topics;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Synchronization;
@@ -21,10 +19,9 @@ public class BusReceiverServiceTests
     private BusReceiverService _dut;
     private Mock<IUnitOfWork> _unitOfWork;
     private Mock<IPlantSetter> _plantSetter;
-    private Mock<ITelemetryClient> _telemetryClient;
     private Mock<IProjectRepository> _projectRepository;
     private readonly string _plant = "Plant";
-    private readonly Guid _projectProCoSysGuid = Guid.NewGuid();
+    private readonly Guid _projectGuid = Guid.NewGuid();
     private Project _project1;
     private Project _projectedAddedToRepository;
 
@@ -33,10 +30,9 @@ public class BusReceiverServiceTests
     {
         _plantSetter = new Mock<IPlantSetter>();
         _unitOfWork = new Mock<IUnitOfWork>();
-        _telemetryClient = new Mock<ITelemetryClient>();
-        _project1 = new Project(_plant, _projectProCoSysGuid, Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+        _project1 = new Project(_plant, _projectGuid, Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
         _projectRepository = new Mock<IProjectRepository>();
-        _projectRepository.Setup(p => p.TryGetByGuidAsync(_projectProCoSysGuid))
+        _projectRepository.Setup(p => p.TryGetByGuidAsync(_projectGuid))
             .ReturnsAsync(_project1);
         _projectRepository
             .Setup(x => x.Add(It.IsAny<Project>()))
@@ -45,15 +41,11 @@ public class BusReceiverServiceTests
                 _projectedAddedToRepository = project;
             });
 
-        var options = new Mock<IOptionsSnapshot<PCS5AuthenticatorOptions>>();
-        options.Setup(s => s.Value).Returns(new PCS5AuthenticatorOptions { PCS5ApiObjectId = Guid.NewGuid() });
-
         _dut = new BusReceiverService(
             _plantSetter.Object,
             _unitOfWork.Object,
-            _telemetryClient.Object,
+            new Mock<ITelemetryClient>().Object,
             _projectRepository.Object);
-
     }
 
     #region Project
@@ -68,7 +60,7 @@ public class BusReceiverServiceTests
             Description = Guid.NewGuid().ToString(),
             IsClosed = true,
             Plant = _plant,
-            ProCoSysGuid = _projectProCoSysGuid
+            ProCoSysGuid = _projectGuid
         };
         var messageJson = JsonSerializer.Serialize(message);
         Assert.IsFalse(_project1.IsClosed);
@@ -79,7 +71,7 @@ public class BusReceiverServiceTests
         // Assert
         _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _plantSetter.Verify(p => p.SetPlant(_plant), Times.Once);
-        _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectProCoSysGuid), Times.Once);
+        _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectGuid), Times.Once);
         Assert.AreEqual(message.ProjectName, _project1.Name);
         Assert.AreEqual(message.Description, _project1.Description);
         Assert.IsTrue(_project1.IsClosed);
@@ -95,10 +87,10 @@ public class BusReceiverServiceTests
             ProjectName = Guid.NewGuid().ToString(),
             Description = Guid.NewGuid().ToString(),
             Plant = _plant,
-            ProCoSysGuid = _projectProCoSysGuid
+            ProCoSysGuid = _projectGuid
         };
         var messageJson = JsonSerializer.Serialize(message);
-        _projectRepository.Setup(p => p.TryGetByGuidAsync(_projectProCoSysGuid))
+        _projectRepository.Setup(p => p.TryGetByGuidAsync(_projectGuid))
             .ReturnsAsync((Project)null);
         Assert.IsFalse(_project1.IsClosed);
 
@@ -108,7 +100,7 @@ public class BusReceiverServiceTests
         // Assert
         _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _plantSetter.Verify(p => p.SetPlant(_plant), Times.Once);
-        _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectProCoSysGuid), Times.Once);
+        _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectGuid), Times.Once);
         Assert.IsNotNull(_projectedAddedToRepository);
         Assert.AreEqual(message.ProCoSysGuid, _projectedAddedToRepository.Guid);
         Assert.AreEqual(message.ProjectName, _projectedAddedToRepository.Name);
@@ -124,7 +116,7 @@ public class BusReceiverServiceTests
         {
             Behavior = "delete",
             Plant = _plant,
-            ProCoSysGuid = _projectProCoSysGuid
+            ProCoSysGuid = _projectGuid
         };
         var messageJson = JsonSerializer.Serialize(message);
         Assert.IsFalse(_project1.IsClosed);
@@ -138,8 +130,7 @@ public class BusReceiverServiceTests
         // Assert
         _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _plantSetter.Verify(p => p.SetPlant(_plant), Times.Once);
-        _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectProCoSysGuid), Times.Once);
-        _plantSetter.Verify(p => p.SetPlant(_plant), Times.Once);
+        _projectRepository.Verify(i => i.TryGetByGuidAsync(_projectGuid), Times.Once);
         Assert.AreEqual(oldName, _project1.Name);
         Assert.AreEqual(oldDescription, _project1.Description);
         Assert.IsTrue(_project1.IsDeletedInSource);
@@ -157,7 +148,7 @@ public class BusReceiverServiceTests
             ProjectName = Guid.NewGuid().ToString(),
             Description = Guid.NewGuid().ToString(),
             IsClosed = true,
-            ProCoSysGuid = _projectProCoSysGuid
+            ProCoSysGuid = _projectGuid
         };
         var messageJson = JsonSerializer.Serialize(message);
 
