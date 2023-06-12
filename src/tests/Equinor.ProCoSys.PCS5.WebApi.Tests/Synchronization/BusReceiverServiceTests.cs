@@ -9,7 +9,6 @@ using Equinor.ProCoSys.PCS5.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Equinor.ProCoSys.PCS5.WebApi.Synchronization;
-using Equinor.ProCoSys.Auth.Authentication;
 using Equinor.ProCoSys.PCS5.WebApi.Authentication;
 using Microsoft.Extensions.Options;
 using Equinor.ProCoSys.PcsServiceBus.Topics;
@@ -23,7 +22,6 @@ public class BusReceiverServiceTests
     private Mock<IUnitOfWork> _unitOfWork;
     private Mock<IPlantSetter> _plantSetter;
     private Mock<ITelemetryClient> _telemetryClient;
-    private Mock<ICurrentUserSetter> _currentUserSetter;
     private Mock<IProjectRepository> _projectRepository;
     private readonly string _plant = "Plant";
     private readonly Guid _projectProCoSysGuid = Guid.NewGuid();
@@ -36,7 +34,6 @@ public class BusReceiverServiceTests
         _plantSetter = new Mock<IPlantSetter>();
         _unitOfWork = new Mock<IUnitOfWork>();
         _telemetryClient = new Mock<ITelemetryClient>();
-        _currentUserSetter = new Mock<ICurrentUserSetter>();
         _project1 = new Project(_plant, _projectProCoSysGuid, Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
         _projectRepository = new Mock<IProjectRepository>();
         _projectRepository.Setup(p => p.TryGetByGuidAsync(_projectProCoSysGuid))
@@ -51,12 +48,10 @@ public class BusReceiverServiceTests
         var options = new Mock<IOptionsSnapshot<PCS5AuthenticatorOptions>>();
         options.Setup(s => s.Value).Returns(new PCS5AuthenticatorOptions { PCS5ApiObjectId = Guid.NewGuid() });
 
-        _dut = new BusReceiverService(_plantSetter.Object,
+        _dut = new BusReceiverService(
+            _plantSetter.Object,
             _unitOfWork.Object,
             _telemetryClient.Object,
-            new Mock<IMainApiAuthenticator>().Object,
-            options.Object,
-            _currentUserSetter.Object,
             _projectRepository.Object);
 
     }
