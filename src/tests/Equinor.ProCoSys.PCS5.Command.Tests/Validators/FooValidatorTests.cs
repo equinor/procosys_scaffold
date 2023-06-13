@@ -30,7 +30,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
 
     #region FooExists
     [TestMethod]
-    public async Task FooExistsAsync_ExistingFoo_ReturnsTrue()
+    public async Task FooExists_ForExistingFoo_ShouldReturnTrue()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);            
@@ -44,7 +44,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task FooExistsAsync_NonExistingFoo_ReturnsFalse()
+    public async Task FooExists_ForNonExistingFoo_ShouldReturnFalse()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
@@ -60,7 +60,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
 
     #region FooIsVoided
     [TestMethod]
-    public async Task FooIsVoidedAsync_VoidedFoo_ReturnsTrue()
+    public async Task FooIsVoided_ForVoidedFoo_ShouldReturnTrue()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
@@ -74,14 +74,28 @@ public class FooValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task FooIsVoidedAsync_NonVoidedFoo_ReturnsFalse()
+    public async Task FooIsVoided_ForNonVoidedFoo_ShouldReturnFalse()
+    {
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
+        var dut = new FooValidator(context);
+
+        // Act
+        var result = await dut.FooExistsAsync(_nonVoidedFooGuid, default);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public async Task FooIsVoided_ForNonExistingFoo_ShouldReturnFalse()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);  
         var dut = new FooValidator(context);
 
         // Act
-        var result = await dut.FooExistsAsync(Guid.Empty, default);
+        var result = await dut.FooExistsAsync(Guid.NewGuid(), default);
 
         // Assert
         Assert.IsFalse(result);

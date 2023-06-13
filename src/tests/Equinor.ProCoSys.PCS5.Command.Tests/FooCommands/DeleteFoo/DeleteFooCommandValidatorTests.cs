@@ -11,23 +11,19 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.DeleteFoo;
 [TestClass]
 public class DeleteFooCommandValidatorTests
 {
-    private readonly Guid _fooGuid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    private readonly string _rowVersion = "AAAAAAAAABA=";
-
     private DeleteFooCommandValidator _dut;
     private Mock<IProjectValidator> _projectValidatorMock;
     private Mock<IFooValidator> _fooValidatorMock;
-
     private DeleteFooCommand _command;
 
     [TestInitialize]
     public void Setup_OkState()
     {
+        _command = new DeleteFooCommand(Guid.NewGuid(), "r");
         _projectValidatorMock = new Mock<IProjectValidator>();
         _fooValidatorMock = new Mock<IFooValidator>();
-        _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default)).ReturnsAsync(true);
-        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooGuid, default)).ReturnsAsync(true);
-        _command = new DeleteFooCommand(_fooGuid, _rowVersion);
+        _fooValidatorMock.Setup(x => x.FooExistsAsync(_command.FooGuid, default)).ReturnsAsync(true);
+        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_command.FooGuid, default)).ReturnsAsync(true);
 
         _dut = new DeleteFooCommandValidator(_projectValidatorMock.Object, _fooValidatorMock.Object);
     }
@@ -46,7 +42,7 @@ public class DeleteFooCommandValidatorTests
     public async Task Validate_ShouldFail_When_FooNotVoided()
     {
         // Arrange
-        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_fooGuid, default)).ReturnsAsync(false);
+        _fooValidatorMock.Setup(x => x.FooIsVoidedAsync(_command.FooGuid, default)).ReturnsAsync(false);
 
         // Act
         var result = await _dut.ValidateAsync(_command);
@@ -61,7 +57,7 @@ public class DeleteFooCommandValidatorTests
     public async Task Validate_ShouldFail_When_FooNotExists()
     {
         // Arrange
-        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_fooGuid, default))
+        _fooValidatorMock.Setup(inv => inv.FooExistsAsync(_command.FooGuid, default))
             .ReturnsAsync(false);
 
         // Act
@@ -77,7 +73,7 @@ public class DeleteFooCommandValidatorTests
     public async Task Validate_ShouldFail_When_ProjectIsClosed()
     {
         // Arrange
-        _projectValidatorMock.Setup(x => x.IsClosedForFoo(_fooGuid, default))
+        _projectValidatorMock.Setup(x => x.IsClosedForFoo(_command.FooGuid, default))
             .ReturnsAsync(true);
 
         // Act

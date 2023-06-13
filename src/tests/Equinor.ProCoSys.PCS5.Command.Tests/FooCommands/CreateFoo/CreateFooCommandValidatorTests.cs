@@ -12,16 +12,14 @@ public class CreateFooCommandValidatorTests
     private CreateFooCommandValidator _dut;
     private CreateFooCommand _command;
     private Mock<IProjectValidator> _projectValidatorMock;
-    private readonly string _projectName = "Project name";
-    private readonly string _title = "Test title";
 
     [TestInitialize]
     public void Setup_OkState()
     {
+        _command = new CreateFooCommand("Test title", "Project name");
         _projectValidatorMock = new Mock<IProjectValidator>();
-        _projectValidatorMock.Setup(x => x.ExistsAsync(_projectName, default))
+        _projectValidatorMock.Setup(x => x.ExistsAsync(_command.ProjectName, default))
             .ReturnsAsync(true);
-        _command = new CreateFooCommand(_title, _projectName);
         _dut = new CreateFooCommandValidator(_projectValidatorMock.Object);
     }
 
@@ -39,7 +37,7 @@ public class CreateFooCommandValidatorTests
     public async Task Validate_ShouldFail_When_ProjectNotExists()
     {
         // Arrange
-        _projectValidatorMock.Setup(x => x.ExistsAsync(_projectName, default))
+        _projectValidatorMock.Setup(x => x.ExistsAsync(_command.ProjectName, default))
             .ReturnsAsync(false);
 
         // Act
@@ -55,7 +53,7 @@ public class CreateFooCommandValidatorTests
     public async Task Validate_ShouldFail_When_ProjectIsClosed()
     {
         // Arrange
-        _projectValidatorMock.Setup(x => x.IsClosed(_projectName, default))
+        _projectValidatorMock.Setup(x => x.IsClosed(_command.ProjectName, default))
             .ReturnsAsync(true);
 
         // Act
