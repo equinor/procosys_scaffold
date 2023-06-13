@@ -33,10 +33,13 @@ internal class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
             .HasDatabaseName("IX_Attachments_SourceGuid")
             .IncludeProperties(x => new
             {
-                // todo adjust properties needed in index
                 x.Guid,
+                x.FileName,
                 x.CreatedById,
-                x.CreatedAtUtc
+                x.CreatedAtUtc,
+                x.ModifiedById,
+                x.ModifiedAtUtc,
+                x.RowVersion
             });
     }
 }
