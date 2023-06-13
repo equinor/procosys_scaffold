@@ -28,7 +28,7 @@ public class GetFooCommentsQueryHandlerTests : TestsBase
             Guid.NewGuid(), 
             "T", 
             new PersonDto(Guid.NewGuid(), "First", "Last", "UN", "Email"),
-            _utcNow);
+            new DateTime(2023, 6, 11, 1, 2, 3));
         var commentDtos = new List<CommentDto>
         {
             _commentDto
@@ -59,6 +59,7 @@ public class GetFooCommentsQueryHandlerTests : TestsBase
         Assert.AreEqual(_commentDto.CreatedBy.LastName, createdBy.LastName);
         Assert.AreEqual(_commentDto.CreatedBy.UserName, createdBy.UserName);
         Assert.AreEqual(_commentDto.CreatedBy.Email, createdBy.Email);
+        Assert.AreEqual(_commentDto.CreatedAtUtc, comment.CreatedAtUtc);
     }
 
     [TestMethod]

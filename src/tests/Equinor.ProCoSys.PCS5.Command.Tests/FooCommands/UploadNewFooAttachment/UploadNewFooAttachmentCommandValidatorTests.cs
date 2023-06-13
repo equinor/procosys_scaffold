@@ -94,7 +94,7 @@ public class UploadNewFooAttachmentCommandValidatorTests
     public async Task Validate_ShouldFail_When_AttachmentWithFilenameExists()
     {
         // Arrange
-        _attachmentServiceMock.Setup(x => x.AttachmentWithFilenameExistsForSourceAsync(
+        _attachmentServiceMock.Setup(x => x.FilenameExistsForSourceAsync(
                 _command.FooGuid, 
                 _command.FileName))
             .ReturnsAsync(true);

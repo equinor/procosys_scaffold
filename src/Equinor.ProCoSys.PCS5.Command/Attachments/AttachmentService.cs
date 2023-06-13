@@ -85,7 +85,7 @@ public class AttachmentService : IAttachmentService
         return await UploadAsync(attachment, content, true, cancellationToken);
     }
 
-    public async Task<bool> AttachmentWithFilenameExistsForSourceAsync(Guid sourceGuid, string fileName)
+    public async Task<bool> FilenameExistsForSourceAsync(Guid sourceGuid, string fileName)
     {
         var attachment = await _attachmentRepository.TryGetAttachmentWithFilenameForSourceAsync(sourceGuid, fileName);
         return attachment != null;
@@ -134,5 +134,11 @@ public class AttachmentService : IAttachmentService
         _logger.LogDebug($"Attachment '{attachment.FileName}' with guid {attachment.Guid} uploaded for {attachment.SourceGuid}");
 
         return new AttachmentDto(attachment.Guid, attachment.RowVersion.ConvertToString());
+    }
+
+    public async Task<bool> ExistsAsync(Guid guid)
+    {
+        var attachment = await _attachmentRepository.TryGetByGuidAsync(guid);
+        return attachment != null;
     }
 }

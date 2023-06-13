@@ -45,6 +45,8 @@ public class AttachmentServiceTests : TestsBase
                 _existingAttachment.SourceGuid,
                 _existingAttachment.FileName))
             .ReturnsAsync(_existingAttachment);
+        _attachmentRepositoryMock.Setup(a => a.TryGetByGuidAsync(_existingAttachment.Guid))
+            .ReturnsAsync(_existingAttachment);
 
         _blobStorageMock = new Mock<IAzureBlobService>();
         var blobStorageOptionsMock = new Mock<IOptionsSnapshot<BlobStorageOptions>>();
@@ -131,7 +133,9 @@ public class AttachmentServiceTests : TestsBase
                 false,
                 default), Times.Once);
     }
+    #endregion
 
+    #region UploadOverwrite
     [TestMethod]
     public async Task UploadOverwriteAsync_ShouldNotAddNewAttachmentToRepository_WhenFileNameExist()
     {
@@ -203,6 +207,29 @@ public class AttachmentServiceTests : TestsBase
         // Since UnitOfWorkMock is a Mock this will not happen here, so we assert that RowVersion is set from command
         Assert.AreEqual(_rowVersion, result.RowVersion);
         Assert.AreEqual(_rowVersion, _existingAttachment.RowVersion.ConvertToString());
+    }
+    #endregion
+
+    #region ExistsAsync
+    [TestMethod]
+    public async Task ExistsAsync_ShouldReturnTrue_WhenKnownAttachment()
+    {
+        // Act
+        var result = await _dut.ExistsAsync(_existingAttachment.Guid);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ExistsAsync_ShouldReturnNull_WhenUnknownAttachment()
+    {
+        // Arrange
+        // Act
+        var result = await _dut.ExistsAsync(Guid.NewGuid());
+
+        // Assert
+        Assert.IsFalse(result);
     }
     #endregion
 }

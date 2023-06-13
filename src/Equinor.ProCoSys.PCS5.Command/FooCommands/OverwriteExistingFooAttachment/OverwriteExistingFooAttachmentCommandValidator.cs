@@ -10,7 +10,6 @@ namespace Equinor.ProCoSys.PCS5.Command.FooCommands.OverwriteExistingFooAttachme
 
 public class OverwriteExistingFooAttachmentCommandValidator : AbstractValidator<OverwriteExistingFooAttachmentCommand>
 {
-    // todo unit tests
     public OverwriteExistingFooAttachmentCommandValidator(
         IProjectValidator projectValidator,
         IFooValidator fooValidator,
@@ -38,6 +37,6 @@ public class OverwriteExistingFooAttachmentCommandValidator : AbstractValidator<
             => await fooValidator.FooExistsAsync(fooGuid, cancellationToken);
 
         async Task<bool> HaveAttachmentWithFilenameAsync(Guid fooGuid, string fileName)
-            => await attachmentService.AttachmentWithFilenameExistsForSourceAsync(fooGuid, fileName);
+            => await attachmentService.FilenameExistsForSourceAsync(fooGuid, fileName);
     }
 }

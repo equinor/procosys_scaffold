@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators
 {
-    // Todo add unit tests
     public class ProjectValidator : IProjectValidator
     {
         private readonly IReadOnlyContext _context;

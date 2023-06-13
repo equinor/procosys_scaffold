@@ -17,7 +17,6 @@ public class LinkServiceTests : TestsBase
 {
     private readonly string _rowVersion = "AAAAAAAAABA=";
     private readonly Guid _sourceGuid = Guid.NewGuid();
-    private readonly Guid _linkGuid = Guid.NewGuid();
     private Mock<ILinkRepository> _linkRepositoryMock;
     private LinkService _dut;
     private Link _linkAddedToRepository;
@@ -34,7 +33,7 @@ public class LinkServiceTests : TestsBase
                 _linkAddedToRepository = link;
             });
         _existingLink = new Link("Whatever", _sourceGuid, "T", "www");
-        _linkRepositoryMock.Setup(l => l.TryGetByGuidAsync(_linkGuid))
+        _linkRepositoryMock.Setup(l => l.TryGetByGuidAsync(_existingLink.Guid))
             .ReturnsAsync(_existingLink);
 
         _dut = new LinkService(
@@ -89,7 +88,7 @@ public class LinkServiceTests : TestsBase
     public async Task ExistsAsync_ShouldReturnTrue_WhenKnownLink()
     {
         // Act
-        var result = await _dut.ExistsAsync(_linkGuid);
+        var result = await _dut.ExistsAsync(_existingLink.Guid);
 
         // Assert
         Assert.IsTrue(result);
@@ -98,12 +97,8 @@ public class LinkServiceTests : TestsBase
     [TestMethod]
     public async Task ExistsAsync_ShouldReturnNull_WhenUnknownLink()
     {
-        // Arrange
-        _linkRepositoryMock.Setup(l => l.TryGetByGuidAsync(_linkGuid))
-            .ReturnsAsync((Link)null);
-
         // Act
-        var result = await _dut.ExistsAsync(_linkGuid);
+        var result = await _dut.ExistsAsync(Guid.NewGuid());
 
         // Assert
         Assert.IsFalse(result);
@@ -119,7 +114,7 @@ public class LinkServiceTests : TestsBase
         var url = "newU";
 
         // Act
-        await _dut.UpdateAsync( _linkGuid, title, url, _rowVersion, default);
+        await _dut.UpdateAsync(_existingLink.Guid, title, url, _rowVersion, default);
 
         // Assert
         Assert.AreEqual(url, _existingLink.Url);
@@ -127,22 +122,16 @@ public class LinkServiceTests : TestsBase
     }
 
     [TestMethod]
-    public async Task UpdateAsync_ShouldThrowException_WhenUnknownLink()
-    {
-        // Arrange
-        _linkRepositoryMock.Setup(l => l.TryGetByGuidAsync(_linkGuid))
-            .ReturnsAsync((Link)null);
-
+    public async Task UpdateAsync_ShouldThrowException_WhenUnknownLink() =>
         // Act and Assert
         await Assert.ThrowsExceptionAsync<Exception>(()
-            => _dut.UpdateAsync(_linkGuid, "T", "www", _rowVersion, default));
-    }
+            => _dut.UpdateAsync(Guid.NewGuid(), "T", "www", _rowVersion, default));
 
     [TestMethod]
     public async Task UpdateAsync_ShouldSaveOnce()
     {
         // Act
-        await _dut.UpdateAsync(_linkGuid, "T", "www", _rowVersion, default);
+        await _dut.UpdateAsync(_existingLink.Guid, "T", "www", _rowVersion, default);
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
@@ -152,7 +141,7 @@ public class LinkServiceTests : TestsBase
     public async Task UpdateAsync_ShouldAddLinkUpdatedEvent()
     {
         // Act
-        await _dut.UpdateAsync(_linkGuid, "T", "www", _rowVersion, default);
+        await _dut.UpdateAsync(_existingLink.Guid, "T", "www", _rowVersion, default);
 
         // Assert
         Assert.IsInstanceOfType(_existingLink.DomainEvents.Last(), typeof(LinkUpdatedEvent));
@@ -162,7 +151,7 @@ public class LinkServiceTests : TestsBase
     public async Task UpdateAsync_ShouldSetAndReturnRowVersion()
     {
         // Act
-        var result = await _dut.UpdateAsync(_linkGuid, "T", "www", _rowVersion, default);
+        var result = await _dut.UpdateAsync(_existingLink.Guid, "T", "www", _rowVersion, default);
 
         // Assert
         // In real life EF Core will create a new RowVersion when save.
@@ -177,29 +166,23 @@ public class LinkServiceTests : TestsBase
     public async Task DeleteAsync_ShouldDeleteLink_WhenKnownLink()
     {
         // Act
-        await _dut.DeleteAsync(_linkGuid, _rowVersion, default);
+        await _dut.DeleteAsync(_existingLink.Guid, _rowVersion, default);
 
         // Assert
         _linkRepositoryMock.Verify(r => r.Remove(_existingLink), Times.Once);
     }
 
     [TestMethod]
-    public async Task DeleteAsync_ShouldThrowException_WhenUnknownLink()
-    {
-        // Arrange
-        _linkRepositoryMock.Setup(l => l.TryGetByGuidAsync(_linkGuid))
-            .ReturnsAsync((Link)null);
-
+    public async Task DeleteAsync_ShouldThrowException_WhenUnknownLink() =>
         // Act and Assert
         await Assert.ThrowsExceptionAsync<Exception>(()
-            => _dut.DeleteAsync(_linkGuid, _rowVersion, default));
-    }
+            => _dut.DeleteAsync(Guid.NewGuid(), _rowVersion, default));
 
     [TestMethod]
     public async Task DeleteAsync_ShouldSaveOnce()
     {
         // Act
-        await _dut.DeleteAsync(_linkGuid,_rowVersion, default);
+        await _dut.DeleteAsync(_existingLink.Guid, _rowVersion, default);
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
@@ -209,7 +192,7 @@ public class LinkServiceTests : TestsBase
     public async Task DeleteAsync_ShouldAddLinkDeletedEvent()
     {
         // Act
-        await _dut.DeleteAsync(_linkGuid, _rowVersion, default);
+        await _dut.DeleteAsync(_existingLink.Guid, _rowVersion, default);
 
         // Assert
         Assert.IsInstanceOfType(_existingLink.DomainEvents.Last(), typeof(LinkDeletedEvent));
@@ -219,7 +202,7 @@ public class LinkServiceTests : TestsBase
     public async Task DeleteAsync_ShouldSetAndReturnRowVersion()
     {
         // Act
-        await _dut.DeleteAsync(_linkGuid, _rowVersion, default);
+        await _dut.DeleteAsync(_existingLink.Guid, _rowVersion, default);
 
         // Assert
         // In real life EF Core will create a new RowVersion when save.

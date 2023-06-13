@@ -81,7 +81,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         var dut = new FooValidator(context);
 
         // Act
-        var result = await dut.FooExistsAsync(_nonVoidedFooGuid, default);
+        var result = await dut.FooIsVoidedAsync(_nonVoidedFooGuid, default);
 
         // Assert
         Assert.IsFalse(result);
@@ -95,7 +95,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
         var dut = new FooValidator(context);
 
         // Act
-        var result = await dut.FooExistsAsync(Guid.NewGuid(), default);
+        var result = await dut.FooIsVoidedAsync(Guid.NewGuid(), default);
 
         // Assert
         Assert.IsFalse(result);

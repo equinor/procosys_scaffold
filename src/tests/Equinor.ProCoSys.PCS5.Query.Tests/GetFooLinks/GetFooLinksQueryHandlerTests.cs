@@ -36,19 +36,19 @@ public class GetFooLinksQueryHandlerTests : TestsBase
     }
 
     [TestMethod]
-    public async Task HandlingQuery_ShouldReturn_Comments()
+    public async Task HandlingQuery_ShouldReturn_Links()
     {
         // Act
         var result = await _dut.Handle(_query, default);
 
         // Assert
         Assert.IsInstanceOfType(result.Data, typeof(IEnumerable<LinkDto>));
-        var comment = result.Data.Single();
-        Assert.AreEqual(_linkDto.SourceGuid, comment.SourceGuid);
-        Assert.AreEqual(_linkDto.Guid, comment.Guid);
-        Assert.AreEqual(_linkDto.Title, comment.Title);
-        Assert.AreEqual(_linkDto.Url, comment.Url);
-        Assert.AreEqual(_linkDto.RowVersion, comment.RowVersion);
+        var link = result.Data.Single();
+        Assert.AreEqual(_linkDto.SourceGuid, link.SourceGuid);
+        Assert.AreEqual(_linkDto.Guid, link.Guid);
+        Assert.AreEqual(_linkDto.Title, link.Title);
+        Assert.AreEqual(_linkDto.Url, link.Url);
+        Assert.AreEqual(_linkDto.RowVersion, link.RowVersion);
     }
 
     [TestMethod]

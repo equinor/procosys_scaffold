@@ -27,5 +27,7 @@ public interface IAttachmentService
         string rowVersion,
         CancellationToken cancellationToken);
 
-    Task<bool> AttachmentWithFilenameExistsForSourceAsync(Guid sourceGuid, string fileName);
+    Task<bool> FilenameExistsForSourceAsync(Guid sourceGuid, string fileName);
+
+    Task<bool> ExistsAsync(Guid guid);
 }

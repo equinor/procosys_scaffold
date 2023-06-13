@@ -29,7 +29,7 @@ public class OverwriteExistingFooAttachmentCommandValidatorTests
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_command.FooGuid, default))
             .ReturnsAsync(true);
         _attachmentServiceMock = new Mock<IAttachmentService>();
-        _attachmentServiceMock.Setup(x => x.AttachmentWithFilenameExistsForSourceAsync(
+        _attachmentServiceMock.Setup(x => x.FilenameExistsForSourceAsync(
                 _command.FooGuid, 
                 _command.FileName))
             .ReturnsAsync(true);
@@ -99,7 +99,7 @@ public class OverwriteExistingFooAttachmentCommandValidatorTests
     public async Task Validate_ShouldFail_When_AttachmentWithFilenameNotExists()
     {
         // Arrange
-        _attachmentServiceMock.Setup(x => x.AttachmentWithFilenameExistsForSourceAsync(
+        _attachmentServiceMock.Setup(x => x.FilenameExistsForSourceAsync(
                 _command.FooGuid,
                 _command.FileName))
             .ReturnsAsync(false);

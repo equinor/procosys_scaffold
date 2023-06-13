@@ -15,7 +15,6 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.Comments;
 public class CommentServiceTests : TestsBase
 {
     private readonly Guid _sourceGuid = Guid.NewGuid();
-    private readonly Guid _commentGuid = Guid.NewGuid();
     private Mock<ICommentRepository> _commentRepositoryMock;
     private CommentService _dut;
     private Comment _commentAddedToRepository;
@@ -30,9 +29,6 @@ public class CommentServiceTests : TestsBase
             {
                 _commentAddedToRepository = comment;
             });
-        var existingComment = new Comment("Whatever", _sourceGuid, "T");
-        _commentRepositoryMock.Setup(l => l.TryGetByGuidAsync(_commentGuid))
-            .ReturnsAsync(existingComment);
 
         _dut = new CommentService(
             _commentRepositoryMock.Object,
