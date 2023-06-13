@@ -39,7 +39,7 @@ public class RowVersionValidatorTests
     [TestMethod]
     public void IsValid_Null_ShouldReturnFalse()
     {
-        var result = _dut.IsValid(null);
+        var result = _dut.IsValid(null!);
         Assert.IsFalse(result);
     }
 }

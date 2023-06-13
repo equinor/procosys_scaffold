@@ -9,7 +9,7 @@ public abstract class UploadAttachmentCommand : IDisposable
     private bool _isDisposed;
 
     protected UploadAttachmentCommand(Stream content)
-        => Content = content ?? throw new ArgumentNullException(nameof(content));
+        => Content = content;
 
     // JsonIgnore needed here so GlobalExceptionHandler do not try to serialize the Stream when reporting validation errors. 
     [JsonIgnore]

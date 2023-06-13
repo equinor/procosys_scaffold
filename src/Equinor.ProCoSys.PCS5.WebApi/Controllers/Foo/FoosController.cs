@@ -12,12 +12,17 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooComment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFoo;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooAttachment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.OverwriteExistingFooAttachment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.UploadNewFooAttachment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
+using Equinor.ProCoSys.PCS5.Query.Attachments;
 using Equinor.ProCoSys.PCS5.Query.Comments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooAttachments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooComments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
@@ -205,6 +210,75 @@ public class FoosController : ControllerBase
         [FromRoute] Guid guid)
     {
         var result = await _mediator.Send(new GetFooCommentsQuery(guid));
+        return this.FromResult(result);
+    }
+    #endregion
+
+    #region Attachments
+    [AuthorizeAny(Permissions.FOO_ATTACH, Permissions.APPLICATION_TESTER)]
+    [HttpPost("{guid}/Attachments")]
+    public async Task<ActionResult<GuidAndRowVersion>> UploadFooAttachment(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid,
+        [FromForm] UploadAttachmentDto dto)
+    {
+        await using var stream = dto.File.OpenReadStream();
+
+        var result = await _mediator.Send(new UploadNewFooAttachmentCommand(
+            guid,
+            dto.File.FileName,
+            stream));
+        return this.FromResult(result);
+    }
+
+    [AuthorizeAny(Permissions.FOO_ATTACH, Permissions.APPLICATION_TESTER)]
+    [HttpPut("{guid}/Attachments")]
+    public async Task<ActionResult<GuidAndRowVersion>> OverwriteFooAttachment(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid,
+        [FromForm] OverwriteAttachmentDto dto)
+    {
+        await using var stream = dto.File.OpenReadStream();
+
+        var result = await _mediator.Send(new OverwriteExistingFooAttachmentCommand(
+            guid, 
+            dto.File.FileName,
+            dto.RowVersion,
+            stream));
+        return this.FromResult(result);
+    }
+
+    [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
+    [HttpGet("{guid}/Attachments")]
+    public async Task<ActionResult<IEnumerable<AttachmentDto>>> GetFooAttachments(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid)
+    {
+        var result = await _mediator.Send(new GetFooAttachmentsQuery(guid));
+        return this.FromResult(result);
+    }
+
+    [AuthorizeAny(Permissions.FOO_DELETE, Permissions.APPLICATION_TESTER)]
+    [HttpDelete("{guid}/Attachments/{attachmentGuid}")]
+    public async Task<ActionResult> DeleteAttachment(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid,
+        [FromRoute] Guid attachmentGuid,
+        [FromBody] RowVersionDto dto)
+    {
+        var result = await _mediator.Send(new DeleteFooAttachmentCommand(guid, attachmentGuid, dto.RowVersion));
         return this.FromResult(result);
     }
     #endregion

@@ -1,16 +1,15 @@
 ﻿using FluentValidation;
+using Equinor.ProCoSys.BlobStorage;
+using Microsoft.Extensions.Options;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers;
 
-public class RowVersionDtoValidator : AbstractValidator<RowVersionDto>
+public class OverwriteAttachmentDtoValidator : UploadBaseDtoValidator<OverwriteAttachmentDto>
 {
-    public RowVersionDtoValidator(IRowVersionValidator rowVersionValidator)
+    public OverwriteAttachmentDtoValidator(IRowVersionValidator rowVersionValidator,
+        IOptionsSnapshot<BlobStorageOptions> blobStorageOptions)
+        : base(blobStorageOptions)
     {
-        RuleLevelCascadeMode = CascadeMode.Stop;
-        ClassLevelCascadeMode = CascadeMode.Stop;
-
-        RuleFor(dto => dto).NotNull();
-
         RuleFor(dto => dto.RowVersion)
             .NotNull()
             .Must(HaveValidRowVersion)

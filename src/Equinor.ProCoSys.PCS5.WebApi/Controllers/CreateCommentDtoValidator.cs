@@ -1,19 +1,18 @@
 ﻿using FluentValidation;
 
-namespace Equinor.ProCoSys.PCS5.WebApi.Controllers
+namespace Equinor.ProCoSys.PCS5.WebApi.Controllers;
+
+public class CreateCommentDtoValidator : AbstractValidator<CreateCommentDto>
 {
-    public class CreateCommentDtoValidator : AbstractValidator<CreateCommentDto>
+    public CreateCommentDtoValidator()
     {
-        public CreateCommentDtoValidator()
-        {
-            RuleLevelCascadeMode = CascadeMode.Stop;
-            ClassLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
+        ClassLevelCascadeMode = CascadeMode.Stop;
 
-            RuleFor(dto => dto).NotNull();
+        RuleFor(dto => dto).NotNull();
 
-            RuleFor(dto => dto.Text)
-                .NotNull()
-                .MaximumLength(Domain.AggregateModels.CommentAggregate.Comment.TextLengthMax);
-        }
+        RuleFor(dto => dto.Text)
+            .NotNull()
+            .MaximumLength(Domain.AggregateModels.CommentAggregate.Comment.TextLengthMax);
     }
 }
