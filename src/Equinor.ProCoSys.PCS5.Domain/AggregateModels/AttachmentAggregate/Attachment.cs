@@ -7,7 +7,7 @@ using Equinor.ProCoSys.PCS5.Domain.Audit;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
 
-public class Attachment : EntityBase, IAggregateRoot, ICreationAuditable, IBelongToSource, IHaveGuid
+public class Attachment : EntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IBelongToSource, IHaveGuid
 {
     public const int SourceTypeLengthMax = 256;
     public const int FileNameLengthMax = 255;
@@ -30,6 +30,7 @@ public class Attachment : EntityBase, IAggregateRoot, ICreationAuditable, IBelon
             throw new ArgumentException($"{nameof(plant)} must have minimum length 5");
         }
         BlobPath = Path.Combine(plant.Substring(4), SourceType, Guid.ToString()).Replace("\\", "/");
+        RevisionNumber = 1;
     }
 
     // private setters needed for Entity Framework
@@ -42,6 +43,9 @@ public class Attachment : EntityBase, IAggregateRoot, ICreationAuditable, IBelon
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
     public Guid Guid { get; private set; }
+    public int RevisionNumber { get; private set; }
+
+    public void IncreaseRevisionNumber() => RevisionNumber++;
 
     public string GetFullBlobPath()
         => Path.Combine(BlobPath, FileName).Replace("\\", "/");

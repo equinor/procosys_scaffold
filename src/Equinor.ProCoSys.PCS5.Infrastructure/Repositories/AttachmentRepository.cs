@@ -12,7 +12,6 @@ public class AttachmentRepository : EntityWithGuidRepository<Attachment>, IAttac
     {
     }
 
-    // todo unit test
     public Task<Attachment?> TryGetAttachmentWithFilenameForSourceAsync(Guid sourceGuid, string fileName)
         => DefaultQuery.SingleOrDefaultAsync(a => a.SourceGuid == sourceGuid && a.FileName == fileName);
 }

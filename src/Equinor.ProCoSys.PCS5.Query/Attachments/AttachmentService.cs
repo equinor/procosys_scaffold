@@ -17,7 +17,6 @@ public class AttachmentService : IAttachmentService
 
     public AttachmentService(IReadOnlyContext context) => _context = context;
 
-    // todo unit test
     public async Task<IEnumerable<AttachmentDto>> GetAllForSourceAsync(
         Guid sourceGuid,
         CancellationToken cancellationToken)

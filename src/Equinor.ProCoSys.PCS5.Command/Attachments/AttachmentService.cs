@@ -77,6 +77,8 @@ public class AttachmentService : IAttachmentService
             throw new Exception($"{sourceType} {sourceGuid} don't have an attachment with filename {fileName}");
         }
 
+        attachment.IncreaseRevisionNumber();
+
         attachment.SetRowVersion(rowVersion);
         attachment.AddDomainEvent(new ExistingAttachmentUploadedAndOverwrittenEvent(attachment));
 

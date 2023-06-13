@@ -82,7 +82,7 @@ public class AttachmentServiceTests : TestsBase
     }
 
     [TestMethod]
-    public async Task UploadNewAsync_ShouldAddAttachmentToRepository_WhenFileNameNotExist()
+    public async Task UploadNewAsync_ShouldAddNewAttachmentToRepository_WhenFileNameNotExist()
     {
         // Act
         await _dut.UploadNewAsync(_sourceType, _sourceGuid, _newFileName, new MemoryStream(), default);
@@ -92,6 +92,7 @@ public class AttachmentServiceTests : TestsBase
         Assert.AreEqual(_sourceGuid, _attachmentAddedToRepository.SourceGuid);
         Assert.AreEqual(_sourceType, _attachmentAddedToRepository.SourceType);
         Assert.AreEqual(_newFileName, _attachmentAddedToRepository.FileName);
+        Assert.AreEqual(1, _attachmentAddedToRepository.RevisionNumber);
     }
 
     [TestMethod]
@@ -132,7 +133,7 @@ public class AttachmentServiceTests : TestsBase
     }
 
     [TestMethod]
-    public async Task UploadOverwriteAsync_ShouldNotAddNewAttachmentToRepository_WhenFileNameExist_AndOverwrite()
+    public async Task UploadOverwriteAsync_ShouldNotAddNewAttachmentToRepository_WhenFileNameExist()
     {
         // Act
         await _dut.UploadOverwriteAsync(_sourceType, _sourceGuid, _existingFileName, new MemoryStream(), _rowVersion, default);
@@ -142,7 +143,20 @@ public class AttachmentServiceTests : TestsBase
     }
 
     [TestMethod]
-    public async Task UploadOverwriteAsync_ShouldSaveOnce_WhenFileNameExist_AndOverwrite()
+    public async Task UploadOverwriteAsync_ShouldIncreaseRevisionNumber_WhenFileNameExist()
+    {
+        // Arrange
+        Assert.AreEqual(1, _existingAttachment.RevisionNumber);
+
+        // Act
+        await _dut.UploadOverwriteAsync(_sourceType, _sourceGuid, _existingFileName, new MemoryStream(), _rowVersion, default);
+
+        // Assert
+        Assert.AreEqual(2, _existingAttachment.RevisionNumber);
+    }
+
+    [TestMethod]
+    public async Task UploadOverwriteAsync_ShouldSaveOnce_WhenFileNameExist()
     {
         // Act
         await _dut.UploadOverwriteAsync(_sourceType, _sourceGuid, _existingFileName, new MemoryStream(), _rowVersion, default);
@@ -152,7 +166,7 @@ public class AttachmentServiceTests : TestsBase
     }
 
     [TestMethod]
-    public async Task UploadOverwriteAsync_ShouldAddExistingAttachmentUploadedAndOverwrittenEvent_WhenFileNameExist_AndOverwrite()
+    public async Task UploadOverwriteAsync_ShouldAddExistingAttachmentUploadedAndOverwrittenEvent_WhenFileNameExist()
     {
         // Act
         await _dut.UploadOverwriteAsync(_sourceType, _sourceGuid, _existingFileName, new MemoryStream(), _rowVersion, default);
@@ -162,7 +176,7 @@ public class AttachmentServiceTests : TestsBase
     }
 
     [TestMethod]
-    public async Task UploadOverwriteAsync_ShouldUploadToBlobStorage_WhenFileNameExist_AndOverwrite()
+    public async Task UploadOverwriteAsync_ShouldUploadToBlobStorage_WhenFileNameExist()
     {
         // Act
         await _dut.UploadOverwriteAsync(_sourceType, _sourceGuid, _existingFileName, new MemoryStream(), _rowVersion, default);
