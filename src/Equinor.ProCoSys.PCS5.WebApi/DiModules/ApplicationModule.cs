@@ -67,6 +67,7 @@ public static class ApplicationModule
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<Command.Comments.ICommentService, Command.Comments.CommentService>();
         services.AddScoped<Query.Comments.ICommentService, Query.Comments.CommentService>();
+        services.AddScoped<Command.Attachments.IAttachmentService, Command.Attachments.AttachmentService>();
 
         services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
 

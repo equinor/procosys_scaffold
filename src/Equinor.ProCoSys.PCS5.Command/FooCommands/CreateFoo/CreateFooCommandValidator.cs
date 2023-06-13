@@ -18,10 +18,10 @@ public class CreateFooCommandValidator : AbstractValidator<CreateFooCommand>
             .MustAsync(NotBeAClosedProjectAsync)
             .WithMessage("Project is closed!");
 
-        async Task<bool> BeAnExistingProjectAsync(CreateFooCommand command, CancellationToken token)
-            => await projectValidator.ExistsAsync(command.ProjectName, token);
+        async Task<bool> BeAnExistingProjectAsync(CreateFooCommand command, CancellationToken cancellationToken)
+            => await projectValidator.ExistsAsync(command.ProjectName, cancellationToken);
 
-        async Task<bool> NotBeAClosedProjectAsync(CreateFooCommand command, CancellationToken token)
-            => !await projectValidator.IsClosed(command.ProjectName, token);
+        async Task<bool> NotBeAClosedProjectAsync(CreateFooCommand command, CancellationToken cancellationToken)
+            => !await projectValidator.IsClosed(command.ProjectName, cancellationToken);
     }
 }

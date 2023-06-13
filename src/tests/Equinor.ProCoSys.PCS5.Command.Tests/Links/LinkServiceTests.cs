@@ -89,7 +89,7 @@ public class LinkServiceTests : TestsBase
     public async Task ExistsAsync_ShouldReturnTrue_WhenKnownLink()
     {
         // Act
-        var result = await _dut.ExistsAsync(_linkGuid, default);
+        var result = await _dut.ExistsAsync(_linkGuid);
 
         // Assert
         Assert.IsTrue(result);
@@ -103,7 +103,7 @@ public class LinkServiceTests : TestsBase
             .ReturnsAsync((Link)null);
 
         // Act
-        var result = await _dut.ExistsAsync(_linkGuid, default);
+        var result = await _dut.ExistsAsync(_linkGuid);
 
         // Assert
         Assert.IsFalse(result);

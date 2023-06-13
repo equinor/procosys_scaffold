@@ -33,6 +33,9 @@ public class Attachment : EntityBase, IAggregateRoot, ICreationAuditable, IBelon
     public int? ModifiedById { get; private set; }
     public Guid Guid { get; private set; }
 
+    public string GetFullBlobPath()
+        => Path.Combine(BlobPath, FileName).Replace("\\", "/");
+
     public void SetCreated(Person createdBy)
     {
         CreatedAtUtc = TimeService.UtcNow;

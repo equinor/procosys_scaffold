@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Equinor.ProCoSys.PCS5.Command.Attachments;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators;
 using FluentValidation;
 
-namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
+namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UploadNewFooAttachment;
 
-public class UpdateFooCommandValidator : AbstractValidator<UpdateFooCommand>
+public class UploadNewFooAttachmentCommandValidator : AbstractValidator<UploadNewFooAttachmentCommand>
 {
-    public UpdateFooCommandValidator(
+    // todo unit tests
+    public UploadNewFooAttachmentCommandValidator(
         IProjectValidator projectValidator,
-        IFooValidator fooValidator)
+        IFooValidator fooValidator,
+        IAttachmentService attachmentService)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
-        ClassLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(command => command)
             .MustAsync((command, cancellationToken) => NotBeAClosedProjectForFooAsync(command.FooGuid, cancellationToken))
@@ -22,7 +24,9 @@ public class UpdateFooCommandValidator : AbstractValidator<UpdateFooCommand>
             .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooGuid, cancellationToken))
             .WithMessage(command => $"Foo with this guid does not exist! Guid={command.FooGuid}")
             .MustAsync((command, cancellationToken) => NotBeAVoidedFoo(command.FooGuid, cancellationToken))
-            .WithMessage("Foo is voided!");
+            .WithMessage("Foo is voided!")
+            .MustAsync((command, _) => NotHaveAttachmentWithFilenameAsync(command.FooGuid, command.FileName))
+            .WithMessage(command => $"Foo already has an attachment with filename {command.FileName}! Please rename file or choose to overwrite");
 
         async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken cancellationToken)
             => !await projectValidator.IsClosedForFoo(fooGuid, cancellationToken);
@@ -32,5 +36,8 @@ public class UpdateFooCommandValidator : AbstractValidator<UpdateFooCommand>
 
         async Task<bool> BeAnExistingFoo(Guid fooGuid, CancellationToken cancellationToken)
             => await fooValidator.FooExistsAsync(fooGuid, cancellationToken);
+
+        async Task<bool> NotHaveAttachmentWithFilenameAsync(Guid fooGuid, string fileName)
+            => !await attachmentService.AttachmentWithFilenameExistsForSourceAsync(fooGuid, fileName);
     }
 }

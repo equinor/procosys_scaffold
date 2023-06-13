@@ -23,13 +23,13 @@ public class UpdateFooLinkCommandValidator : AbstractValidator<UpdateFooLinkComm
             .WithMessage("Project is closed!")
             .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooGuid, cancellationToken))
             .WithMessage(command => $"Foo with this guid does not exist! Guid={command.FooGuid}")
-            .MustAsync((command, cancellationToken) => BeAnExistingLink(command.LinkGuid, cancellationToken))
+            .MustAsync((command, _) => BeAnExistingLink(command.LinkGuid))
             .WithMessage(command => $"Link with this guid does not exist! Guid={command.LinkGuid}")
             .MustAsync((command, cancellationToken) => NotBeAVoidedFoo(command.FooGuid, cancellationToken))
             .WithMessage("Foo is voided!");
 
-        async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken token)
-            => !await projectValidator.IsClosedForFoo(fooGuid, token);
+        async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken cancellationToken)
+            => !await projectValidator.IsClosedForFoo(fooGuid, cancellationToken);
 
         async Task<bool> NotBeAVoidedFoo(Guid fooGuid, CancellationToken cancellationToken)
             => !await fooValidator.FooIsVoidedAsync(fooGuid, cancellationToken);
@@ -37,7 +37,7 @@ public class UpdateFooLinkCommandValidator : AbstractValidator<UpdateFooLinkComm
         async Task<bool> BeAnExistingFoo(Guid fooGuid, CancellationToken cancellationToken)
             => await fooValidator.FooExistsAsync(fooGuid, cancellationToken);
 
-        async Task<bool> BeAnExistingLink(Guid linkGuid, CancellationToken cancellationToken)
-            => await linkService.ExistsAsync(linkGuid, cancellationToken);
+        async Task<bool> BeAnExistingLink(Guid linkGuid)
+            => await linkService.ExistsAsync(linkGuid);
     }
 }

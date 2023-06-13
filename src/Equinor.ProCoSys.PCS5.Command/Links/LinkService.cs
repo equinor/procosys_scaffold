@@ -43,9 +43,7 @@ public class LinkService : ILinkService
         return new LinkDto(link.Guid, link.RowVersion.ConvertToString());
     }
 
-    public async Task<bool> ExistsAsync(
-        Guid guid,
-        CancellationToken cancellationToken)
+    public async Task<bool> ExistsAsync(Guid guid)
     {
         var link = await _linkRepository.TryGetByGuidAsync(guid);
         return link != null;

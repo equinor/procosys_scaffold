@@ -24,8 +24,8 @@ public class CreateFooLinkCommandValidator : AbstractValidator<CreateFooLinkComm
             .MustAsync((command, cancellationToken) => NotBeAVoidedFoo(command.FooGuid, cancellationToken))
             .WithMessage("Foo is voided!");
 
-        async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken token)
-            => !await projectValidator.IsClosedForFoo(fooGuid, token);
+        async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken cancellationToken)
+            => !await projectValidator.IsClosedForFoo(fooGuid, cancellationToken);
 
         async Task<bool> NotBeAVoidedFoo(Guid fooGuid, CancellationToken cancellationToken)
             => !await fooValidator.FooIsVoidedAsync(fooGuid, cancellationToken);

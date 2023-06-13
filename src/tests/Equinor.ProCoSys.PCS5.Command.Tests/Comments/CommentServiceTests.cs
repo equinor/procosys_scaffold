@@ -19,7 +19,6 @@ public class CommentServiceTests : TestsBase
     private Mock<ICommentRepository> _commentRepositoryMock;
     private CommentService _dut;
     private Comment _commentAddedToRepository;
-    private Comment _existingComment;
 
     [TestInitialize]
     public void Setup()
@@ -31,9 +30,9 @@ public class CommentServiceTests : TestsBase
             {
                 _commentAddedToRepository = comment;
             });
-        _existingComment = new Comment("Whatever", _sourceGuid, "T");
+        var existingComment = new Comment("Whatever", _sourceGuid, "T");
         _commentRepositoryMock.Setup(l => l.TryGetByGuidAsync(_commentGuid))
-            .ReturnsAsync(_existingComment);
+            .ReturnsAsync(existingComment);
 
         _dut = new CommentService(
             _commentRepositoryMock.Object,

@@ -31,7 +31,7 @@ public class DeleteFooLinkCommandValidatorTests
         _fooValidatorMock.Setup(x => x.FooExistsAsync(_fooGuid, default))
             .ReturnsAsync(true);
         _linkServiceMock = new Mock<ILinkService>();
-        _linkServiceMock.Setup(x => x.ExistsAsync(_linkGuid, default))
+        _linkServiceMock.Setup(x => x.ExistsAsync(_linkGuid))
             .ReturnsAsync(true);
         _command = new DeleteFooLinkCommand(_fooGuid, _linkGuid, _rowVersion);
 
@@ -71,7 +71,7 @@ public class DeleteFooLinkCommandValidatorTests
     public async Task Validate_ShouldFail_When_LinkNotExists()
     {
         // Arrange
-        _linkServiceMock.Setup(x => x.ExistsAsync(_linkGuid, default))
+        _linkServiceMock.Setup(x => x.ExistsAsync(_linkGuid))
             .ReturnsAsync(false);
 
         // Act

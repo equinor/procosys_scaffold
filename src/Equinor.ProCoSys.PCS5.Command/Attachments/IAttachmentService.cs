@@ -1,0 +1,31 @@
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Equinor.ProCoSys.PCS5.Command.Attachments;
+
+public interface IAttachmentService
+{
+    Task<AttachmentDto> UploadNewAsync(
+        string sourceType,
+        Guid sourceGuid,
+        string fileName,
+        Stream content,
+        CancellationToken cancellationToken);
+
+    Task<AttachmentDto> UploadOverwriteAsync(
+        string sourceType,
+        Guid sourceGuid,
+        string fileName,
+        Stream content,
+        string rowVersion,
+        CancellationToken cancellationToken);
+
+    Task DeleteAsync(
+        Guid guid,
+        string rowVersion,
+        CancellationToken cancellationToken);
+
+    Task<bool> AttachmentWithFilenameExistsForSourceAsync(Guid sourceGuid, string fileName);
+}

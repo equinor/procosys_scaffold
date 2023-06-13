@@ -25,4 +25,14 @@ public class AttachmentTests
         Assert.AreNotEqual(_sourceGuid, _dut.Guid);
         Assert.AreNotEqual(Guid.Empty, _dut.Guid);
     }
+
+    [TestMethod]
+    public void GetFullBlobPath_ShouldReturnFullBlobPath()
+    {
+        // Act
+        var result = _dut.GetFullBlobPath();
+
+        // Arrange
+        Assert.AreEqual($"Plant/X/{_dut.Guid}/{_fileName}", result);
+    }
 }

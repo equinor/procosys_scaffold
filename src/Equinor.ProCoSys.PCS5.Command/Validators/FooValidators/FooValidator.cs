@@ -15,9 +15,9 @@ public class FooValidator : IFooValidator
     public FooValidator(IReadOnlyContext context) => _context = context;
 
     public async Task<bool> FooExistsAsync(Guid fooGuid, CancellationToken cancellationToken) =>
-        await (from foo in _context.QuerySet<Foo>()
-            where foo.Guid == fooGuid
-            select foo).AnyAsync(cancellationToken);
+        await (from f in _context.QuerySet<Foo>()
+            where f.Guid == fooGuid
+            select f).AnyAsync(cancellationToken);
 
     public async Task<bool> FooIsVoidedAsync(Guid fooGuid, CancellationToken cancellationToken)
     {
@@ -25,6 +25,5 @@ public class FooValidator : IFooValidator
             where f.Guid == fooGuid
             select f).SingleOrDefaultAsync(cancellationToken);
         return foo != null && foo.IsVoided;
-
     }
 }

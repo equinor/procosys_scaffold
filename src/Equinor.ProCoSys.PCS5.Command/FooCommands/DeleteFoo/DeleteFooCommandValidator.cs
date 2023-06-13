@@ -24,8 +24,8 @@ public class DeleteFooCommandValidator : AbstractValidator<DeleteFooCommand>
             .MustAsync((command, cancellationToken) => BeAVoidedFoo(command.FooGuid, cancellationToken))
             .WithMessage("Foo must be voided before delete!");
 
-        async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken token)
-            => !await projectValidator.IsClosedForFoo(fooGuid, token);
+        async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken cancellationToken)
+            => !await projectValidator.IsClosedForFoo(fooGuid, cancellationToken);
 
         async Task<bool> BeAnExistingFoo(Guid fooGuid, CancellationToken cancellationToken)
             => await fooValidator.FooExistsAsync(fooGuid, cancellationToken);
