@@ -61,7 +61,7 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
     public virtual DbSet<Project> Projects => Set<Project>();
     public virtual DbSet<Link> Links => Set<Link>();
     public virtual DbSet<Comment> Comments => Set<Comment>();
-    public virtual DbSet<Attachment> Attachments { get; set; }
+    public virtual DbSet<Attachment> Attachments => Set<Attachment>();
 
     private void SetGlobalPlantFilter(ModelBuilder modelBuilder)
     {

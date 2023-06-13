@@ -13,12 +13,22 @@ public class Attachment : EntityBase, IAggregateRoot, ICreationAuditable, IBelon
     public const int FileNameLengthMax = 255;
     public const int BlobPathLengthMax = 1024;
 
+#pragma warning disable CS8618
+    public Attachment()
+#pragma warning restore CS8618
+    {
+    }
+
     public Attachment(string sourceType, Guid sourceGuid, string plant, string fileName)
     {
         SourceType = sourceType;
         SourceGuid = sourceGuid;
         FileName = fileName;
         Guid = Guid.NewGuid();
+        if (plant.Length < 5)
+        {
+            throw new ArgumentException($"{nameof(plant)} must have minimum length 5");
+        }
         BlobPath = Path.Combine(plant.Substring(4), SourceType, Guid.ToString()).Replace("\\", "/");
     }
 
