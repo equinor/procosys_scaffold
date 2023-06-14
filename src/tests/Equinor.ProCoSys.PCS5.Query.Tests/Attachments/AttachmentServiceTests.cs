@@ -1,24 +1,29 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Equinor.ProCoSys.PCS5.Query.Attachments;
+using Equinor.ProCoSys.BlobStorage;
+using Moq;
+using Microsoft.Extensions.Options;
 
 namespace Equinor.ProCoSys.PCS5.Query.Tests.Attachments;
 
 [TestClass]
 public class AttachmentServiceTests : ReadOnlyTestsBase
 {
+    private readonly string _blobContainer = "bc";
     private Attachment _createdAttachment;
     private Guid _createdAttachmentGuid;
     private Attachment _modifiedAttachment;
     private Guid _modifiedAttachmentGuid;
     private Guid _sourceGuid;
+    private Mock<IOptionsSnapshot<BlobStorageOptions>> _blobStorageOptionsMock;
+    private Mock<IAzureBlobService> _azureBlobServiceMock;
 
     protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
     {
@@ -36,6 +41,16 @@ public class AttachmentServiceTests : ReadOnlyTestsBase
         _modifiedAttachment.IncreaseRevisionNumber();
         context.SaveChangesAsync().Wait();
         _modifiedAttachmentGuid = _modifiedAttachment.Guid;
+
+        _azureBlobServiceMock = new Mock<IAzureBlobService>();
+        _blobStorageOptionsMock = new Mock<IOptionsSnapshot<BlobStorageOptions>>();
+        var blobStorageOptions = new BlobStorageOptions
+        {
+            BlobContainer = _blobContainer
+        };
+        _blobStorageOptionsMock
+            .Setup(x => x.Value)
+            .Returns(blobStorageOptions);
     }
 
     [TestMethod]
@@ -43,7 +58,7 @@ public class AttachmentServiceTests : ReadOnlyTestsBase
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-        var dut = new AttachmentService(context);
+        var dut = new AttachmentService(context, _azureBlobServiceMock.Object, _blobStorageOptionsMock.Object);
 
         // Act
         var result = await dut.GetAllForSourceAsync(_sourceGuid, default);
@@ -66,6 +81,44 @@ public class AttachmentServiceTests : ReadOnlyTestsBase
         Assert.AreEqual(CurrentUserOid, modifiedBy.Guid);
         Assert.IsTrue(modifiedAttachmentDto.ModifiedAtUtc.HasValue);
         Assert.AreEqual(_modifiedAttachment.ModifiedAtUtc, modifiedAttachmentDto.ModifiedAtUtc);
+    }
+
+    [TestMethod]
+    public async Task TryGetDownloadUriAsync_ShouldReturnUri_WhenKnownAttachment()
+    {
+        // Arrange
+        var uri = new Uri("http://blah.blah.com");
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
+        var dut = new AttachmentService(context, _azureBlobServiceMock.Object, _blobStorageOptionsMock.Object);
+        var p = _createdAttachment.GetFullBlobPath();
+        _azureBlobServiceMock.Setup(a => a.GetDownloadSasUri(_blobContainer, p, It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+            .Returns(uri);
+
+        // Act
+        var result = await dut.TryGetDownloadUriAsync(_createdAttachment.Guid, default);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(uri, result);
+    }
+
+
+    [TestMethod]
+    public async Task TryGetDownloadUriAsync_ShouldReturnNull_WhenUnknownAttachment()
+    {
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
+        var dut = new AttachmentService(context, _azureBlobServiceMock.Object, _blobStorageOptionsMock.Object);
+
+        // Act
+        var result = await dut.TryGetDownloadUriAsync(Guid.NewGuid(), default);
+
+        Assert.IsNull(result);
+        _azureBlobServiceMock.Verify(
+            a => a.GetDownloadSasUri(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()), Times.Never);
     }
 
     private void AssertAttachmentDto(Attachment attachment, AttachmentDto attachmentDto)

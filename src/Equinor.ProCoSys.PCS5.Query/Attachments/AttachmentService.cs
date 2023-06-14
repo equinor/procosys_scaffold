@@ -68,7 +68,6 @@ public class AttachmentService : IAttachmentService
         return attachments;
     }
 
-    // todo unit test
     public async Task<Uri?> TryGetDownloadUriAsync(Guid guid, CancellationToken cancellationToken)
     {
         var attachment = await

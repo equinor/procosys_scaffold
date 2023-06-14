@@ -13,7 +13,6 @@ public class GetFooAttachmentDownloadUrlQueryHandler : IRequestHandler<GetFooAtt
 
     public GetFooAttachmentDownloadUrlQueryHandler(IAttachmentService attachmentService) => _attachmentService = attachmentService;
 
-    // todo unit test
     public async Task<Result<Uri>> Handle(GetFooAttachmentDownloadUrlQuery request, CancellationToken cancellationToken)
     {
         var uri = await _attachmentService.TryGetDownloadUriAsync(request.AttachmentGuid, cancellationToken);

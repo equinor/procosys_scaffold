@@ -25,7 +25,7 @@ public class AttachmentServiceTests : TestsBase
     private AttachmentService _dut;
     private Attachment _attachmentAddedToRepository;
     private Attachment _existingAttachment;
-    private Mock<IAzureBlobService> _blobStorageMock;
+    private Mock<IAzureBlobService> _azureBlobServiceMock;
     private readonly string _existingFileName = "E.txt";
     private readonly string _newFileName = "N.txt";
     private readonly string _rowVersion = "AAAAAAAAABA=";
@@ -48,20 +48,20 @@ public class AttachmentServiceTests : TestsBase
         _attachmentRepositoryMock.Setup(a => a.TryGetByGuidAsync(_existingAttachment.Guid))
             .ReturnsAsync(_existingAttachment);
 
-        _blobStorageMock = new Mock<IAzureBlobService>();
+        _azureBlobServiceMock = new Mock<IAzureBlobService>();
         var blobStorageOptionsMock = new Mock<IOptionsSnapshot<BlobStorageOptions>>();
-        var options = new BlobStorageOptions
+        var blobStorageOptions = new BlobStorageOptions
         {
             BlobContainer = _blobContainer
         };
         blobStorageOptionsMock
             .Setup(x => x.Value)
-            .Returns(options);
+            .Returns(blobStorageOptions);
         _dut = new AttachmentService(
             _attachmentRepositoryMock.Object,
             _plantProviderMock.Object,
             _unitOfWorkMock.Object,
-            _blobStorageMock.Object,
+            _azureBlobServiceMock.Object,
             blobStorageOptionsMock.Object,
             new Mock<ILogger<AttachmentService>>().Object);
     }
@@ -75,7 +75,7 @@ public class AttachmentServiceTests : TestsBase
             => _dut.UploadNewAsync(_sourceType, _sourceGuid, _existingFileName, new MemoryStream(), default));
 
         // Assert
-        _blobStorageMock.Verify(b => b.UploadAsync(
+        _azureBlobServiceMock.Verify(b => b.UploadAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<Stream>(),
@@ -125,7 +125,7 @@ public class AttachmentServiceTests : TestsBase
 
         // Assert
         var p = _attachmentAddedToRepository.GetFullBlobPath();
-        _blobStorageMock.Verify(b
+        _azureBlobServiceMock.Verify(b
             => b.UploadAsync(
                 _blobContainer,
                 p,
@@ -187,7 +187,7 @@ public class AttachmentServiceTests : TestsBase
 
         // Assert
         var p = _existingAttachment.GetFullBlobPath();
-        _blobStorageMock.Verify(b
+        _azureBlobServiceMock.Verify(b
             => b.UploadAsync(
                 _blobContainer,
                 p,
