@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Equinor.ProCoSys.Common.Misc;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
@@ -64,6 +65,9 @@ public static class PCS5ContextExtension
 
         var comment = SeedComment(dbContext, "Foo", foo.Guid, "Comment");
         knownTestData.CommentInFooAGuid = comment.Guid;
+
+        var attachment = SeedAttachment(dbContext, plant, "Foo", foo.Guid, "fil.txt");
+        knownTestData.AttachmentInFooAGuid = attachment.Guid;
     }
 
     private static void EnsureCurrentUserIsSeeded(PCS5Context dbContext, ICurrentUserProvider userProvider)
@@ -123,5 +127,19 @@ public static class PCS5ContextExtension
         commentRepository.Add(comment);
         dbContext.SaveChangesAsync().Wait();
         return comment;
+    }
+
+    private static Attachment SeedAttachment(
+        PCS5Context dbContext,
+        string plant,
+        string sourceType,
+        Guid sourceGuid,
+        string fileName)
+    {
+        var attachmentRepository = new AttachmentRepository(dbContext);
+        var attachment = new Attachment(sourceType, sourceGuid, plant, fileName);
+        attachmentRepository.Add(attachment);
+        dbContext.SaveChangesAsync().Wait();
+        return attachment;
     }
 }

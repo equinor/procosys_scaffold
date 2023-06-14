@@ -346,7 +346,7 @@ public class FoosControllerTests : TestBase
             attachmentGuidAndRowVersion.Guid);
 
         // Assert
-        Assert.AreEqual(uri.AbsolutePath, attachmentUrl);
+        Assert.AreEqual(uri.AbsoluteUri, attachmentUrl);
     }
 
     [TestMethod]
