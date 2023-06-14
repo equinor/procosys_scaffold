@@ -1,4 +1,5 @@
-﻿using Equinor.ProCoSys.PCS5.WebApi.Controllers;
+﻿using System.Threading.Tasks;
+using Equinor.ProCoSys.PCS5.WebApi.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -26,4 +27,22 @@ public class OverwriteAttachmentDtoValidatorTests : UploadBaseDtoValidatorTests<
             File = new TestableFormFile("picture.gif", 1000),
             RowVersion = _rowVersion
         };
+
+    [TestMethod]
+    public async Task Validate_ShouldFail_WhenRowVersionNotGiven()
+    {
+        // Arrange
+        var dto = new OverwriteAttachmentDto()
+        {
+            File = new TestableFormFile("picture.gif", 1000)
+        };
+
+        // Act
+        var result = await _dut.ValidateAsync(dto);
+
+        // Assert
+        Assert.IsFalse(result.IsValid);
+        Assert.AreEqual(1, result.Errors.Count);
+        Assert.IsTrue(result.Errors[0].ErrorMessage.StartsWith("'Row Version' must not be empty."));
+    }
 }

@@ -30,7 +30,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
 
     #region FooExists
     [TestMethod]
-    public async Task FooExists_ForExistingFoo_ShouldReturnTrue()
+    public async Task FooExists_ShouldReturnTrue_WhenFooExist()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);            
@@ -44,7 +44,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task FooExists_ForNonExistingFoo_ShouldReturnFalse()
+    public async Task FooExists_ShouldReturnFalse_WhenFooNotExist()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
@@ -60,7 +60,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
 
     #region FooIsVoided
     [TestMethod]
-    public async Task FooIsVoided_ForVoidedFoo_ShouldReturnTrue()
+    public async Task FooIsVoided_ShouldReturnTrue_WhenFooIsVoided()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
@@ -74,7 +74,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task FooIsVoided_ForNonVoidedFoo_ShouldReturnFalse()
+    public async Task FooIsVoided_ShouldReturnFalse_WhenFooIsNotVoided()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
@@ -88,7 +88,7 @@ public class FooValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task FooIsVoided_ForNonExistingFoo_ShouldReturnFalse()
+    public async Task FooIsVoided_ShouldReturnFalse_WhenFooNotExist()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);  

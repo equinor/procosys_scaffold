@@ -37,7 +37,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
 
     #region ExistsAsync
     [TestMethod]
-    public async Task ExistsAsync_ForExistingClosedProject_ShouldReturnTrue()
+    public async Task ExistsAsync_ShouldReturnTrue_WhenProjectIsClosed()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);            
@@ -51,7 +51,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task ExistsAsync_ForExistingOpenProject_ShouldReturnTrue()
+    public async Task ExistsAsync_ShouldReturnTrue_WhenProjectIsOpen()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
@@ -65,7 +65,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task ExistsAsync_ForNonExistingProject_ShouldReturnFalse()
+    public async Task ExistsAsync_ShouldReturnFalse_WhenProjectNotExist()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
@@ -81,7 +81,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
 
     #region IsClosed
     [TestMethod]
-    public async Task IsClosed_ForClosedProject_ShouldReturnTrue()
+    public async Task IsClosed_ShouldReturnTrue_WhenProjectIsClosed()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
@@ -95,7 +95,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task IsClosed_ForOpenProject_ShouldReturnFalse()
+    public async Task IsClosed_ShouldReturnFalse_WhenProjectIsOpen()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
@@ -109,7 +109,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task IsClosed_ForNonExistingProject_ShouldReturnFalse()
+    public async Task IsClosed_ShouldReturnFalse_WhenProjectNotExist()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
@@ -125,7 +125,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
 
     #region IsClosedForFoo
     [TestMethod]
-    public async Task IsClosedForFoo_ForFooInClosedProject_ShouldReturnTrue()
+    public async Task IsClosedForFoo_ShouldReturnTrue_WhenFooIsInClosedProject()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
@@ -139,7 +139,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task IsClosedForFoo_ForFooInOpenProject_ShouldReturnFalse()
+    public async Task IsClosedForFoo_ShouldReturnFalse_WhenFooIsInOpenProject()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
@@ -153,7 +153,7 @@ public class ProjectValidatorTests : ReadOnlyTestsBase
     }
 
     [TestMethod]
-    public async Task IsClosedForFoo_ForNonExistingFoo_ShouldReturnFalse()
+    public async Task IsClosedForFoo_ShouldReturnFalse_WhenFooNotExist()
     {
         // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);

@@ -39,7 +39,7 @@ public abstract class UploadBaseDtoValidatorTests<T> where T : UploadBaseDto, ne
     protected abstract T GetValidDto();
 
     [TestMethod]
-    public void Validate_OK()
+    public void Validate_ShouldBeValid_WhenOkState()
     {
         var result = _dut.Validate(GetValidDto());
 
@@ -47,7 +47,7 @@ public abstract class UploadBaseDtoValidatorTests<T> where T : UploadBaseDto, ne
     }
 
     [TestMethod]
-    public void Fail_When_FileNotGiven()
+    public void Validate_ShouldValidate_ShouldFail_WhenFileNotGiven()
     {
         var uploadAttachmentDto = new T();
 
@@ -59,7 +59,7 @@ public abstract class UploadBaseDtoValidatorTests<T> where T : UploadBaseDto, ne
     }
 
     [TestMethod]
-    public void Fail_WhenFileNameNotExists()
+    public void Validate_ShouldFail_WhenFileNameNotExists()
     {
         var uploadAttachmentDto = new T
         {
@@ -74,7 +74,7 @@ public abstract class UploadBaseDtoValidatorTests<T> where T : UploadBaseDto, ne
     }
 
     [TestMethod]
-    public void Fail_WhenFileNameIsTooLong()
+    public void Validate_ShouldFail_WhenFileNameIsTooLong()
     {
         var uploadAttachmentDto = new T
         {
@@ -89,7 +89,7 @@ public abstract class UploadBaseDtoValidatorTests<T> where T : UploadBaseDto, ne
     }
 
     [TestMethod]
-    public void Fail_When_FileToBig()
+    public void Validate_ShouldValidate_ShouldFail_WhenFileToBig()
     {
         var uploadAttachmentDto = new T
         {
@@ -104,7 +104,7 @@ public abstract class UploadBaseDtoValidatorTests<T> where T : UploadBaseDto, ne
     }
 
     [TestMethod]
-    public void Fail_When_IllegalFileType()
+    public void Validate_ShouldValidate_ShouldFail_WhenIllegalFileType()
     {
         var uploadAttachmentDto = new T
         {
