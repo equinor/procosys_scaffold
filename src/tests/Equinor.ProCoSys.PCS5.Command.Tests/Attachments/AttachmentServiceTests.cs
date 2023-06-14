@@ -41,7 +41,7 @@ public class AttachmentServiceTests : TestsBase
                 _attachmentAddedToRepository = attachment;
             });
         _existingAttachment = new Attachment(_sourceType, _sourceGuid, TestPlantA, _existingFileName);
-        _attachmentRepositoryMock.Setup(l => l.TryGetAttachmentWithFilenameForSourceAsync(
+        _attachmentRepositoryMock.Setup(a => a.TryGetAttachmentWithFilenameForSourceAsync(
                 _existingAttachment.SourceGuid,
                 _existingAttachment.FileName))
             .ReturnsAsync(_existingAttachment);
@@ -75,7 +75,7 @@ public class AttachmentServiceTests : TestsBase
             => _dut.UploadNewAsync(_sourceType, _sourceGuid, _existingFileName, new MemoryStream(), default));
 
         // Assert
-        _azureBlobServiceMock.Verify(b => b.UploadAsync(
+        _azureBlobServiceMock.Verify(a => a.UploadAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<Stream>(),
@@ -125,8 +125,8 @@ public class AttachmentServiceTests : TestsBase
 
         // Assert
         var p = _attachmentAddedToRepository.GetFullBlobPath();
-        _azureBlobServiceMock.Verify(b
-            => b.UploadAsync(
+        _azureBlobServiceMock.Verify(a
+            => a.UploadAsync(
                 _blobContainer,
                 p,
                 It.IsAny<Stream>(),
@@ -187,8 +187,8 @@ public class AttachmentServiceTests : TestsBase
 
         // Assert
         var p = _existingAttachment.GetFullBlobPath();
-        _azureBlobServiceMock.Verify(b
-            => b.UploadAsync(
+        _azureBlobServiceMock.Verify(a
+            => a.UploadAsync(
                 _blobContainer,
                 p,
                 It.IsAny<Stream>(),
@@ -230,6 +230,53 @@ public class AttachmentServiceTests : TestsBase
 
         // Assert
         Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region DeleteAsync
+    [TestMethod]
+    public async Task DeleteAsync_ShouldDeleteAttachmentFromRepository_WhenKnownAttachment()
+    {
+        // Act
+        await _dut.DeleteAsync(_existingAttachment.Guid, _rowVersion, default);
+
+        // Assert
+        _attachmentRepositoryMock.Verify(a => a.Remove(_existingAttachment), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task DeleteAsync_ShouldDeleteAttachmentFromBlobStorage_WhenKnownAttachment()
+    {
+        // Act
+        await _dut.DeleteAsync(_existingAttachment.Guid, _rowVersion, default);
+
+        // Assert
+        var p = _existingAttachment.GetFullBlobPath();
+        _azureBlobServiceMock.Verify(a
+            => a.DeleteAsync(
+                _blobContainer,
+                p,
+                default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task DeleteAsync_ShouldThrowException_WhenUnknownAttachment()
+    {
+        // Act and Assert
+        await Assert.ThrowsExceptionAsync<Exception>(()
+            => _dut.DeleteAsync(Guid.NewGuid(), _rowVersion, default));
+
+        // Assert
+        _attachmentRepositoryMock.Verify(
+            a => a.Remove(
+                It.IsAny<Attachment>()),
+            Times.Never);
+        _azureBlobServiceMock.Verify(
+            a => a.DeleteAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                default),
+            Times.Never);
     }
     #endregion
 }

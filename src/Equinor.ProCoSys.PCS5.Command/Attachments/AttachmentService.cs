@@ -91,6 +91,7 @@ public class AttachmentService : IAttachmentService
         return attachment != null;
     }
 
+    // todo unit tests
     public async Task DeleteAsync(
         Guid guid,
         string rowVersion,
@@ -102,6 +103,12 @@ public class AttachmentService : IAttachmentService
         {
             throw new Exception($"Attachment with guid {guid} not found when updating");
         }
+
+        var fullBlobPath = attachment.GetFullBlobPath();
+        await _azureBlobService.DeleteAsync(
+            _blobStorageOptions.Value.BlobContainer,
+            fullBlobPath,
+            cancellationToken);
 
         // Setting RowVersion before delete has 2 missions:
         // 1) Set correct Concurrency

@@ -7,7 +7,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Controllers;
 public class UploadNewAttachmentDtoValidatorTests : UploadBaseDtoValidatorTests<UploadNewAttachmentDto>
 {
     protected override void SetupDut() =>
-        _dut = new UploadNewAttachmentDtoValidator<UploadNewAttachmentDto>(_blobStorageOptionsMock.Object);
+        _dut = new(_blobStorageOptionsMock.Object);
 
     protected override UploadNewAttachmentDto GetValidDto() =>
         new()
