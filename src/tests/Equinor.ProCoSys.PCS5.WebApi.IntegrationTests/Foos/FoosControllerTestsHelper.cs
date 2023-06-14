@@ -163,6 +163,103 @@ public static class FoosControllerTestsHelper
         return JsonConvert.DeserializeObject<GuidAndRowVersion>(jsonString);
     }
 
+
+    public static async Task<List<AttachmentDto>> GetFooAttachmentsAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{guid}/Attachments");
+
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (expectedStatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<List<AttachmentDto>>(content);
+    }
+
+    public static async Task<string> GetFooAttachmentDownloadUrlAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        Guid attachmentGuid,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).GetAsync($"{_route}/{guid}/Attachments/{attachmentGuid}");
+
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        if (expectedStatusCode != HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public static async Task<GuidAndRowVersion> UploadNewFooAttachmentAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        TestFile file,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var httpContent = file.CreateHttpContent();
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PostAsync($"{_route}/{guid}/Attachments", httpContent);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<GuidAndRowVersion>(jsonString);
+    }
+
+    public static async Task<string> OverwriteExistingFooAttachmentAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        TestFile file,
+        string rowVersion,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var httpContent = file.CreateHttpContent();
+        httpContent.Add(new StringContent(rowVersion), nameof(rowVersion));
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).PutAsync($"{_route}/{guid}/Attachments", httpContent);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public static async Task DeleteFooAttachmentAsync(
+        UserType userType,
+        string plant,
+        Guid guid,
+        Guid attachmentGuid,
+        string rowVersion,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK,
+        string expectedMessageOnBadRequest = null)
+    {
+        var bodyPayload = new
+        {
+            rowVersion
+        };
+        var serializePayload = JsonConvert.SerializeObject(bodyPayload);
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"{_route}/{guid}/Attachments/{attachmentGuid}")
+        {
+            Content = new StringContent(serializePayload, Encoding.UTF8, "application/json")
+        };
+
+        var response = await TestFactory.Instance.GetHttpClient(userType, plant).SendAsync(request);
+        await TestsHelper.AssertResponseAsync(response, expectedStatusCode, expectedMessageOnBadRequest);
+    }
+
     public static async Task<string> UpdateFooAsync(
         UserType userType,
         string plant,

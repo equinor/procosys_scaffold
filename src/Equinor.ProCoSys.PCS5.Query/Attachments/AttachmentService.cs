@@ -44,6 +44,7 @@ public class AttachmentService : IAttachmentService
                    select new AttachmentDto(
                        a.SourceGuid,
                        a.Guid,
+                       a.GetFullBlobPath(),
                        a.FileName,
                        new PersonDto(
                            createdByUser.Guid,

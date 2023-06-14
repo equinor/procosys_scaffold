@@ -59,10 +59,14 @@ public class AttachmentService : IAttachmentService
         _attachmentRepository.Add(attachment);
         attachment.AddDomainEvent(new NewAttachmentUploadedEvent(attachment));
 
-        return await UploadAsync(attachment, content, false, cancellationToken);
+        await UploadAsync(attachment, content, false, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new AttachmentDto(attachment.Guid, attachment.RowVersion.ConvertToString());
     }
 
-    public async Task<AttachmentDto> UploadOverwriteAsync(
+    public async Task<string> UploadOverwriteAsync(
         string sourceType,
         Guid sourceGuid,
         string fileName,
@@ -81,8 +85,12 @@ public class AttachmentService : IAttachmentService
 
         attachment.SetRowVersion(rowVersion);
         attachment.AddDomainEvent(new ExistingAttachmentUploadedAndOverwrittenEvent(attachment));
+        
+        await UploadAsync(attachment, content, true, cancellationToken);
 
-        return await UploadAsync(attachment, content, true, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        return attachment.RowVersion.ConvertToString();
     }
 
     public async Task<bool> FilenameExistsForSourceAsync(Guid sourceGuid, string fileName)
@@ -122,7 +130,7 @@ public class AttachmentService : IAttachmentService
         _logger.LogDebug($"Attachment '{attachment.FileName}' with guid {attachment.Guid} deleted for {attachment.SourceGuid}");
     }
 
-    private async Task<AttachmentDto> UploadAsync(
+    private async Task UploadAsync(
         Attachment attachment,
         Stream content,
         bool overwriteIfExists,
@@ -136,11 +144,7 @@ public class AttachmentService : IAttachmentService
             overwriteIfExists,
             cancellationToken);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
         _logger.LogDebug($"Attachment '{attachment.FileName}' with guid {attachment.Guid} uploaded for {attachment.SourceGuid}");
-
-        return new AttachmentDto(attachment.Guid, attachment.RowVersion.ConvertToString());
     }
 
     public async Task<bool> ExistsAsync(Guid guid)

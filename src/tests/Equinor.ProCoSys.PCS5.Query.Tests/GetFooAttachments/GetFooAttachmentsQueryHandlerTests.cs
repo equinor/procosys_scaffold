@@ -26,6 +26,7 @@ public class GetFooAttachmentsQueryHandlerTests : TestsBase
         _attachmentDto = new AttachmentDto(
             _query.FooGuid,
             Guid.NewGuid(), 
+            "full/path",
             "F.txt",
             new PersonDto(Guid.NewGuid(), "First1", "Last1", "UN1", "Email1"),
             new DateTime(2023, 6, 11, 1, 2, 3),
@@ -55,6 +56,7 @@ public class GetFooAttachmentsQueryHandlerTests : TestsBase
         Assert.AreEqual(_attachmentDto.SourceGuid, attachment.SourceGuid);
         Assert.AreEqual(_attachmentDto.Guid, attachment.Guid);
         Assert.AreEqual(_attachmentDto.FileName, attachment.FileName);
+        Assert.AreEqual(_attachmentDto.FullBlobPath, attachment.FullBlobPath);
         Assert.AreEqual(_attachmentDto.RowVersion, attachment.RowVersion);
         
         var createdBy = attachment.CreatedBy;

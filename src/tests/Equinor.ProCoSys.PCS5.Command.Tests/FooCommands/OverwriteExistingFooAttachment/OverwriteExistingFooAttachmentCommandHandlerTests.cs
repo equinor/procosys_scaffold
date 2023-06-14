@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.PCS5.Command.FooCommands.UploadNewFooAttachment;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.OverwriteExistingFooAttachment;
 using Equinor.ProCoSys.PCS5.Command.Attachments;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Test.Common;
@@ -13,38 +13,37 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.OverwriteExistingFooAt
 [TestClass]
 public class OverwriteExistingFooAttachmentCommandHandlerTests : TestsBase
 {
-    private readonly string _rowVersion = "AAAAAAAAABA=";
-    private readonly Guid _guid = new("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    private UploadNewFooAttachmentCommandHandler _dut;
-    private UploadNewFooAttachmentCommand _command;
+    private readonly string _newRowVersion = "AAAAAAAAACC=";
+    private OverwriteExistingFooAttachmentCommandHandler _dut;
+    private OverwriteExistingFooAttachmentCommand _command;
     private Mock<IAttachmentService> _attachmentServiceMock;
 
     [TestInitialize]
     public void Setup()
     {
-        _command = new UploadNewFooAttachmentCommand(Guid.NewGuid(), "T", new MemoryStream());
+        var oldRowVersion = "AAAAAAAAABA=";
+        _command = new OverwriteExistingFooAttachmentCommand(Guid.NewGuid(), "T", oldRowVersion, new MemoryStream());
 
         _attachmentServiceMock = new Mock<IAttachmentService>();
-        _attachmentServiceMock.Setup(a => a.UploadNewAsync(
+        _attachmentServiceMock.Setup(a => a.UploadOverwriteAsync(
             nameof(Foo),
             _command.FooGuid,
             _command.FileName,
             _command.Content,
-            default)).ReturnsAsync(new AttachmentDto(_guid, _rowVersion));
+            _command.RowVersion,
+            default)).ReturnsAsync(_newRowVersion);
 
-        _dut = new UploadNewFooAttachmentCommandHandler(_attachmentServiceMock.Object);
+        _dut = new OverwriteExistingFooAttachmentCommandHandler(_attachmentServiceMock.Object);
     }
 
     [TestMethod]
-    public async Task HandlingCommand_ShouldReturn_GuidAndRowVersion()
+    public async Task HandlingCommand_ShouldReturn_NewGuid()
     {
         // Act
         var result = await _dut.Handle(_command, default);
 
         // Assert
-        Assert.IsInstanceOfType(result.Data, typeof(GuidAndRowVersion));
-        Assert.AreEqual(_rowVersion, result.Data.RowVersion);
-        Assert.AreEqual(_guid, result.Data.Guid);
+        Assert.AreEqual(_newRowVersion, result.Data);
     }
 
     [TestMethod]
@@ -54,11 +53,12 @@ public class OverwriteExistingFooAttachmentCommandHandlerTests : TestsBase
         await _dut.Handle(_command, default);
 
         // Assert
-        _attachmentServiceMock.Verify(u => u.UploadNewAsync(
+        _attachmentServiceMock.Verify(u => u.UploadOverwriteAsync(
             nameof(Foo), 
             _command.FooGuid, 
             _command.FileName,
             _command.Content,
+            _command.RowVersion,
             default), Times.Exactly(1));
     }
 }

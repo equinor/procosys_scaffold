@@ -205,7 +205,7 @@ public class AttachmentServiceTests : TestsBase
         // Assert
         // In real life EF Core will create a new RowVersion when save.
         // Since UnitOfWorkMock is a Mock this will not happen here, so we assert that RowVersion is set from command
-        Assert.AreEqual(_rowVersion, result.RowVersion);
+        Assert.AreEqual(_rowVersion, result);
         Assert.AreEqual(_rowVersion, _existingAttachment.RowVersion.ConvertToString());
     }
     #endregion

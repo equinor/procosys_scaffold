@@ -48,7 +48,7 @@ public class UploadNewFooAttachmentCommandHandlerTests : TestsBase
     }
 
     [TestMethod]
-    public async Task HandlingCommand_Should_CallAdd_OnAttachmentService()
+    public async Task HandlingCommand_Should_CallUploadNewAsync_OnAttachmentService()
     {
         // Act
         await _dut.Handle(_command, default);

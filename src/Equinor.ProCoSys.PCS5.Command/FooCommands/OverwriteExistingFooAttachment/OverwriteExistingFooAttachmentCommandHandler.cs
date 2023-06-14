@@ -7,16 +7,16 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.OverwriteExistingFooAttachment;
 
-public class OverwriteExistingFooAttachmentCommandHandler : IRequestHandler<OverwriteExistingFooAttachmentCommand, Result<GuidAndRowVersion>>
+public class OverwriteExistingFooAttachmentCommandHandler : IRequestHandler<OverwriteExistingFooAttachmentCommand, Result<string>>
 {
     private readonly IAttachmentService _attachmentService;
 
     public OverwriteExistingFooAttachmentCommandHandler(IAttachmentService attachmentService)
         => _attachmentService = attachmentService;
 
-    public async Task<Result<GuidAndRowVersion>> Handle(OverwriteExistingFooAttachmentCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(OverwriteExistingFooAttachmentCommand request, CancellationToken cancellationToken)
     {
-        var attachmentDto = await _attachmentService.UploadOverwriteAsync(
+        var newRowVersion = await _attachmentService.UploadOverwriteAsync(
             nameof(Foo),
             request.FooGuid,
             request.FileName,
@@ -24,6 +24,6 @@ public class OverwriteExistingFooAttachmentCommandHandler : IRequestHandler<Over
             request.RowVersion,
             cancellationToken);
 
-        return new SuccessResult<GuidAndRowVersion>(new GuidAndRowVersion(attachmentDto.Guid, attachmentDto.RowVersion));
+        return new SuccessResult<string>(newRowVersion);
     }
 }

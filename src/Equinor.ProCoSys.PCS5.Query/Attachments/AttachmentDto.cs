@@ -7,6 +7,7 @@ public class AttachmentDto
     public AttachmentDto(
         Guid sourceGuid,
         Guid guid,
+        string fullBlobPath,
         string fileName,
         PersonDto createdBy,
         DateTime createdAtUtc,
@@ -16,6 +17,7 @@ public class AttachmentDto
     {
         SourceGuid = sourceGuid;
         Guid = guid;
+        FullBlobPath = fullBlobPath;
         FileName = fileName;
         CreatedBy = createdBy;
         CreatedAtUtc = createdAtUtc;
@@ -26,6 +28,7 @@ public class AttachmentDto
 
     public Guid SourceGuid { get; }
     public Guid Guid { get; }
+    public string FullBlobPath { get; }
     public string FileName { get; }
     public PersonDto CreatedBy { get; }
     public DateTime CreatedAtUtc { get; set; }

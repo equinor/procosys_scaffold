@@ -125,6 +125,7 @@ public class AttachmentServiceTests : ReadOnlyTestsBase
     {
         Assert.AreEqual(attachment.SourceGuid, attachmentDto.SourceGuid);
         Assert.AreEqual(attachment.Guid, attachmentDto.Guid);
+        Assert.AreEqual(attachment.GetFullBlobPath(), attachmentDto.FullBlobPath);
         Assert.AreEqual(attachment.FileName, attachmentDto.FileName);
         var createdBy = attachmentDto.CreatedBy;
         Assert.IsNotNull(createdBy);

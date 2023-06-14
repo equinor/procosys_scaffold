@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Auth.Permission;
 using Equinor.ProCoSys.Auth.Person;
+using Equinor.ProCoSys.BlobStorage;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
@@ -31,6 +32,7 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
     private readonly List<Action> _teardownList = new();
     private readonly List<IDisposable> _disposables = new();
 
+    public readonly Mock<IAzureBlobService> BlobStorageMock = new();
     private readonly Mock<IPersonApiService> _personApiServiceMock = new();
     private readonly Mock<IPermissionApiService> _permissionApiServiceMock = new();
 
@@ -133,6 +135,7 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
 
             services.AddScoped(_ => _personApiServiceMock.Object);
             services.AddScoped(_ => _permissionApiServiceMock.Object);
+            services.AddScoped(_ => BlobStorageMock.Object);
         });
 
         builder.ConfigureServices(services =>

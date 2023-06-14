@@ -14,7 +14,7 @@ public interface IAttachmentService
         Stream content,
         CancellationToken cancellationToken);
 
-    Task<AttachmentDto> UploadOverwriteAsync(
+    Task<string> UploadOverwriteAsync(
         string sourceType,
         Guid sourceGuid,
         string fileName,

@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Common.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
 
@@ -282,6 +283,131 @@ public class FoosControllerTests : TestBase
             comments);
     }
 
+    [TestMethod]
+    public async Task UploadFooAttachment_AsWriter_ShouldUploadFooAttachment()
+    {
+        // Arrange and Act
+        var (_, attachmentGuidAndRowVersion)
+            = await UploadNewFooAttachmentAsync(Guid.NewGuid().ToString());
+
+        // Assert
+        AssertValidGuidAndRowVersion(attachmentGuidAndRowVersion);
+    }
+
+    [TestMethod]
+    public async Task GetFooAttachmentsAsync_AsReader_ShouldGetFooAttachments()
+    {
+        // Arrange and Act
+        var fileName = Guid.NewGuid().ToString();
+        var (fooGuidAndRowVersion, attachmentGuidAndRowVersion) = await UploadNewFooAttachmentAsync(fileName);
+
+        // Act
+        var attachments = await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+
+        // Assert
+        AssertFirstAndOnlyAttachment(
+            fooGuidAndRowVersion.Guid,
+            attachmentGuidAndRowVersion.Guid,
+            attachmentGuidAndRowVersion.RowVersion,
+            fileName,
+            attachments);
+    }
+
+    [TestMethod]
+    public async Task GetFooAttachmentDownloadUrl_AsReader_ShouldGetUrl()
+    {
+        // Arrange
+        var fileName = Guid.NewGuid().ToString();
+        var (fooGuidAndRowVersion, attachmentGuidAndRowVersion) = await UploadNewFooAttachmentAsync(fileName);
+
+        var attachments = await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+        var uri = new Uri("http://blah.blah.com");
+        var fullBlobPath = attachments.ElementAt(0).FullBlobPath;
+        TestFactory.Instance.BlobStorageMock
+            .Setup(a => a.GetDownloadSasUri(
+                It.IsAny<string>(),
+                fullBlobPath,
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()))
+            .Returns(uri);
+
+
+        // Act
+        var attachmentUrl = await FoosControllerTestsHelper.GetFooAttachmentDownloadUrlAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid,
+            attachmentGuidAndRowVersion.Guid);
+
+        // Assert
+        Assert.AreEqual(uri.AbsolutePath, attachmentUrl);
+    }
+
+    [TestMethod]
+    public async Task OverwriteExistingFooAttachment_AsWriter_ShouldUpdateFooAttachmentAndRowVersion()
+    {
+        // Arrange
+        var fileName = Guid.NewGuid().ToString();
+        var (fooGuidAndRowVersion, attachmentGuidAndRowVersion) =
+            await UploadNewFooAttachmentAsync(fileName);
+
+        // Act
+        var newAttachmentRowVersion = await FoosControllerTestsHelper.OverwriteExistingFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid,
+            new TestFile("blah updated", fileName),
+            attachmentGuidAndRowVersion.RowVersion);
+
+        // Assert
+        AssertRowVersionChange(attachmentGuidAndRowVersion.RowVersion, newAttachmentRowVersion);
+
+        var attachments = await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+
+        AssertFirstAndOnlyAttachment(
+            fooGuidAndRowVersion.Guid,
+            attachmentGuidAndRowVersion.Guid,
+            newAttachmentRowVersion,
+            fileName,
+            attachments);
+    }
+
+    [TestMethod]
+    public async Task DeleteFooAttachment_AsWriter_ShouldDeleteFooAttachment()
+    {
+        // Arrange
+        var (fooGuidAndRowVersion, attachmentGuidAndRowVersion)
+            = await UploadNewFooAttachmentAsync(Guid.NewGuid().ToString());
+        var attachments = await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+        Assert.AreEqual(1, attachments.Count);
+
+        // Act
+        await FoosControllerTestsHelper.DeleteFooAttachmentAsync(
+            UserType.Writer, TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid,
+            attachmentGuidAndRowVersion.Guid,
+            attachmentGuidAndRowVersion.RowVersion);
+
+        // Assert
+        attachments = await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid);
+        Assert.AreEqual(0, attachments.Count);
+    }
+
     private async Task<(GuidAndRowVersion fooGuidAndRowVersion, GuidAndRowVersion linkGuidAndRowVersion)>
         CreateFooLinkAsync(string title, string url)
     {
@@ -319,6 +445,24 @@ public class FoosControllerTests : TestBase
         return (fooGuidAndRowVersion, commentGuidAndRowVersion);
     }
 
+    private async Task<(GuidAndRowVersion fooGuidAndRowVersion, GuidAndRowVersion linkGuidAndRowVersion)>
+        UploadNewFooAttachmentAsync(string fileName)
+    {
+        var fooGuidAndRowVersion = await FoosControllerTestsHelper.CreateFooAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            Guid.NewGuid().ToString(),
+            TestFactory.ProjectWithAccess);
+
+        var attachmentGuidAndRowVersion = await FoosControllerTestsHelper.UploadNewFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithAccess,
+            fooGuidAndRowVersion.Guid,
+            new TestFile("blah", fileName));
+
+        return (fooGuidAndRowVersion, attachmentGuidAndRowVersion);
+    }
+
     private static void AssertFirstAndOnlyLink(
         Guid fooGuid,
         Guid linkGuid,
@@ -349,5 +493,23 @@ public class FoosControllerTests : TestBase
         Assert.AreEqual(fooGuid, comment.SourceGuid);
         Assert.AreEqual(commentGuid, comment.Guid);
         Assert.AreEqual(text, comment.Text);
+        Assert.IsNotNull(comment.CreatedBy);
+        Assert.IsNotNull(comment.CreatedAtUtc);
+    }
+
+    private static void AssertFirstAndOnlyAttachment(
+        Guid fooGuid,
+        Guid attachmentGuid,
+        string attachmentRowVersion,
+        string fileName,
+        List<AttachmentDto> attachments)
+    {
+        Assert.IsNotNull(attachments);
+        Assert.AreEqual(1, attachments.Count);
+        var attachment = attachments[0];
+        Assert.AreEqual(fooGuid, attachment.SourceGuid);
+        Assert.AreEqual(attachmentGuid, attachment.Guid);
+        Assert.AreEqual(attachmentRowVersion, attachment.RowVersion);
+        Assert.AreEqual(fileName, attachment.FileName);
     }
 }

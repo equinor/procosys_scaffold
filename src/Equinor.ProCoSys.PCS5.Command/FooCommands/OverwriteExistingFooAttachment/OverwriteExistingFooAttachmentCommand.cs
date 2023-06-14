@@ -5,7 +5,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.OverwriteExistingFooAttachment;
 
-public class OverwriteExistingFooAttachmentCommand : UploadAttachmentCommand, IRequest<Result<GuidAndRowVersion>>, IFooCommandRequest
+public class OverwriteExistingFooAttachmentCommand : UploadAttachmentCommand, IRequest<Result<string>>, IFooCommandRequest
 {
     public OverwriteExistingFooAttachmentCommand(Guid fooGuid, string fileName, string rowVersion, Stream content)
         : base(content)

@@ -238,7 +238,7 @@ public class FoosController : ControllerBase
 
     [AuthorizeAny(Permissions.FOO_ATTACH, Permissions.APPLICATION_TESTER)]
     [HttpPut("{guid}/Attachments")]
-    public async Task<ActionResult<GuidAndRowVersion>> OverwriteFooAttachment(
+    public async Task<ActionResult<string>> OverwriteExistingFooAttachment(
         [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
         [Required]
         [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
