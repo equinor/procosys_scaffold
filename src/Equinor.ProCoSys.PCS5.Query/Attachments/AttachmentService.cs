@@ -8,14 +8,27 @@ using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Microsoft.EntityFrameworkCore;
+using Equinor.ProCoSys.BlobStorage;
+using Equinor.ProCoSys.Common.Time;
+using Microsoft.Extensions.Options;
 
 namespace Equinor.ProCoSys.PCS5.Query.Attachments;
 
 public class AttachmentService : IAttachmentService
 {
     private readonly IReadOnlyContext _context;
+    private readonly IAzureBlobService _azureBlobService;
+    private readonly IOptionsSnapshot<BlobStorageOptions> _blobStorageOptions;
 
-    public AttachmentService(IReadOnlyContext context) => _context = context;
+    public AttachmentService(
+        IReadOnlyContext context,
+        IAzureBlobService azureBlobService,
+        IOptionsSnapshot<BlobStorageOptions> blobStorageOptions)
+    {
+        _context = context;
+        _azureBlobService = azureBlobService;
+        _blobStorageOptions = blobStorageOptions;
+    }
 
     public async Task<IEnumerable<AttachmentDto>> GetAllForSourceAsync(
         Guid sourceGuid,
@@ -53,5 +66,28 @@ public class AttachmentService : IAttachmentService
                 .ToListAsync(cancellationToken);
 
         return attachments;
+    }
+
+    // todo unit test
+    public async Task<Uri?> TryGetDownloadUriAsync(Guid guid, CancellationToken cancellationToken)
+    {
+        var attachment = await
+            (from a in _context.QuerySet<Attachment>()
+                where a.Guid == guid
+                select a).SingleOrDefaultAsync(cancellationToken);
+
+        if (attachment == null)
+        {
+            return null;
+        }
+
+        var now = TimeService.UtcNow;
+        var fullBlobPath = attachment.GetFullBlobPath();
+        var uri = _azureBlobService.GetDownloadSasUri(
+            _blobStorageOptions.Value.BlobContainer,
+            fullBlobPath,
+            new DateTimeOffset(now.AddMinutes(_blobStorageOptions.Value.BlobClockSkewMinutes * -1)),
+            new DateTimeOffset(now.AddMinutes(_blobStorageOptions.Value.BlobClockSkewMinutes)));
+        return uri;
     }
 }

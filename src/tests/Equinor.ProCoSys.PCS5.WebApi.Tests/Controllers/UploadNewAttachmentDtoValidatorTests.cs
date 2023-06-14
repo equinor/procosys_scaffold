@@ -4,12 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Controllers;
 
 [TestClass]
-public class UploadAttachmentDtoValidatorTests : UploadBaseDtoValidatorTests<UploadAttachmentDto>
+public class UploadNewAttachmentDtoValidatorTests : UploadBaseDtoValidatorTests<UploadNewAttachmentDto>
 {
     protected override void SetupDut() =>
-        _dut = new UploadAttachmentDtoValidator<UploadAttachmentDto>(_blobStorageOptionsMock.Object);
+        _dut = new UploadNewAttachmentDtoValidator<UploadNewAttachmentDto>(_blobStorageOptionsMock.Object);
 
-    protected override UploadAttachmentDto GetValidDto() =>
+    protected override UploadNewAttachmentDto GetValidDto() =>
         new()
         {
             File = new TestableFormFile("picture.gif", 1000)

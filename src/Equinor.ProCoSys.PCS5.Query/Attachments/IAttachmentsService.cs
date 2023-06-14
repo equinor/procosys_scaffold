@@ -10,4 +10,8 @@ public interface IAttachmentService
     Task<IEnumerable<AttachmentDto>> GetAllForSourceAsync(
         Guid sourceGuid,
         CancellationToken cancellationToken);
+
+    Task<Uri?> TryGetDownloadUriAsync(
+        Guid guid,
+        CancellationToken cancellationToken);
 }

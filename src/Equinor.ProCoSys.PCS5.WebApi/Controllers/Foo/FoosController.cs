@@ -22,12 +22,14 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Query.Attachments;
 using Equinor.ProCoSys.PCS5.Query.Comments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooAttachmentDownloadUrl;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooAttachments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooComments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
 using Equinor.ProCoSys.PCS5.Query.Links;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
+using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Controllers.Foo;
 
@@ -223,7 +225,7 @@ public class FoosController : ControllerBase
         [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
         string plant,
         [FromRoute] Guid guid,
-        [FromForm] UploadAttachmentDto dto)
+        [FromForm] UploadNewAttachmentDto dto)
     {
         await using var stream = dto.File.OpenReadStream();
 
@@ -280,6 +282,26 @@ public class FoosController : ControllerBase
     {
         var result = await _mediator.Send(new DeleteFooAttachmentCommand(guid, attachmentGuid, dto.RowVersion));
         return this.FromResult(result);
+    }
+
+    [AuthorizeAny(Permissions.FOO_READ, Permissions.APPLICATION_TESTER)]
+    [HttpGet("{guid}/Attachments/{attachmentGuid}")]
+    public async Task<ActionResult<string>> GetFooAttachmentDownloadUrl(
+        [FromHeader(Name = CurrentPlantMiddleware.PlantHeader)]
+        [Required]
+        [StringLength(PlantEntityBase.PlantLengthMax, MinimumLength = PlantEntityBase.PlantLengthMin)]
+        string plant,
+        [FromRoute] Guid guid,
+        [FromRoute] Guid attachmentGuid)
+    {
+        var result = await _mediator.Send(new GetFooAttachmentDownloadUrlQuery(guid, attachmentGuid));
+
+        if (result.ResultType != ResultType.Ok)
+        {
+            return this.FromResult(result);
+        }
+
+        return Ok(result.Data.ToString());
     }
     #endregion
 }
