@@ -17,9 +17,11 @@ using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooComment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooAttachment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
+using Equinor.ProCoSys.PCS5.Command.FooCommands.OverwriteExistingFooAttachment;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.UploadNewFooAttachment;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooAttachments;
 using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooComments;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooAttachmentDownloadUrl;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations;
 
@@ -314,6 +316,34 @@ public class AccessValidatorTests
     }
     #endregion
 
+    #region OverwriteExistingFooAttachmentCommand
+    [TestMethod]
+    public async Task ValidateAsync_OnOverwriteExistingFooAttachmentCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new OverwriteExistingFooAttachmentCommand(_fooGuidWithAccessToProject, null!, null!, null!);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnOverwriteExistingFooAttachmentCommand_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
+    {
+        // Arrange
+        var command = new OverwriteExistingFooAttachmentCommand(_fooGuidWithoutAccessToProject, null!, null!, null!);
+
+        // act
+        var result = await _dut.ValidateAsync(command);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
     #region DeleteFooAttachmentCommand
     [TestMethod]
     public async Task ValidateAsync_OnDeleteFooAttachmentCommand_ShouldReturnTrue_WhenAccessToProjectForFoo()
@@ -449,6 +479,34 @@ public class AccessValidatorTests
     {
         // Arrange
         var query = new GetFooAttachmentsQuery(_fooGuidWithoutAccessToProject);
+
+        // act
+        var result = await _dut.ValidateAsync(query);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+    #endregion
+
+    #region GetFooAttachmentDownloadUrlQuery
+    [TestMethod]
+    public async Task ValidateAsync_OnGetFooAttachmentDownloadUrlQuery_ShouldReturnTrue_WhenAccessToProject()
+    {
+        // Arrange
+        var query = new GetFooAttachmentDownloadUrlQuery(_fooGuidWithAccessToProject, Guid.Empty);
+
+        // act
+        var result = await _dut.ValidateAsync(query);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_OnGetFooAttachmentDownloadUrlQuery_ShouldReturnFalse_WhenNoAccessToProject()
+    {
+        // Arrange
+        var query = new GetFooAttachmentDownloadUrlQuery(_fooGuidWithoutAccessToProject, Guid.Empty);
 
         // act
         var result = await _dut.ValidateAsync(query);
