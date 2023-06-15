@@ -13,7 +13,7 @@ namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc;
 [TestClass]
 public class ProjectCheckerTests
 {
-    private readonly Guid _currentUserOid = new Guid("12345678-1234-1234-1234-123456789123");
+    private readonly Guid _currentUserOid = new("12345678-1234-1234-1234-123456789123");
     private readonly string _plant = "Plant";
     private readonly string _project = "Project";
 

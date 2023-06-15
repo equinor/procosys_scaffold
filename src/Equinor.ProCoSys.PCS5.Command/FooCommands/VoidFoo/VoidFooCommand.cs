@@ -1,16 +1,17 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 
 public class VoidFooCommand : IRequest<Result<string>>, IFooCommandRequest
 {
-    public VoidFooCommand(int fooId, string? rowVersion)
+    public VoidFooCommand(Guid fooGuid, string rowVersion)
     {
-        FooId = fooId;
+        FooGuid = fooGuid;
         RowVersion = rowVersion;
     }
 
-    public int FooId { get; }
-    public string? RowVersion { get; }
+    public Guid FooGuid { get; }
+    public string RowVersion { get; }
 }

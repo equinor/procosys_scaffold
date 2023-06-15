@@ -3,7 +3,6 @@ using System.Linq;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.Common.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -12,29 +11,24 @@ using Equinor.ProCoSys.PCS5.Infrastructure;
 
 namespace Equinor.ProCoSys.PCS5.Test.Common;
 
-public abstract class ReadOnlyTestsBase
+public abstract class ReadOnlyTestsBase : TestsBase
 {
-    protected readonly string TestPlantA = "PCS$PlantA";
     protected readonly string ProjectNameA = "ProA";
     protected readonly string ProjectNameB = "ProB";
-    protected static readonly Guid ProjectProCoSysGuidA = Guid.NewGuid();
-    protected static readonly Guid ProjectProCoSysGuidB = Guid.NewGuid();
+    protected static readonly Guid ProjectGuidA = Guid.NewGuid();
+    protected static readonly Guid ProjectGuidB = Guid.NewGuid();
     protected Project _projectA;
     protected Project _projectB;
     protected Person _currentPerson;
     protected readonly Guid CurrentUserOid = new ("12345678-1234-1234-1234-123456789123");
     protected DbContextOptions<PCS5Context> _dbContextOptions;
-    protected Mock<IPlantProvider> _plantProviderMock;
     protected IPlantProvider _plantProvider;
     protected ICurrentUserProvider _currentUserProvider;
     protected IEventDispatcher _eventDispatcher;
-    protected ManualTimeProvider _timeProvider;
 
     [TestInitialize]
     public void SetupBase()
     {
-        _plantProviderMock = new Mock<IPlantProvider>();
-        _plantProviderMock.SetupGet(x => x.Plant).Returns(TestPlantA);
         _plantProvider = _plantProviderMock.Object;
 
         var currentUserProviderMock = new Mock<ICurrentUserProvider>();
@@ -44,9 +38,6 @@ public abstract class ReadOnlyTestsBase
         var eventDispatcher = new Mock<IEventDispatcher>();
         _eventDispatcher = eventDispatcher.Object;
 
-        _timeProvider = new ManualTimeProvider(new DateTime(2020, 2, 1, 0, 0, 0, DateTimeKind.Utc));
-        TimeService.SetProvider(_timeProvider);
-
         _dbContextOptions = new DbContextOptionsBuilder<PCS5Context>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
@@ -54,14 +45,14 @@ public abstract class ReadOnlyTestsBase
         using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
             
         // ensure current user exists in db. Will be used when setting createdby / modifiedby
-        if (context.Persons.SingleOrDefault(p => p.Oid == CurrentUserOid) == null)
+        if (context.Persons.SingleOrDefault(p => p.Guid == CurrentUserOid) == null)
         {
             _currentPerson = new Person(CurrentUserOid, "Ole", "Lukkøye", "ol", "ol@pcs.pcs");
             AddPerson(context, _currentPerson);
         }
 
-        _projectA = new(TestPlantA, ProjectProCoSysGuidA, ProjectNameA, $"{ProjectNameA} desc");
-        _projectB = new(TestPlantA, ProjectProCoSysGuidB, ProjectNameB, $"{ProjectNameB} desc");
+        _projectA = new(TestPlantA, ProjectGuidA, ProjectNameA, $"{ProjectNameA} desc");
+        _projectB = new(TestPlantA, ProjectGuidB, ProjectNameB, $"{ProjectNameB} desc");
 
         AddProject(context, _projectA);
         AddProject(context, _projectB);

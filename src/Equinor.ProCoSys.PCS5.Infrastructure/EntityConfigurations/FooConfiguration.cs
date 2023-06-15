@@ -24,10 +24,36 @@ internal class FooConfiguration : IEntityTypeConfiguration<Foo>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Property(x => x.Title)
-            .HasMaxLength(Foo.TitleMaxLength)
+            .HasMaxLength(Foo.TitleLengthMax)
             .IsRequired();
 
         builder.Property(x => x.Text)
-            .HasMaxLength(Foo.TextMaxLength);
+            .HasMaxLength(Foo.TextLengthMax);
+
+        builder
+            .HasIndex(x => x.Guid)
+            .HasDatabaseName("IX_Foos_Guid")
+            .IncludeProperties(x => new
+            {
+                x.Title,
+                x.Text,
+                x.ProjectId,
+                x.CreatedById,
+                x.CreatedAtUtc,
+                x.ModifiedById,
+                x.ModifiedAtUtc,
+                x.IsVoided,
+                x.RowVersion
+            });
+
+        builder
+            .HasIndex(x => x.ProjectId)
+            .HasDatabaseName("IX_Foos_ProjectId")
+            .IncludeProperties(x => new
+            {
+                x.Title,
+                x.IsVoided,
+                x.RowVersion
+            });
     }
 }

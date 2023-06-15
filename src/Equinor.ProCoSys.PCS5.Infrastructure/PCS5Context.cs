@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Domain;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Audit;
@@ -56,6 +59,9 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
     public virtual DbSet<Person> Persons => Set<Person>();
     public virtual DbSet<Foo> Foos => Set<Foo>();
     public virtual DbSet<Project> Projects => Set<Project>();
+    public virtual DbSet<Link> Links => Set<Link>();
+    public virtual DbSet<Comment> Comments => Set<Comment>();
+    public virtual DbSet<Attachment> Attachments => Set<Attachment>();
 
     private void SetGlobalPlantFilter(ModelBuilder modelBuilder)
     {
@@ -79,10 +85,11 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await DispatchPreSaveEventsAsync(cancellationToken);
+        await DispatchDomainEventsAsync(cancellationToken);
+
         await SetAuditDataAsync();
         UpdateConcurrencyToken();
-            
+
         try
         {
             var result = await base.SaveChangesAsync(cancellationToken);
@@ -98,7 +105,8 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
     public async Task<IDbContextTransaction> BeginTransaction(CancellationToken cancellationToken = default) 
         => await base.Database.BeginTransactionAsync(cancellationToken);
 
-    public void Commit() => base.Database.CommitTransaction();
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+        => await base.Database.CommitTransactionAsync(cancellationToken);
 
     private void UpdateConcurrencyToken()
     {
@@ -117,13 +125,13 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
         }
     }
 
-    private async Task DispatchPreSaveEventsAsync(CancellationToken cancellationToken = default)
+    private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken = default)
     {
         var entities = ChangeTracker
             .Entries<EntityBase>()
-            .Where(x => x.Entity.PreSaveDomainEvents != null && x.Entity.PreSaveDomainEvents.Any())
+            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any())
             .Select(x => x.Entity);
-        await _eventDispatcher.DispatchPreSaveAsync(entities, cancellationToken);
+        await _eventDispatcher.DispatchDomainEventsAsync(entities, cancellationToken);
     }
 
     private async Task DispatchPostSaveEventsAsync(CancellationToken cancellationToken = default)
@@ -132,7 +140,7 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
             .Entries<EntityBase>()
             .Where(x => x.Entity.PostSaveDomainEvents != null && x.Entity.PostSaveDomainEvents.Any())
             .Select(x => x.Entity);
-        await _eventDispatcher.DispatchPostSaveAsync(entities, cancellationToken);
+        await _eventDispatcher.DispatchPostSaveEventsAsync(entities, cancellationToken);
     }
 
     private async Task SetAuditDataAsync()
@@ -143,13 +151,14 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
             .ToList();
         var modifiedEntries = ChangeTracker
             .Entries<IModificationAuditable>()
-            .Where(x => x.State == EntityState.Modified)
+            // Also update modifiedBy / modifiedAt when deleting. This to be able to log who performed the deletion
+            .Where(x => x.State == EntityState.Modified || x.State == EntityState.Deleted)
             .ToList();
 
         if (addedEntries.Any() || modifiedEntries.Any())
         {
             var currentUserOid = _currentUserProvider.GetCurrentUserOid();
-            var currentUser = await Persons.SingleOrDefaultAsync(p => p.Oid == currentUserOid);
+            var currentUser = await Persons.SingleOrDefaultAsync(p => p.Guid == currentUserOid);
             if (currentUser == null)
             {
                 throw new Exception(

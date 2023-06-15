@@ -8,20 +8,25 @@ namespace Equinor.ProCoSys.PCS5.WebApi.IntegrationTests.Foos;
 [TestClass]
 public class FoosControllerNegativeTests : TestBase
 {
-    private int _fooIdUnderTest;
+    private Guid _fooGuidUnderTest;
+    private Guid _linkGuidUnderTest;
+    private Guid _attachmentGuidUnderTest;
 
     [TestInitialize]
     public void TestInitialize()
-        => _fooIdUnderTest
-            = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAId;
-        
-    #region Get
+    {
+        _fooGuidUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].FooAGuid;
+        _linkGuidUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].LinkInFooAGuid;
+        _attachmentGuidUnderTest = TestFactory.Instance.SeededData[KnownPlantData.PlantA].AttachmentInFooAGuid;
+    }
+
+    #region GetFoo
     [TestMethod]
     public async Task GetFoo_AsAnonymous_ShouldReturnUnauthorized()
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Anonymous,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             HttpStatusCode.Unauthorized);
 
     [TestMethod]
@@ -29,7 +34,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.NoPermissionUser,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
 
@@ -38,7 +43,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest, 
+            _fooGuidUnderTest, 
             HttpStatusCode.BadRequest,
             "is not a valid plant");
 
@@ -47,7 +52,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest, 
+            _fooGuidUnderTest, 
             HttpStatusCode.Forbidden);
 
     [TestMethod]
@@ -55,7 +60,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess, 
-            _fooIdUnderTest, 
+            _fooGuidUnderTest, 
             HttpStatusCode.Forbidden);
 
     [TestMethod]
@@ -63,11 +68,11 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.GetFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess, 
-            9999, 
+            Guid.Empty, 
             HttpStatusCode.NotFound);
     #endregion
 
-    #region GetInProject
+    #region GetFoosInProject
     [TestMethod]
     public async Task GetFoosInProject_AsAnonymous_ShouldReturnUnauthorized()
         => await FoosControllerTestsHelper.GetAllFoosInProjectAsync(
@@ -119,7 +124,7 @@ public class FoosControllerNegativeTests : TestBase
             HttpStatusCode.Forbidden);
     #endregion
 
-    #region Create
+    #region CreateFoo
     [TestMethod]
     public async Task CreateFoo_AsAnonymous_ShouldReturnUnauthorized()
         => await FoosControllerTestsHelper.CreateFooAsync(
@@ -177,13 +182,13 @@ public class FoosControllerNegativeTests : TestBase
             HttpStatusCode.Forbidden);
     #endregion
         
-    #region Void
+    #region VoidFoo
     [TestMethod]
     public async Task VoidFoo_AsAnonymous_ShouldReturnUnauthorized()
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Anonymous, 
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Unauthorized);
 
@@ -192,7 +197,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.NoPermissionUser,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -202,7 +207,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -212,7 +217,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -221,7 +226,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -230,7 +235,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Reader,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -239,19 +244,19 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.WrongButValidRowVersion,
             HttpStatusCode.Conflict);
 
     #endregion
 
-    #region Update
+    #region UpdateFoo
     [TestMethod]
     public async Task UpdateFoo_AsAnonymous_ShouldReturnUnauthorized()
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Anonymous,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -262,7 +267,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.NoPermissionUser,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -274,7 +279,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -286,7 +291,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -297,7 +302,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -308,7 +313,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Reader,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             "Foo1",
             "Foo1-txt",
             TestFactory.AValidRowVersion,
@@ -319,7 +324,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.UpdateFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
             TestFactory.WrongButValidRowVersion,
@@ -327,13 +332,13 @@ public class FoosControllerNegativeTests : TestBase
 
     #endregion
 
-    #region Delete
+    #region DeleteFoo
     [TestMethod]
     public async Task DeleteFoo_AsAnonymous_ShouldReturnUnauthorized()
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Anonymous,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Unauthorized);
 
@@ -341,7 +346,7 @@ public class FoosControllerNegativeTests : TestBase
     public async Task DeleteFoo_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.NoPermissionUser, TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -351,7 +356,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Writer,
             TestFactory.Unknown,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.BadRequest,
             "is not a valid plant");
@@ -361,7 +366,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.NoPermissionUser,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -370,7 +375,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Writer,
             TestFactory.PlantWithoutAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -379,7 +384,7 @@ public class FoosControllerNegativeTests : TestBase
         => await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Reader,
             TestFactory.PlantWithAccess,
-            _fooIdUnderTest,
+            _fooGuidUnderTest,
             TestFactory.AValidRowVersion,
             HttpStatusCode.Forbidden);
 
@@ -394,16 +399,645 @@ public class FoosControllerNegativeTests : TestBase
         await FoosControllerTestsHelper.VoidFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Id,
+            idAndRowVersion.Guid,
             idAndRowVersion.RowVersion);
         // Act
 
         await FoosControllerTestsHelper.DeleteFooAsync(
             UserType.Writer,
             TestFactory.PlantWithAccess,
-            idAndRowVersion.Id,
+            idAndRowVersion.Guid,
             TestFactory.WrongButValidRowVersion,
             HttpStatusCode.Conflict);
     }
+    #endregion
+
+    #region CreateFooLink
+    [TestMethod]
+    public async Task CreateFooLink_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.CreateFooLinkAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            "U",
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task CreateFooLink_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.CreateFooLinkAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            "U",
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task CreateFooLink_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.CreateFooLinkAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            "U",
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task CreateFooLink_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.CreateFooLinkAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            "T",
+            "U",
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task CreateFooLink_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.CreateFooLinkAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            "T",
+            "U",
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task CreateFooLink_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.CreateFooLinkAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            "T",
+            "U",
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region GetFooLinks
+    [TestMethod]
+    public async Task GetFooLinks_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task GetFooLinks_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooLinks_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooLinks_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task GetFooLinks_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooLinksAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region UpdateFooLink
+    [TestMethod]
+    public async Task UpdateFooLink_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.UpdateFooLinkAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            "T",
+            "U",
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task UpdateFooLink_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.UpdateFooLinkAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            "T",
+            "U",
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task UpdateFooLink_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.UpdateFooLinkAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            "T",
+            "U",
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task UpdateFooLink_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.UpdateFooLinkAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            "T",
+            "U",
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task UpdateFooLink_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.UpdateFooLinkAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            "T",
+            "U",
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task UpdateFooLink_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.UpdateFooLinkAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            "T",
+            "U",
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region DeleteFooLink
+    [TestMethod]
+    public async Task DeleteFooLink_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.DeleteFooLinkAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task DeleteFooLink_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.DeleteFooLinkAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task DeleteFooLink_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.DeleteFooLinkAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task DeleteFooLink_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.DeleteFooLinkAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task DeleteFooLink_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.DeleteFooLinkAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task DeleteFooLink_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.DeleteFooLinkAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            _linkGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region CreateFooComment
+    [TestMethod]
+    public async Task CreateFooComment_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task CreateFooComment_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task CreateFooComment_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task CreateFooComment_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task CreateFooComment_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task CreateFooComment_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.CreateFooCommentAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            "T",
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region GetFooComments
+    [TestMethod]
+    public async Task GetFooComments_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task GetFooComments_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooComments_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooComments_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task GetFooComments_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooCommentsAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region UploadNewFooAttachment
+    [TestMethod]
+    public async Task UploadNewFooAttachment_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.UploadNewFooAttachmentAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task UploadNewFooAttachment_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.UploadNewFooAttachmentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task UploadNewFooAttachment_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.UploadNewFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task UploadNewFooAttachment_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.UploadNewFooAttachmentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task UploadNewFooAttachment_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.UploadNewFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task UploadNewFooAttachment_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.UploadNewFooAttachmentAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region GetFooAttachments
+    [TestMethod]
+    public async Task GetFooAttachments_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task GetFooAttachments_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooAttachments_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooAttachments_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task GetFooAttachments_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentsAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region GetFooAttachmentDownloadUrl
+    [TestMethod]
+    public async Task GetFooAttachmentDownloadUrl_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.GetFooAttachmentDownloadUrlAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task GetFooAttachmentDownloadUrl_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentDownloadUrlAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooAttachmentDownloadUrl_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentDownloadUrlAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task GetFooAttachmentDownloadUrl_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentDownloadUrlAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task GetFooAttachmentDownloadUrl_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.GetFooAttachmentDownloadUrlAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region OverwriteExistingFooAttachment
+    [TestMethod]
+    public async Task OverwriteExistingFooAttachment_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.OverwriteExistingFooAttachmentAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task OverwriteExistingFooAttachment_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.OverwriteExistingFooAttachmentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task OverwriteExistingFooAttachment_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.OverwriteExistingFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task OverwriteExistingFooAttachment_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.OverwriteExistingFooAttachmentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task OverwriteExistingFooAttachment_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.OverwriteExistingFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task OverwriteExistingFooAttachment_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.OverwriteExistingFooAttachmentAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            new TestFile("T", "F"),
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+    #endregion
+
+    #region DeleteFooAttachment
+    [TestMethod]
+    public async Task DeleteFooAttachment_AsAnonymous_ShouldReturnUnauthorized()
+        => await FoosControllerTestsHelper.DeleteFooAttachmentAsync(
+            UserType.Anonymous,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Unauthorized);
+
+    [TestMethod]
+    public async Task DeleteFooAttachment_AsNoPermissionUser_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.DeleteFooAttachmentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task DeleteFooAttachment_AsWriter_ShouldReturnBadRequest_WhenUnknownPlant()
+        => await FoosControllerTestsHelper.DeleteFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.Unknown,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.BadRequest,
+            "is not a valid plant");
+
+    [TestMethod]
+    public async Task DeleteFooAttachment_AsNoPermissionUser_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.DeleteFooAttachmentAsync(
+            UserType.NoPermissionUser,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task DeleteFooAttachment_AsWriter_ShouldReturnForbidden_WhenNoAccessToPlant()
+        => await FoosControllerTestsHelper.DeleteFooAttachmentAsync(
+            UserType.Writer,
+            TestFactory.PlantWithoutAccess,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
+
+    [TestMethod]
+    public async Task DeleteFooAttachment_AsReader_ShouldReturnForbidden_WhenPermissionMissing()
+        => await FoosControllerTestsHelper.DeleteFooAttachmentAsync(
+            UserType.Reader,
+            TestFactory.PlantWithAccess,
+            _fooGuidUnderTest,
+            _attachmentGuidUnderTest,
+            TestFactory.AValidRowVersion,
+            HttpStatusCode.Forbidden);
     #endregion
 }

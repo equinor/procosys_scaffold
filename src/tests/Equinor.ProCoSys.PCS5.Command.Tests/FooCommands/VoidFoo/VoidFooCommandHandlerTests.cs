@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
+using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -11,9 +11,8 @@ using Moq;
 namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.VoidFoo;
 
 [TestClass]
-public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
+public class VoidFooCommandHandlerTests : TestsBase
 {
-    private readonly int _fooId = 1;
     private readonly string _rowVersion = "AAAAAAAAABA=";
 
     private Mock<IFooRepository> _fooRepositoryMock;
@@ -25,14 +24,13 @@ public class VoidFooCommandHandlerTests : CommandHandlerTestsBase
     [TestInitialize]
     public void Setup()
     {
-        var project = new Project(TestPlant, Guid.NewGuid(), "P", "D");
-        _existingFoo = new Foo(TestPlant, project, "Foo");
-        _existingFoo.SetProtectedIdForTesting(_fooId);
+        var project = new Project(TestPlantA, Guid.NewGuid(), "P", "D");
+        _existingFoo = new Foo(TestPlantA, project, "Foo");
         _fooRepositoryMock = new Mock<IFooRepository>();
-        _fooRepositoryMock.Setup(r => r.GetByIdAsync(_existingFoo.Id))
+        _fooRepositoryMock.Setup(r => r.TryGetByGuidAsync(_existingFoo.Guid))
             .ReturnsAsync(_existingFoo);
 
-        _command = new VoidFooCommand(_fooId, _rowVersion);
+        _command = new VoidFooCommand(_existingFoo.Guid, _rowVersion);
 
         _dut = new VoidFooCommandHandler(
             _fooRepositoryMock.Object,

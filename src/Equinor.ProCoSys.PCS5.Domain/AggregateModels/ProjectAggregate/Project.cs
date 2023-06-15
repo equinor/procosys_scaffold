@@ -6,10 +6,12 @@ using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 
-public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable
+public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IHaveGuid
 {
     public const int NameLengthMax = 30;
     public const int DescriptionLengthMax = 1000;
+
+    private bool _isDeletedInSource;
 
 #pragma warning disable CS8618
     protected Project()
@@ -18,23 +20,23 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
     {
     }
 
-    public Project(string plant, Guid proCoSysGuid, string name, string description)
+    public Project(string plant, Guid guid, string name, string description)
         : base(plant)
     {
-        ProCoSysGuid = proCoSysGuid;
+        Guid = guid;
         Name = name;
         Description = description;
     }
 
-    // private set needed for EntityFramework
-    public Guid ProCoSysGuid { get; private set; }
-    public string Name { get; private set; }
+    // private setters needed for Entity Framework
+    public string Name { get; set; }
     public string Description { get; set; }
     public bool IsClosed { get; set; }
     public DateTime CreatedAtUtc { get; private set; }
     public int CreatedById { get; private set; }
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
+    public Guid Guid { get; private set; }
 
     public void SetCreated(Person createdBy)
     {
@@ -54,5 +56,29 @@ public class Project : PlantEntityBase, IAggregateRoot, ICreationAuditable, IMod
             throw new ArgumentNullException(nameof(modifiedBy));
         }
         ModifiedById = modifiedBy.Id;
+    }
+
+    public bool IsDeletedInSource
+    {
+        get => _isDeletedInSource;
+        set
+        {
+            if (_isDeletedInSource && !value)
+            {
+                // this is an Undelete, which don't make sence
+                throw new Exception("Changing IsDeletedInSource from true to false is not supported!");
+            }
+
+            // do nothing if already set
+            if (_isDeletedInSource == value)
+            {
+                return;
+            }
+
+            _isDeletedInSource = value;
+
+            // Make sure to close when setting _isDeletedInSource
+            IsClosed = value;
+        }
     }
 }

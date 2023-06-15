@@ -13,53 +13,60 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers;
 public class EventDispatcherTests
 {
     [TestMethod]
-    public async Task DispatchPreSaveAsync_SendsOutEvents_Test()
+    public async Task DispatchPreSaveAsync_ShouldSendsOutEvents()
     {
         var mediator = new Mock<IMediator>();
         var dut = new EventDispatcher(mediator.Object);
-        var entities = new List<TestableEntityBase>();
+        var entities = new List<TestableEntity>();
 
         for (var i = 0; i < 3; i++)
         {
-            var entity = new Mock<TestableEntityBase>();
-            entity.Object.AddPreSaveDomainEvent(new Mock<IPreSaveDomainEvent>().Object);
+            var entity = new Mock<TestableEntity>();
+            entity.Object.AddDomainEvent(new TestableDomainEvent());
             entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
         }
-        await dut.DispatchPreSaveAsync(entities);
+        await dut.DispatchDomainEventsAsync(entities);
 
         mediator.Verify(x 
             => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
 
-        entities.ForEach(e => Assert.AreEqual(0, e.PreSaveDomainEvents.Count));
+        entities.ForEach(e => Assert.AreEqual(0, e.DomainEvents.Count));
         entities.ForEach(e => Assert.AreEqual(1, e.PostSaveDomainEvents.Count));
     }
 
     [TestMethod]
-    public async Task DispatchPostSaveAsync_SendsOutEvents_Test()
+    public async Task DispatchPostSaveAsync_ShouldSendsOutEvents()
     {
         var mediator = new Mock<IMediator>();
         var dut = new EventDispatcher(mediator.Object);
-        var entities = new List<TestableEntityBase>();
+        var entities = new List<TestableEntity>();
 
         for (var i = 0; i < 3; i++)
         {
-            var entity = new Mock<TestableEntityBase>();
-            entity.Object.AddPreSaveDomainEvent(new Mock<IPreSaveDomainEvent>().Object);
+            var entity = new Mock<TestableEntity>();
+            entity.Object.AddDomainEvent(new TestableDomainEvent());
             entity.Object.AddPostSaveDomainEvent(new Mock<IPostSaveDomainEvent>().Object);
             entities.Add(entity.Object);
         }
-        await dut.DispatchPostSaveAsync(entities);
+        await dut.DispatchPostSaveEventsAsync(entities);
 
         mediator.Verify(x
             => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
 
-        entities.ForEach(e => Assert.AreEqual(1, e.PreSaveDomainEvents.Count));
+        entities.ForEach(e => Assert.AreEqual(1, e.DomainEvents.Count));
         entities.ForEach(e => Assert.AreEqual(0, e.PostSaveDomainEvents.Count));
     }
 }
 
-public class TestableEntityBase : EntityBase
+// The base classes are abstract, therefor sub classes needed to test it.
+public class TestableEntity : EntityBase
 {
-    // The base class is abstract, therefor a sub class is needed to test it.
+}
+
+public class TestableDomainEvent : DomainEvent
+{
+    public TestableDomainEvent() : base("Test")
+    {
+    }
 }

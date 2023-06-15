@@ -3,6 +3,7 @@ using System.Linq;
 using Equinor.ProCoSys.Common.Time;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -47,14 +48,6 @@ public class FooTests
     public void Constructor_ShouldThrowException_WhenProjectInOtherPlant()
         => Assert.ThrowsException<ArgumentException>(() =>
             new Foo(_testPlant, new Project("OtherPlant", Guid.NewGuid(), "P", "D"), _title));
-
-    [TestMethod]
-    public void Constructor_ShouldAddFooCreatedPreEvent()
-        => Assert.IsInstanceOfType(_dut.PreSaveDomainEvents.First(), typeof(Events.PreSave.FooCreatingEvent));
-
-    [TestMethod]
-    public void Constructor_ShouldAddFooCreatedPostEvent()
-        => Assert.IsInstanceOfType(_dut.PostSaveDomainEvents.First(), typeof(Events.PostSave.FooCreatedEvent));
     #endregion
 
     #region Edit
@@ -66,14 +59,6 @@ public class FooTests
 
         Assert.AreEqual("New Title", _dut.Title);
         Assert.AreEqual("New Text", _dut.Text);
-    }
-
-    [TestMethod]
-    public void EditFoo_ShouldAddFooEditedEvent()
-    {
-        _dut.EditFoo("New Title", "New Text");
-
-        Assert.IsInstanceOfType(_dut.PreSaveDomainEvents.Last(), typeof(Events.PreSave.FooEditingEvent));
     }
     #endregion
 }

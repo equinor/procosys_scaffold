@@ -32,7 +32,7 @@ public class Seeder : IHostedService
                        new SeederUserProvider()))
             {
                 // If the seeder user exists in the database, it's already been seeded. Don't seed again.
-                if (await dbContext.Persons.AnyAsync(p => p.Oid == s_seederUser.Oid))
+                if (await dbContext.Persons.AnyAsync(p => p.Guid == s_seederUser.Guid))
                 {
                     return;
                 }
@@ -56,7 +56,7 @@ public class Seeder : IHostedService
 
     private class SeederUserProvider : ICurrentUserProvider
     {
-        public Guid GetCurrentUserOid() => s_seederUser.Oid;
+        public Guid GetCurrentUserOid() => s_seederUser.Guid;
         public bool HasCurrentUser => throw new NotImplementedException();
     }
 }

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Equinor.ProCoSys.Common.Misc;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Infrastructure;
@@ -42,26 +45,35 @@ public static class PCS5ContextExtension
         var project = SeedProject(
             dbContext,
             plant,
-            KnownTestData.ProjectProCoSysGuidA,
+            KnownTestData.ProjectGuidA,
             KnownTestData.ProjectNameA,
             KnownTestData.ProjectDescriptionA);
         var foo = SeedFoo(dbContext, plant, project, KnownTestData.FooA);
-        knownTestData.FooAId = foo.Id;
+        knownTestData.FooAGuid = foo.Guid;
 
         project = SeedProject(
             dbContext, 
             plant, 
-            KnownTestData.ProjectProCoSysGuidB,
+            KnownTestData.ProjectGuidB,
             KnownTestData.ProjectNameB, 
             KnownTestData.ProjectDescriptionB);
         foo = SeedFoo(dbContext, plant, project, KnownTestData.FooB);
-        knownTestData.FooBId = foo.Id;
+        knownTestData.FooBGuid = foo.Guid;
+
+        var link = SeedLink(dbContext, "Foo", foo.Guid, "VG", "www.vg.no");
+        knownTestData.LinkInFooAGuid = link.Guid;
+
+        var comment = SeedComment(dbContext, "Foo", foo.Guid, "Comment");
+        knownTestData.CommentInFooAGuid = comment.Guid;
+
+        var attachment = SeedAttachment(dbContext, plant, "Foo", foo.Guid, "fil.txt");
+        knownTestData.AttachmentInFooAGuid = attachment.Guid;
     }
 
     private static void EnsureCurrentUserIsSeeded(PCS5Context dbContext, ICurrentUserProvider userProvider)
     {
         var personRepository = new PersonRepository(dbContext);
-        var seeder = personRepository.GetByOidAsync(userProvider.GetCurrentUserOid()).Result;
+        var seeder = personRepository.TryGetByGuidAsync(userProvider.GetCurrentUserOid()).Result;
         if (seeder == null)
         {
             SeedCurrentUserAsPerson(dbContext, userProvider);
@@ -79,12 +91,12 @@ public static class PCS5ContextExtension
     private static Project SeedProject(
         PCS5Context dbContext,
         string plant,
-        Guid proCoSysGuid,
+        Guid guid,
         string name,
         string desc)
     {
         var projectRepository = new ProjectRepository(dbContext);
-        var project = new Project(plant, proCoSysGuid, name, desc);
+        var project = new Project(plant, guid, name, desc);
         projectRepository.Add(project);
         dbContext.SaveChangesAsync().Wait();
         return project;
@@ -97,5 +109,37 @@ public static class PCS5ContextExtension
         fooRepository.Add(foo);
         dbContext.SaveChangesAsync().Wait();
         return foo;
+    }
+
+    private static Link SeedLink(PCS5Context dbContext, string sourceType, Guid sourceGuid, string title, string url)
+    {
+        var linkRepository = new LinkRepository(dbContext);
+        var link = new Link(sourceType, sourceGuid, title, url);
+        linkRepository.Add(link);
+        dbContext.SaveChangesAsync().Wait();
+        return link;
+    }
+
+    private static Comment SeedComment(PCS5Context dbContext, string sourceType, Guid sourceGuid, string text)
+    {
+        var commentRepository = new CommentRepository(dbContext);
+        var comment = new Comment(sourceType, sourceGuid, text);
+        commentRepository.Add(comment);
+        dbContext.SaveChangesAsync().Wait();
+        return comment;
+    }
+
+    private static Attachment SeedAttachment(
+        PCS5Context dbContext,
+        string plant,
+        string sourceType,
+        Guid sourceGuid,
+        string fileName)
+    {
+        var attachmentRepository = new AttachmentRepository(dbContext);
+        var attachment = new Attachment(sourceType, sourceGuid, plant, fileName);
+        attachmentRepository.Add(attachment);
+        dbContext.SaveChangesAsync().Wait();
+        return attachment;
     }
 }

@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Equinor.ProCoSys.PCS5.Domain\Equinor.ProCoSys.PCS5.Domain.csproj" />
     <ProjectReference Include="..\..\Equinor.ProCoSys.PCS5.WebApi\Equinor.ProCoSys.PCS5.WebApi.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Test.Common\Equinor.ProCoSys.PCS5.Test.Common.csproj" />
   </ItemGroup>

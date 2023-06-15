@@ -7,11 +7,11 @@ using Equinor.ProCoSys.Common;
 
 namespace Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 
-public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IVoidable
+public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModificationAuditable, IVoidable, IHaveGuid
 {
-    public const int TitleMinLength = 3;
-    public const int TitleMaxLength = 250;
-    public const int TextMaxLength = 500;
+    public const int TitleLengthMin = 3;
+    public const int TitleLengthMax = 250;
+    public const int TextLengthMax = 500;
 
 #pragma warning disable CS8618
     protected Foo()
@@ -35,30 +35,25 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
         ProjectId = project.Id;
 
         Title = title;
-
-        ProCoSysGuid = Guid.NewGuid();
-
-        AddPreSaveDomainEvent(new Events.PreSave.FooCreatingEvent(plant, ProCoSysGuid));
-        AddPostSaveDomainEvent(new Events.PostSave.FooCreatedEvent(plant, ProCoSysGuid));
+        Guid = Guid.NewGuid();
     }
 
-    // private set needed for EntityFramework
-    public Guid ProCoSysGuid { get; private set; }
+    // private setters needed for Entity Framework
     public int ProjectId { get; private set; }
     public string Title { get; set; }
     public string? Text { get; set; }
+    public bool IsVoided { get; set; }
 
     public DateTime CreatedAtUtc { get; private set; }
     public int CreatedById { get; private set; }
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
+    public Guid Guid { get; private set; }
 
     public void EditFoo(string title, string? text)
     {
         Title = title;
         Text = text;
-        AddPreSaveDomainEvent(new Events.PreSave.FooEditingEvent(ProCoSysGuid));
-        AddPostSaveDomainEvent(new Events.PostSave.FooEditedEvent(ProCoSysGuid));
     }
 
     public void SetCreated(Person createdBy)
@@ -80,16 +75,4 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
         }
         ModifiedById = modifiedBy.Id;
     }
-
-    public void MoveToProject(Project toProject)
-    {
-        if (toProject is null)
-        {
-            throw new ArgumentNullException(nameof(toProject));
-        }
-
-        ProjectId = toProject.Id;
-    }
-
-    public bool IsVoided { get; set; }
 }

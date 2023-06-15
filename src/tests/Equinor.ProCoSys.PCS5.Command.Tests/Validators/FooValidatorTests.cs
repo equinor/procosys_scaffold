@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.Test.Common;
@@ -11,8 +12,8 @@ namespace Equinor.ProCoSys.PCS5.Command.Tests.Validators;
 [TestClass]
 public class FooValidatorTests : ReadOnlyTestsBase
 {
-    private int _nonVoidedFooId;
-    private int _voidedFooId;
+    private Guid _nonVoidedFooGuid;
+    private Guid _voidedFooGuid;
 
     protected override void SetupNewDatabase(DbContextOptions<PCS5Context> dbContextOptions)
     {
@@ -23,50 +24,80 @@ public class FooValidatorTests : ReadOnlyTestsBase
         context.Foos.Add(foo1);
         context.Foos.Add(foo2);
         context.SaveChangesAsync().Wait();
-        _nonVoidedFooId = foo1.Id;
-        _voidedFooId = foo2.Id;
+        _nonVoidedFooGuid = foo1.Guid;
+        _voidedFooGuid = foo2.Guid;
     }
 
     #region FooExists
     [TestMethod]
-    public async Task FooExistsAsync_ExistingFoo_ReturnsTrue()
+    public async Task FooExists_ShouldReturnTrue_WhenFooExist()
     {
-        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);            
         var dut = new FooValidator(context);
-        var result = await dut.FooExistsAsync(_nonVoidedFooId, default);
+
+        // Act
+        var result = await dut.FooExistsAsync(_nonVoidedFooGuid, default);
+
+        // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
-    public async Task FooExistsAsync_NonExistingFoo_ReturnsFalse()
+    public async Task FooExists_ShouldReturnFalse_WhenFooNotExist()
     {
-        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
         var dut = new FooValidator(context);
-        var result = await dut.FooExistsAsync(100, default);
+
+        // Act
+        var result = await dut.FooExistsAsync(Guid.Empty, default);
+
+        // Assert
         Assert.IsFalse(result);
     }
     #endregion
 
     #region FooIsVoided
     [TestMethod]
-    public async Task FooIsVoidedAsync_VoidedFoo_ReturnsTrue()
+    public async Task FooIsVoided_ShouldReturnTrue_WhenFooIsVoided()
     {
-        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);    
         var dut = new FooValidator(context);
-        var result = await dut.FooIsVoidedAsync(_voidedFooId, default);
+
+        // Act
+        var result = await dut.FooIsVoidedAsync(_voidedFooGuid, default);
+
+        // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
-    public async Task FooIsVoidedAsync_NonVoidedFoo_ReturnsFalse()
+    public async Task FooIsVoided_ShouldReturnFalse_WhenFooIsNotVoided()
     {
+        // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
-            
         var dut = new FooValidator(context);
-        var result = await dut.FooExistsAsync(100, default);
+
+        // Act
+        var result = await dut.FooIsVoidedAsync(_nonVoidedFooGuid, default);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public async Task FooIsVoided_ShouldReturnFalse_WhenFooNotExist()
+    {
+        // Arrange
+        await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);  
+        var dut = new FooValidator(context);
+
+        // Act
+        var result = await dut.FooIsVoidedAsync(Guid.NewGuid(), default);
+
+        // Assert
         Assert.IsFalse(result);
     }
     #endregion

@@ -2,9 +2,10 @@
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
 using Equinor.ProCoSys.PCS5.Domain;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 using Equinor.ProCoSys.PCS5.WebApi.Authentication;
@@ -20,7 +21,10 @@ using Equinor.ProCoSys.Common.Caches;
 using Equinor.ProCoSys.Common.Email;
 using Equinor.ProCoSys.Common.Telemetry;
 using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators;
+using Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
 using Equinor.ProCoSys.PCS5.WebApi.Controllers;
+using Equinor.ProCoSys.BlobStorage;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.DIModules;
 
@@ -32,6 +36,7 @@ public static class ApplicationModule
         services.Configure<MainApiOptions>(configuration.GetSection("MainApi"));
         services.Configure<CacheOptions>(configuration.GetSection("CacheOptions"));
         services.Configure<PCS5AuthenticatorOptions>(configuration.GetSection("Authenticator"));
+        services.Configure<BlobStorageOptions>(configuration.GetSection("BlobStorage"));
 
         services.AddDbContext<PCS5Context>(options =>
         {
@@ -59,12 +64,23 @@ public static class ApplicationModule
         services.AddScoped<ILocalPersonRepository, LocalPersonRepository>();
         services.AddScoped<IFooRepository, FooRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<ILinkRepository, LinkRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+        services.AddScoped<Command.Links.ILinkService, Command.Links.LinkService>();
+        services.AddScoped<Query.Links.ILinkService, Query.Links.LinkService>();
+        services.AddScoped<Command.Comments.ICommentService, Command.Comments.CommentService>();
+        services.AddScoped<Query.Comments.ICommentService, Query.Comments.CommentService>();
+        services.AddScoped<Command.Attachments.IAttachmentService, Command.Attachments.AttachmentService>();
+        services.AddScoped<Query.Attachments.IAttachmentService, Query.Attachments.AttachmentService>();
 
         services.AddScoped<IAuthenticatorOptions, AuthenticatorOptions>();
-        services.AddScoped<IProjectApiService, MainApiProjectService>();
 
+        services.AddScoped<IProjectValidator, ProjectValidator>();
         services.AddScoped<IFooValidator, FooValidator>();
         services.AddScoped<IRowVersionValidator, RowVersionValidator>();
+
+        services.AddScoped<IAzureBlobService, AzureBlobService>();
 
         // Singleton - Created the first time they are requested
         services.AddSingleton<IEmailService, EmailService>();

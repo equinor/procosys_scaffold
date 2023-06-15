@@ -23,13 +23,13 @@ internal class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired();
 
         builder
-            .HasIndex(p => p.Plant)
+            .HasIndex(x => x.Plant)
             .HasDatabaseName("IX_Projects_Plant_ASC")
-            .IncludeProperties(p => new { p.Name, p.IsClosed, p.CreatedAtUtc, p.ModifiedAtUtc });
+            .IncludeProperties(x => new { x.Name, x.IsClosed, x.CreatedAtUtc, x.ModifiedAtUtc });
 
         builder
-            .HasIndex(p => p.Name)
+            .HasIndex(x => x.Name)
             .HasDatabaseName("IX_Projects_Name_ASC")
-            .IncludeProperties(p => new { p.Plant });
+            .IncludeProperties(x => new { x.Plant });
     }
 }

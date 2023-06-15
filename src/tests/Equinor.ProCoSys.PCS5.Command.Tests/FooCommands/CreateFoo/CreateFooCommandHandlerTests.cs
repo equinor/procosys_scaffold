@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFoo;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
+using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
+using Equinor.ProCoSys.PCS5.Test.Common;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,19 +14,15 @@ using Moq;
 namespace Equinor.ProCoSys.PCS5.Command.Tests.FooCommands.CreateFoo;
 
 [TestClass]
-public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
+public class CreateFooCommandHandlerTests : TestsBase
 {
     private Mock<IFooRepository> _fooRepositoryMock;
-    private Mock<IProjectApiService> _projectApiServiceMock;
     private Mock<IProjectRepository> _projectRepositoryMock;
 
     private readonly string _projectName = "Project";
-    private readonly string _projectDescription = "Project Desc";
-    private readonly int _projectIdOnNew = 1;
+    private readonly int _projectIdOnExisting = 10;
 
     private Foo _fooAddedToRepository;
-    private Project _projectAddedToRepository;
-    private ProCoSysProject _proCoSysProject;
 
     private CreateFooCommandHandler _dut;
     private CreateFooCommand _command;
@@ -39,19 +37,12 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
             {
                 _fooAddedToRepository = foo;
             });
+        var project = new Project(TestPlantA, Guid.NewGuid(), _projectName, "");
+        project.SetProtectedIdForTesting(_projectIdOnExisting);
         _projectRepositoryMock = new Mock<IProjectRepository>();
         _projectRepositoryMock
-            .Setup(x => x.Add(It.IsAny<Project>()))
-            .Callback<Project>(project =>
-            {
-                _projectAddedToRepository = project;
-                project.SetProtectedIdForTesting(_projectIdOnNew);
-            });
-        _proCoSysProject = new ProCoSysProject {Name = _projectName, Description = _projectDescription };
-        _projectApiServiceMock = new Mock<IProjectApiService>();
-        _projectApiServiceMock
-            .Setup(x => x.TryGetProjectAsync(TestPlant, _projectName))
-            .ReturnsAsync(_proCoSysProject);
+            .Setup(x => x.TryGetProjectByNameAsync(_projectName))
+            .ReturnsAsync(project);
 
         _command = new CreateFooCommand("Foo", _projectName);
 
@@ -60,81 +51,34 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
             _fooRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _projectRepositoryMock.Object,
-            _projectApiServiceMock.Object,
             new Mock<ILogger<CreateFooCommandHandler>>().Object);
     }
 
     [TestMethod]
-    public async Task HandlingCommand_ShouldReturn_IdAndRowVersion()
+    public async Task HandlingCommand_ShouldReturn_GuidAndRowVersion()
     {
         // Act
         var result = await _dut.Handle(_command, default);
 
         // Assert
-        Assert.IsInstanceOfType(result.Data, typeof(IdAndRowVersion));
+        Assert.IsInstanceOfType(result.Data, typeof(GuidAndRowVersion));
     }
 
     [TestMethod]
-    public async Task HandlingCommand_ShouldAddFooToRepository_WhenProjectNotExists()
+    public async Task HandlingCommand_ShouldAddFooToRepository()
     {
         // Act
         await _dut.Handle(_command, default);
 
         // Assert
         Assert.IsNotNull(_fooAddedToRepository);
-        Assert.AreEqual(_projectIdOnNew, _fooAddedToRepository.ProjectId);
+        Assert.AreEqual(_command.Title, _fooAddedToRepository.Title);
+        Assert.AreEqual(_projectIdOnExisting, _fooAddedToRepository.ProjectId);
     }
 
     [TestMethod]
-    public async Task HandlingCommand_ShouldAddFooToRepository_WhenProjectExists()
+    public async Task HandlingCommand_ShouldSave()
     {
-        // Arrange
-        var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
-        var projectIdOnExisting = 10;
-        project.SetProtectedIdForTesting(projectIdOnExisting);
-        _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
-        // Act
-        await _dut.Handle(_command, default);
-
-        // Assert
-        Assert.IsNotNull(_fooAddedToRepository);
-        Assert.AreEqual(projectIdOnExisting, _fooAddedToRepository.ProjectId);
-    }
-
-    [TestMethod]
-    public async Task HandlingCommand_ShouldAddProjectToRepository_WhenProjectNotExists()
-    {
-        // Act
-        await _dut.Handle(_command, default);
-
-        // Assert
-        Assert.IsNotNull(_projectAddedToRepository);
-        Assert.AreEqual(_projectIdOnNew, _projectAddedToRepository.Id);
-        Assert.AreEqual(_projectName, _projectAddedToRepository.Name);
-        Assert.AreEqual(_projectDescription, _projectAddedToRepository.Description);
-    }
-
-    [TestMethod]
-    public async Task HandlingCommand_ShouldNotAddAnyProjectToRepository_WhenProjectAlreadyExists()
-    {
-        // Arrange
-        var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
-        _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
-
-        // Act
-        await _dut.Handle(_command, default);
-
-        // Assert
-        Assert.IsNull(_projectAddedToRepository);
-    }
-
-    [TestMethod]
-    public async Task HandlingCommand_ShouldSaveOnce_WhenProjectAlreadyExists()
-    {
-        // Arrange
-        var project = new Project(TestPlant, Guid.NewGuid(), _projectName, "");
-        _projectRepositoryMock.Setup(r => r.GetProjectOnlyByNameAsync(_projectName)).ReturnsAsync(project);
-
         // Act
         await _dut.Handle(_command, default);
 
@@ -143,12 +87,24 @@ public class CreateFooCommandHandlerTests : CommandHandlerTestsBase
     }
 
     [TestMethod]
-    public async Task HandlingCommand_ShouldSaveTwice_WhenProjectNotExists()
+    public async Task HandlingCommand_ShouldThrewException_WhenProjectNotExists()
+    {
+        // Arrange
+        _projectRepositoryMock
+            .Setup(x => x.TryGetProjectByNameAsync(_projectName))
+            .ReturnsAsync((Project)null);
+
+        // Act and Assert
+        await Assert.ThrowsExceptionAsync<Exception>(() => _dut.Handle(_command, default));
+    }
+
+    [TestMethod]
+    public async Task HandlingCommand_ShouldAddFooCreatedEvent()
     {
         // Act
         await _dut.Handle(_command, default);
 
         // Assert
-        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(default), Times.Exactly(2));
+        Assert.IsInstanceOfType(_fooAddedToRepository.DomainEvents.First(), typeof(FooCreatedEvent));
     }
 }

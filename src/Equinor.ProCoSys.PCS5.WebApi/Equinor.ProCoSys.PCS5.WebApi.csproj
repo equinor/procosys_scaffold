@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Equinor.ProCoSys.PcsServiceBus" Version="3.8.6" />
+    <PackageReference Include="Equinor.ProCoSys.PcsServiceBus" Version="4.0.2" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="5.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.15" />
@@ -20,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
     <PackageReference Include="ServiceResult.ApiExtensions" Version="1.0.1" />
+    <PackageReference Include="System.Text.Json" Version="7.0.2" />
   </ItemGroup>
 
   <ItemGroup>

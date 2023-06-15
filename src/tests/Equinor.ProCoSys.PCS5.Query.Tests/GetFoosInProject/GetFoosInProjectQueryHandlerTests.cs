@@ -6,7 +6,7 @@ using Equinor.ProCoSys.PCS5.Test.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceResult;
-using Equinor.ProCoSys.PCS5.Query.GetFoosInProject;
+using Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 
 namespace Equinor.ProCoSys.PCS5.Query.Tests.GetFoosInProject;
 
@@ -34,13 +34,16 @@ public class GetFoosInProjectQueryHandlerTests : ReadOnlyTestsBase
     [TestMethod]
     public async Task Handler_ShouldReturnEmptyList_IfNoneFound()
     {
+        // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
         var query = new GetFoosInProjectQuery("UnknownProject");
         var dut = new GetFoosInProjectQueryHandler(context);
 
+        // Act
         var result = await dut.Handle(query, default);
 
+        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(ResultType.Ok, result.ResultType);
         Assert.AreEqual(0, result.Data.Count());
@@ -49,13 +52,16 @@ public class GetFoosInProjectQueryHandlerTests : ReadOnlyTestsBase
     [TestMethod]
     public async Task Handler_ShouldReturnCorrectFoos()
     {
+        // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
         var query = new GetFoosInProjectQuery(_projectA.Name, true);
         var dut = new GetFoosInProjectQueryHandler(context);
 
+        // Act
         var result = await dut.Handle(query, default);
 
+        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(ResultType.Ok, result.ResultType);
         Assert.AreEqual(2, result.Data.Count());
@@ -67,13 +73,16 @@ public class GetFoosInProjectQueryHandlerTests : ReadOnlyTestsBase
     [TestMethod]
     public async Task Handler_ShouldReturnNonVoidedFoos()
     {
+        // Arrange
         await using var context = new PCS5Context(_dbContextOptions, _plantProvider, _eventDispatcher, _currentUserProvider);
 
         var query = new GetFoosInProjectQuery(_projectA.Name);
         var dut = new GetFoosInProjectQueryHandler(context);
 
+        // Act
         var result = await dut.Handle(query, default);
 
+        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(ResultType.Ok, result.ResultType);
         Assert.AreEqual(1, result.Data.Count());

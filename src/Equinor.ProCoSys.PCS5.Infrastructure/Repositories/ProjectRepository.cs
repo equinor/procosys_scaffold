@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Equinor.ProCoSys.PCS5.Infrastructure.Repositories;
 
-public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
+public class ProjectRepository : EntityWithGuidRepository<Project>, IProjectRepository
 {
     public ProjectRepository(PCS5Context context)
         : base(context, context.Projects, context.Projects)
@@ -12,6 +12,6 @@ public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
     {
     }
 
-    public Task<Project?> GetProjectOnlyByNameAsync(string projectName)
-        => Set.SingleOrDefaultAsync(p => !string.IsNullOrEmpty(projectName) &&  p.Name == projectName);
+    public Task<Project?> TryGetProjectByNameAsync(string projectName)
+        => DefaultQuery.SingleOrDefaultAsync(p => !string.IsNullOrEmpty(projectName) &&  p.Name == projectName);
 }

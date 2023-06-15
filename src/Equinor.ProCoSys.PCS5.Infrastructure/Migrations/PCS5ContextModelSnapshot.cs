@@ -22,6 +22,114 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate.Attachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BlobPath")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ModifiedById")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SourceGuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("SourceGuid")
+                        .HasDatabaseName("IX_Attachments_SourceGuid");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("SourceGuid"), new[] { "Guid", "FileName", "CreatedById", "CreatedAtUtc", "ModifiedById", "ModifiedAtUtc", "RowVersion" });
+
+                    b.ToTable("Attachments");
+                });
+
+            modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SourceGuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("SourceGuid")
+                        .HasDatabaseName("IX_Comments_SourceGuid");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("SourceGuid"), new[] { "Guid", "Text", "CreatedById", "CreatedAtUtc" });
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate.Foo", b =>
                 {
                     b.Property<int>("Id")
@@ -35,6 +143,9 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
 
                     b.Property<int>("CreatedById")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsVoided")
                         .HasColumnType("bit");
@@ -60,9 +171,6 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid>("ProCoSysGuid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
@@ -84,15 +192,104 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
 
                     b.HasIndex("CreatedById");
 
+                    b.HasIndex("Guid")
+                        .HasDatabaseName("IX_Foos_Guid");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Guid"), new[] { "Title", "Text", "ProjectId", "CreatedById", "CreatedAtUtc", "ModifiedById", "ModifiedAtUtc", "IsVoided", "RowVersion" });
+
                     b.HasIndex("ModifiedById");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("IX_Foos_ProjectId");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ProjectId"), new[] { "Title", "IsVoided", "RowVersion" });
 
                     b.ToTable("Foos");
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
                             {
                                 ttb.UseHistoryTable("FoosHistory");
+                                ttb
+                                    .HasPeriodStart("PeriodStart")
+                                    .HasColumnName("PeriodStart");
+                                ttb
+                                    .HasPeriodEnd("PeriodEnd")
+                                    .HasColumnName("PeriodEnd");
+                            }));
+                });
+
+            modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate.Link", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ModifiedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodEnd");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodStart");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SourceGuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("ModifiedById");
+
+                    b.HasIndex("SourceGuid")
+                        .HasDatabaseName("IX_Links_SourceGuid");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("SourceGuid"), new[] { "Guid", "Url", "Title", "RowVersion" });
+
+                    b.ToTable("Links");
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("LinksHistory");
                                 ttb
                                     .HasPeriodStart("PeriodStart")
                                     .HasColumnName("PeriodStart");
@@ -120,6 +317,9 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -130,9 +330,6 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
 
                     b.Property<int?>("ModifiedById")
                         .HasColumnType("int");
-
-                    b.Property<Guid>("Oid")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -146,10 +343,10 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ModifiedById");
-
-                    b.HasIndex("Oid")
+                    b.HasIndex("Guid")
                         .IsUnique();
+
+                    b.HasIndex("ModifiedById");
 
                     b.ToTable("Persons");
                 });
@@ -173,7 +370,13 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeletedInSource")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedAtUtc")
@@ -191,9 +394,6 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<Guid>("ProCoSysGuid")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -219,6 +419,24 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate.Attachment", b =>
+                {
+                    b.HasOne("Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate.Person", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.CommentAggregate.Comment", b =>
+                {
+                    b.HasOne("Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate.Person", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate.Foo", b =>
                 {
                     b.HasOne("Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate.Person", null)
@@ -237,6 +455,20 @@ namespace Equinor.ProCoSys.PCS5.Infrastructure.Migrations
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.LinkAggregate.Link", b =>
+                {
+                    b.HasOne("Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate.Person", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate.Person", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedById")
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
 
             modelBuilder.Entity("Equinor.ProCoSys.PCS5.Domain.AggregateModels.PersonAggregate.Person", b =>

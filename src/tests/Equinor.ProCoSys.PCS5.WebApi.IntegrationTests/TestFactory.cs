@@ -6,8 +6,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.Auth.Permission;
 using Equinor.ProCoSys.Auth.Person;
+using Equinor.ProCoSys.BlobStorage;
 using Equinor.ProCoSys.Common.Misc;
-using Equinor.ProCoSys.PCS5.ForeignApi.MainApi.Project;
 using Equinor.ProCoSys.PCS5.Infrastructure;
 using Equinor.ProCoSys.PCS5.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,8 +32,8 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
     private readonly List<Action> _teardownList = new();
     private readonly List<IDisposable> _disposables = new();
 
+    public readonly Mock<IAzureBlobService> BlobStorageMock = new();
     private readonly Mock<IPersonApiService> _personApiServiceMock = new();
-    private readonly Mock<IProjectApiService> _projectApiServiceMock = new();
     private readonly Mock<IPermissionApiService> _permissionApiServiceMock = new();
 
     public static string PlantWithAccess => KnownPlantData.PlantA;
@@ -134,8 +134,8 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
                 jwtBearerOptions.ForwardAuthenticate = IntegrationTestAuthHandler.TestAuthenticationScheme);
 
             services.AddScoped(_ => _personApiServiceMock.Object);
-            services.AddScoped(_ => _projectApiServiceMock.Object);
             services.AddScoped(_ => _permissionApiServiceMock.Object);
+            services.AddScoped(_ => BlobStorageMock.Object);
         });
 
         builder.ConfigureServices(services =>
@@ -212,7 +212,7 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
 
     private string GetTestDbConnectionString(string projectDir)
     {
-        var dbName = "IntegrationTestsPresDB";
+        var dbName = "IntegrationTestsDB";
         var dbPath = Path.Combine(projectDir, $"{dbName}.mdf");
             
         // Set Initial Catalog to be able to delete database!
@@ -377,6 +377,8 @@ public sealed class TestFactory : WebApplicationFactory<Startup>
                 {
                     Permissions.FOO_CREATE,
                     Permissions.FOO_WRITE,
+                    Permissions.FOO_ATTACH,
+                    Permissions.FOO_DETACH,
                     Permissions.FOO_DELETE,
                     Permissions.FOO_READ
                 },

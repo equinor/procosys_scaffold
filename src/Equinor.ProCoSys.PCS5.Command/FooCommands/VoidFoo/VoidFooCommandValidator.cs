@@ -1,28 +1,37 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Equinor.ProCoSys.PCS5.Command.Validators.FooValidators;
+using Equinor.ProCoSys.PCS5.Command.Validators.ProjectValidators;
 using FluentValidation;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 
 public class VoidFooCommandValidator : AbstractValidator<VoidFooCommand>
 {
-    public VoidFooCommandValidator(IFooValidator fooValidator)
+    public VoidFooCommandValidator(
+        IProjectValidator projectValidator,
+        IFooValidator fooValidator)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
         ClassLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(command => command)
-            //business validators
-            .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooId, cancellationToken))
-            .WithMessage(command => $"Foo with this ID does not exist! Id={command.FooId}")
-            .MustAsync((command, cancellationToken) => NotBeAVoidedFoo(command.FooId, cancellationToken))
+            .MustAsync((command, cancellationToken) => NotBeAClosedProjectForFooAsync(command.FooGuid, cancellationToken))
+            .WithMessage("Project is closed!")
+            .MustAsync((command, cancellationToken) => BeAnExistingFoo(command.FooGuid, cancellationToken))
+            .WithMessage(command => $"Foo with this guid does not exist! Guid={command.FooGuid}")
+            .MustAsync((command, cancellationToken) => NotBeAVoidedFoo(command.FooGuid, cancellationToken))
             .WithMessage("Foo is already voided!");
 
-        async Task<bool> NotBeAVoidedFoo(int fooId, CancellationToken cancellationToken)
-            => !await fooValidator.FooIsVoidedAsync(fooId, cancellationToken);
+        async Task<bool> NotBeAClosedProjectForFooAsync(Guid fooGuid, CancellationToken cancellationToken)
+            => !await projectValidator.IsClosedForFoo(fooGuid, 
+                cancellationToken);
 
-        async Task<bool> BeAnExistingFoo(int fooId, CancellationToken cancellationToken)
-            => await fooValidator.FooExistsAsync(fooId, cancellationToken);
+        async Task<bool> NotBeAVoidedFoo(Guid fooGuid, CancellationToken cancellationToken)
+            => !await fooValidator.FooIsVoidedAsync(fooGuid, cancellationToken);
+
+        async Task<bool> BeAnExistingFoo(Guid fooGuid, CancellationToken cancellationToken)
+            => await fooValidator.FooExistsAsync(fooGuid, cancellationToken);
     }
 }
