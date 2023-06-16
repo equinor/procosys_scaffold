@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Equinor.ProCoSys.Common;
 using Equinor.ProCoSys.Common.Misc;
 using Equinor.ProCoSys.PCS5.Command;
 using Equinor.ProCoSys.PCS5.Query.FooQueries;
@@ -11,8 +10,8 @@ using Microsoft.Extensions.Logging;
 namespace Equinor.ProCoSys.PCS5.WebApi.Authorizations;
 
 /// <summary>
-/// Validates if current user has access to perform a request of type IProjectRequest, 
-/// IFooCommandRequest or IFooQueryRequest.
+/// Validates if current user has access to perform a request of type IIsProjectCommand, 
+/// IIsFooCommand or IIsFooQuery.
 /// It validates if user has access to the project of the request 
 /// </summary>
 public class AccessValidator : IAccessValidator
@@ -42,24 +41,24 @@ public class AccessValidator : IAccessValidator
         }
 
         var userOid = _currentUserProvider.GetCurrentUserOid();
-        if (request is IProjectRequest projectRequest &&
-            !_projectAccessChecker.HasCurrentUserAccessToProject(projectRequest.ProjectName))
+        if (request is IIsProjectCommand projectCommand &&
+            !_projectAccessChecker.HasCurrentUserAccessToProject(projectCommand.ProjectName))
         {
-            _logger.LogWarning($"Current user {userOid} don't have access to project {projectRequest.ProjectName}");
+            _logger.LogWarning($"Current user {userOid} don't have access to project {projectCommand.ProjectName}");
             return false;
         }
 
-        if (request is IFooCommandRequest fooCommandRequest)
+        if (request is IIsFooCommand fooCommand)
         {
-            if (!await HasCurrentUserAccessToProjectAsync(fooCommandRequest.FooGuid, userOid))
+            if (!await HasCurrentUserAccessToProjectAsync(fooCommand.FooGuid, userOid))
             {
                 return false;
             }
         }
 
-        if (request is IFooQueryRequest fooQueryRequest)
+        if (request is IIsFooQuery fooQuery)
         {
-            if (!await HasCurrentUserAccessToProjectAsync(fooQueryRequest.FooGuid, userOid))
+            if (!await HasCurrentUserAccessToProjectAsync(fooQuery.FooGuid, userOid))
             {
                 return false;
             }

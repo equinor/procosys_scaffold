@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooAttachmentDownloadUrl;
 
-public class GetFooAttachmentDownloadUrlQuery : IRequest<Result<Uri>>, IFooQueryRequest
+public class GetFooAttachmentDownloadUrlQuery : IRequest<Result<Uri>>, IIsFooQuery
 {
     public GetFooAttachmentDownloadUrlQuery(Guid fooGuid, Guid attachmentGuid)
     {

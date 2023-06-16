@@ -1,8 +1,9 @@
 ﻿using System;
+using MediatR;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries;
 
-public interface IFooQueryRequest
+public interface IIsFooQuery : IBaseRequest
 {
     Guid FooGuid { get; }
 }

@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Command\Equinor.ProCoSys.PCS5.Command.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Domain\Equinor.ProCoSys.PCS5.Domain.csproj" />
     <ProjectReference Include="..\Equinor.ProCoSys.PCS5.Infrastructure\Equinor.ProCoSys.PCS5.Infrastructure.csproj" />
   </ItemGroup>

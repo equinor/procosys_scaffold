@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFooLink;
 
-public class UpdateFooLinkCommand : IRequest<Result<string>>, IFooCommandRequest
+public class UpdateFooLinkCommand : IRequest<Result<string>>, IIsFooCommand
 {
     public UpdateFooLinkCommand(Guid fooGuid, Guid linkGuid, string title, string url, string rowVersion)
     {

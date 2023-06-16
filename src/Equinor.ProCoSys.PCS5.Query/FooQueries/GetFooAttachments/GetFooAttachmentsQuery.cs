@@ -6,7 +6,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooAttachments;
 
-public class GetFooAttachmentsQuery : IRequest<Result<IEnumerable<AttachmentDto>>>, IFooQueryRequest
+public class GetFooAttachmentsQuery : IRequest<Result<IEnumerable<AttachmentDto>>>, IIsFooQuery
 {
     public GetFooAttachmentsQuery(Guid fooGuid) => FooGuid = fooGuid;
 

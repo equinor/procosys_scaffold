@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.CreateFooComment;
 
-public class CreateFooCommentCommand : IRequest<Result<GuidAndRowVersion>>, IFooCommandRequest
+public class CreateFooCommentCommand : IRequest<Result<GuidAndRowVersion>>, IIsFooCommand
 {
     public CreateFooCommentCommand(Guid fooGuid, string text)
     {

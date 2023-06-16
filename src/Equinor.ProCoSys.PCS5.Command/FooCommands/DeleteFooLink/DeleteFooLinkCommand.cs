@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooLink;
 
-public class DeleteFooLinkCommand : IRequest<Result<Unit>>, IFooCommandRequest
+public class DeleteFooLinkCommand : IRequest<Result<Unit>>, IIsFooCommand
 {
     public DeleteFooLinkCommand(Guid fooGuid, Guid linkGuid, string rowVersion)
     {

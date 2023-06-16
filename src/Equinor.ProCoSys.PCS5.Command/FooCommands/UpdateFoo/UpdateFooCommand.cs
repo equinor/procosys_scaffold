@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UpdateFoo;
 
-public class UpdateFooCommand : IRequest<Result<string>>, IFooCommandRequest
+public class UpdateFooCommand : IRequest<Result<string>>, IIsFooCommand
 {
     public UpdateFooCommand(Guid fooGuid, string title, string? text, string rowVersion)
     {

@@ -6,7 +6,7 @@ using Equinor.ProCoSys.PCS5.WebApi.Misc;
 using MediatR;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.Command;
 
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Misc;
 
@@ -62,7 +62,7 @@ public class ProjectCheckerTests
     public async Task EnsureValidProjectAsync_ShouldThrowException_WhenRequestIsNull()
         => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _dut.EnsureValidProjectAsync((IBaseRequest)null));
 
-    private class TestRequest : IBaseRequest, IProjectRequest
+    private class TestRequest : IIsProjectCommand
     {
         public TestRequest(string projectName) => ProjectName = projectName;
 

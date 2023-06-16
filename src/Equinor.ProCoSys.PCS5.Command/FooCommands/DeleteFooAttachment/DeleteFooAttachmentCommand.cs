@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.DeleteFooAttachment;
 
-public class DeleteFooAttachmentCommand : IRequest<Result<Unit>>, IFooCommandRequest
+public class DeleteFooAttachmentCommand : IRequest<Result<Unit>>, IIsFooCommand
 {
     public DeleteFooAttachmentCommand(Guid fooGuid, Guid attachmentGuid, string rowVersion)
     {

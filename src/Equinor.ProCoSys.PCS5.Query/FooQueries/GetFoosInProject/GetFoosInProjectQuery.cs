@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Equinor.ProCoSys.Common;
+using Equinor.ProCoSys.PCS5.Command;
 using MediatR;
 using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 
-public class GetFoosInProjectQuery : IRequest<Result<IEnumerable<FooDto>>>, IProjectRequest
+public class GetFoosInProjectQuery : IRequest<Result<IEnumerable<FooDto>>>, IIsProjectCommand
 {
     public GetFoosInProjectQuery(string projectName, bool includeVoided = false)
     {

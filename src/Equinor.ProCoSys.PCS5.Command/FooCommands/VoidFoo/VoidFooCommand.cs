@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.VoidFoo;
 
-public class VoidFooCommand : IRequest<Result<string>>, IFooCommandRequest
+public class VoidFooCommand : IRequest<Result<string>>, IIsFooCommand
 {
     public VoidFooCommand(Guid fooGuid, string rowVersion)
     {

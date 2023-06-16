@@ -6,7 +6,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooComments;
 
-public class GetFooCommentsQuery : IRequest<Result<IEnumerable<CommentDto>>>, IFooQueryRequest
+public class GetFooCommentsQuery : IRequest<Result<IEnumerable<CommentDto>>>, IIsFooQuery
 {
     public GetFooCommentsQuery(Guid fooGuid) => FooGuid = fooGuid;
 

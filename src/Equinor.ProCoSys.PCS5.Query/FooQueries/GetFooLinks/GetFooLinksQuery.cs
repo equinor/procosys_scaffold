@@ -6,7 +6,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFooLinks;
 
-public class GetFooLinksQuery : IRequest<Result<IEnumerable<LinkDto>>>, IFooQueryRequest
+public class GetFooLinksQuery : IRequest<Result<IEnumerable<LinkDto>>>, IIsFooQuery
 {
     public GetFooLinksQuery(Guid fooGuid) => FooGuid = fooGuid;
 

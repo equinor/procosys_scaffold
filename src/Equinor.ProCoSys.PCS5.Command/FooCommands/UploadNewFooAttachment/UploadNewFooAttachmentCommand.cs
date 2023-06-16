@@ -5,7 +5,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Command.FooCommands.UploadNewFooAttachment;
 
-public class UploadNewFooAttachmentCommand : UploadAttachmentCommand, IRequest<Result<GuidAndRowVersion>>, IFooCommandRequest
+public class UploadNewFooAttachmentCommand : UploadAttachmentCommand, IRequest<Result<GuidAndRowVersion>>, IIsFooCommand
 {
     public UploadNewFooAttachmentCommand(Guid fooGuid, string fileName, Stream content)
         : base(content)

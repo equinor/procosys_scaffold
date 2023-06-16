@@ -4,7 +4,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoo;
 
-public class GetFooQuery : IRequest<Result<FooDetailsDto>>, IFooQueryRequest
+public class GetFooQuery : IRequest<Result<FooDetailsDto>>, IIsFooQuery
 {
     public GetFooQuery(Guid fooGuid) => FooGuid = fooGuid;
 
