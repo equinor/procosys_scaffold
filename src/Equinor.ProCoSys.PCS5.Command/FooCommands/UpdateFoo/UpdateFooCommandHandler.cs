@@ -35,7 +35,7 @@ public class UpdateFooCommandHandler : IRequestHandler<UpdateFooCommand, Result<
             throw new Exception($"Entity {nameof(Foo)} {request.FooGuid} not found");
         }
 
-        foo.EditFoo(request.Title, request.Text);
+        foo.Update(request.Title, request.Text);
         foo.SetRowVersion(request.RowVersion);
         foo.AddDomainEvent(new FooUpdatedEvent(foo));
 

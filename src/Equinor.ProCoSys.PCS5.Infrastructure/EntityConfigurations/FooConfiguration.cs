@@ -10,12 +10,11 @@ internal class FooConfiguration : IEntityTypeConfiguration<Foo>
 {
     public void Configure(EntityTypeBuilder<Foo> builder)
     {
+        builder.ConfigureSystemVersioning();
         builder.ConfigurePlant();
         builder.ConfigureCreationAudit();
         builder.ConfigureModificationAudit();
         builder.ConfigureConcurrencyToken();
-
-        builder.ToTable(t => t.IsTemporal());
 
         builder.HasOne<Project>()
             .WithMany()

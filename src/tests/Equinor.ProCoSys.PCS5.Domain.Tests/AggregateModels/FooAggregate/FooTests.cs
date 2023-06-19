@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using Equinor.ProCoSys.Common.Time;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
-using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -50,12 +48,12 @@ public class FooTests
             new Foo(_testPlant, new Project("OtherPlant", Guid.NewGuid(), "P", "D"), _title));
     #endregion
 
-    #region Edit
+    #region Update
 
     [TestMethod]
-    public void EditFoo_ShouldEditFoo()
+    public void Update_ShouldUpdate()
     {
-        _dut.EditFoo("New Title", "New Text");
+        _dut.Update("New Title", "New Text");
 
         Assert.AreEqual("New Title", _dut.Title);
         Assert.AreEqual("New Text", _dut.Text);

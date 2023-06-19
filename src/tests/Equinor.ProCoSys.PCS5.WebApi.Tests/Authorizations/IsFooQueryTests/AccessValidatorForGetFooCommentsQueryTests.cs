@@ -4,11 +4,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations.IsFooQueryTests;
 
 [TestClass]
-public class AccessValidatorForGetFooCommentsQueryTests : AccessValidatorForIFooQueryTests<GetFooCommentsQuery>
+public class AccessValidatorForGetFooCommentsQueryTests : AccessValidatorForIIsFooQueryTests<GetFooCommentsQuery>
 {
-    protected override GetFooCommentsQuery GetFooCommandWithAccessToProject()
+    protected override GetFooCommentsQuery GetFooQueryWithAccessToProject()
         => new(FooGuidWithAccessToProject);
 
-    protected override GetFooCommentsQuery GetFooCommandWithoutAccessToProject()
+    protected override GetFooCommentsQuery GetFooQueryWithoutAccessToProject()
         => new(FooGuidWithoutAccessToProject);
 }

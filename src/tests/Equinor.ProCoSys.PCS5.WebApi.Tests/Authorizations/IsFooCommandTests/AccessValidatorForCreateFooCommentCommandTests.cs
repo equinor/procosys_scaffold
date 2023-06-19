@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations.IsFooCommandTests;
 
 [TestClass]
-public class AccessValidatorForCreateFooCommentCommandTests : AccessValidatorForIFooCommandTests<CreateFooCommentCommand>
+public class AccessValidatorForCreateFooCommentCommandTests : AccessValidatorForIIsFooCommandTests<CreateFooCommentCommand>
 {
     protected override CreateFooCommentCommand GetFooCommandWithAccessToProject()
         => new(FooGuidWithAccessToProject, null!);

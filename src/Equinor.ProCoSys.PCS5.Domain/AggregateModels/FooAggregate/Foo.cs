@@ -50,7 +50,7 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
     public int? ModifiedById { get; private set; }
     public Guid Guid { get; private set; }
 
-    public void EditFoo(string title, string? text)
+    public void Update(string title, string? text)
     {
         Title = title;
         Text = text;

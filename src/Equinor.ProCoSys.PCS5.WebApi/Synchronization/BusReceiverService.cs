@@ -18,7 +18,7 @@ public class BusReceiverService : IBusReceiverService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITelemetryClient _telemetryClient;
     private readonly IProjectRepository _projectRepository;
-    private readonly string _fooBusReceiverTelemetryEvent = "FOO Bus Receiver";
+    private readonly string _busReceiverTelemetryEvent = "PCS5 Bus Receiver";
 
     public BusReceiverService(
         IPlantSetter plantSetter,
@@ -87,7 +87,7 @@ public class BusReceiverService : IBusReceiverService
     }
 
     private void TrackProjectEvent(ProjectTopic projectEvent) =>
-        _telemetryClient.TrackEvent(_fooBusReceiverTelemetryEvent,
+        _telemetryClient.TrackEvent(_busReceiverTelemetryEvent,
             new Dictionary<string, string?>
             {
                 {"Event", ProjectTopic.TopicName},

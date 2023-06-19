@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations.IsFooCommandTests;
 
 [TestClass]
-public class AccessValidatorForDeleteFooAttachmentCommandTests : AccessValidatorForIFooCommandTests<DeleteFooAttachmentCommand>
+public class AccessValidatorForDeleteFooAttachmentCommandTests : AccessValidatorForIIsFooCommandTests<DeleteFooAttachmentCommand>
 {
     protected override DeleteFooAttachmentCommand GetFooCommandWithAccessToProject()
         => new(FooGuidWithAccessToProject, Guid.Empty, null!);

@@ -6,17 +6,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations.IsFooQueryTests;
 
 [TestClass]
-public abstract class AccessValidatorForIFooQueryTests<TFooQuery> : AccessValidatorTestBase
+public abstract class AccessValidatorForIIsFooQueryTests<TFooQuery> : AccessValidatorTestBase
     where TFooQuery : IBaseRequest, IIsFooQuery
 {
-    protected abstract TFooQuery GetFooCommandWithAccessToProject();
-    protected abstract TFooQuery GetFooCommandWithoutAccessToProject();
+    protected abstract TFooQuery GetFooQueryWithAccessToProject();
+    protected abstract TFooQuery GetFooQueryWithoutAccessToProject();
 
     [TestMethod]
     public async Task Validate_ShouldReturnTrue_WhenAccessToProjectForFoo()
     {
         // Arrange
-        var command = GetFooCommandWithAccessToProject();
+        var command = GetFooQueryWithAccessToProject();
 
         // act
         var result = await _dut.ValidateAsync(command);
@@ -29,7 +29,7 @@ public abstract class AccessValidatorForIFooQueryTests<TFooQuery> : AccessValida
     public async Task Validate_ShouldReturnFalse_WhenNoAccessToProjectForFoo()
     {
         // Arrange
-        var command = GetFooCommandWithoutAccessToProject();
+        var command = GetFooQueryWithoutAccessToProject();
 
         // act
         var result = await _dut.ValidateAsync(command);

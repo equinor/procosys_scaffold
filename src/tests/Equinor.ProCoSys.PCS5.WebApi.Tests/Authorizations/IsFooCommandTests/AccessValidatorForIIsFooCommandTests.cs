@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations.IsFooCommandTests;
 
 [TestClass]
-public abstract class AccessValidatorForIFooCommandTests<TFooCommand> : AccessValidatorTestBase
+public abstract class AccessValidatorForIIsFooCommandTests<TFooCommand> : AccessValidatorTestBase
     where TFooCommand : IBaseRequest, IIsFooCommand
 {
     protected abstract TFooCommand GetFooCommandWithAccessToProject();

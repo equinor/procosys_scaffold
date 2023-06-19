@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.WebApi.Tests.Authorizations.IsFooCommandTests;
 
 [TestClass]
-public class AccessValidatorForUploadNewFooAttachmentCommandTests : AccessValidatorForIFooCommandTests<UploadNewFooAttachmentCommand>
+public class AccessValidatorForUploadNewFooAttachmentCommandTests : AccessValidatorForIIsFooCommandTests<UploadNewFooAttachmentCommand>
 {
     protected override UploadNewFooAttachmentCommand GetFooCommandWithAccessToProject()
         => new(FooGuidWithAccessToProject, null!, null!);

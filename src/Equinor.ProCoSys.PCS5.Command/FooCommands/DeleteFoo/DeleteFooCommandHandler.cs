@@ -41,10 +41,10 @@ public class DeleteFooCommandHandler : IRequestHandler<DeleteFooCommand, Result<
         _fooRepository.Remove(foo);
         foo.AddDomainEvent(new FooDeletedEvent(foo));
 
-        _logger.LogInformation($"Deleting Foo '{foo.Title}'");
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-            
+
+        _logger.LogInformation($"{nameof(Foo)} '{foo.Title}' deleted");
+
         return new SuccessResult<Unit>(Unit.Value);
     }
 }

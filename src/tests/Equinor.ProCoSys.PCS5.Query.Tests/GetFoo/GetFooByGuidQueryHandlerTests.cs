@@ -30,7 +30,7 @@ public class GetFooByGuidQueryHandlerTests : ReadOnlyTestsBase
         context.SaveChangesAsync().Wait();
         _createdFooGuid = _createdFoo.Guid;
 
-        _modifiedFoo.EditFoo("TitleB modified", "Modified");
+        _modifiedFoo.Update("TitleB modified", "Modified");
         context.SaveChangesAsync().Wait();
         _modifiedFooGuid = _modifiedFoo.Guid;
     }

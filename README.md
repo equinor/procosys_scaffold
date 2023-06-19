@@ -14,7 +14,7 @@ Edit solution file, csproj files and Dockerfile in Notepad and fix paths to cspr
 
 Solution should now load correctly in Visual Studio. Check Project references.
 
-* Rename namespaces Equinor.ProCoSys.PCS5 in all *.cs-files
+* Rename namespaces Equinor.ProCoSys.PCS5 in all *.cs-files and launchSettings.json
 
 * Rename classes and filenames starting with PCS5 (as Equinor.ProCoSys.PCS5.Infrastructure.PCS5Context)
 
@@ -37,6 +37,7 @@ After all renaming completed, there should not exists any phrases as foo or pcs5
  2) Open Package Manager Console and add new migration with command: add-migration InitialSetup
 
 With correct connectionstring in appsettings.json or user sercret file, pointing to an existing database, the solution should now be able to run and test in swagger.
+All tests should pass.
 
 # Permissions
 All Foo endpoints are secured with the AuthorizeAny attribute, each endpoint secured with 2
