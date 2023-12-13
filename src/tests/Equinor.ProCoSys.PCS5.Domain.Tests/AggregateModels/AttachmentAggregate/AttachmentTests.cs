@@ -1,16 +1,20 @@
 ﻿using System;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.AttachmentAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Audit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.AttachmentAggregate;
 
 [TestClass]
-public class AttachmentTests
+public class AttachmentTests : IModificationAuditableTests
 {
     private Attachment _dut;
     private readonly string _sourceType = "X";
     private readonly Guid _sourceGuid = Guid.NewGuid();
     private readonly string _fileName = "a.txt";
+
+    protected override ICreationAuditable GetCreationAuditable() => _dut;
+    protected override IModificationAuditable GetModificationAuditable() => _dut;
 
     [TestInitialize]
     public void Setup() => _dut = new Attachment(_sourceType, _sourceGuid, "PCS$Plant", _fileName);

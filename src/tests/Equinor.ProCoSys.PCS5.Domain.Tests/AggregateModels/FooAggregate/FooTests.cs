@@ -2,6 +2,7 @@
 using Equinor.ProCoSys.Common.Time;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.FooAggregate;
 using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
+using Equinor.ProCoSys.PCS5.Domain.Audit;
 using Equinor.ProCoSys.PCS5.Test.Common;
 using Equinor.ProCoSys.PCS5.Test.Common.ExtensionMethods;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,13 +10,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Equinor.ProCoSys.PCS5.Domain.Tests.AggregateModels.FooAggregate;
 
 [TestClass]
-public class FooTests
+public class FooTests : IModificationAuditableTests
 {
     private Foo _dut;
     private readonly string _testPlant = "PlantA";
     private readonly int _projectId = 132;
     private Project _project;
     private readonly string _title = "Title A";
+    
+    protected override ICreationAuditable GetCreationAuditable() => _dut;
+    protected override IModificationAuditable GetModificationAuditable() => _dut;
 
     [TestInitialize]
     public void Setup()

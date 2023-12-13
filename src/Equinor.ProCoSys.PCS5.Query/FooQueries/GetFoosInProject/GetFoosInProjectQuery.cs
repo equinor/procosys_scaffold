@@ -5,6 +5,7 @@ using ServiceResult;
 
 namespace Equinor.ProCoSys.PCS5.Query.FooQueries.GetFoosInProject;
 
+// todo IIsProjectCommand should be IIsProjectQuery
 public class GetFoosInProjectQuery : IRequest<Result<IEnumerable<FooDto>>>, IIsProjectCommand
 {
     public GetFoosInProjectQuery(string projectName, bool includeVoided = false)

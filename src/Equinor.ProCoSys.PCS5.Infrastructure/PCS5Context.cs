@@ -70,12 +70,13 @@ public class PCS5Context : DbContext, IUnitOfWork, IReadOnlyContext
         foreach (var type in TypeProvider.GetEntityTypes(typeof(IDomainMarker).GetTypeInfo().Assembly, typeof(PlantEntityBase)))
         {
             typeof(PCS5Context)
-                .GetMethod(nameof(PCS5Context.SetGlobalQueryFilter))
+                .GetMethod(nameof(SetGlobalQueryFilter))
                 ?.MakeGenericMethod(type)
                 .Invoke(this, new object[] { modelBuilder });
         }
     }
 
+    // NB! This method need to be Public, if made private it will not apply
     public void SetGlobalQueryFilter<T>(ModelBuilder builder) where T : PlantEntityBase =>
         builder
             .Entity<T>()

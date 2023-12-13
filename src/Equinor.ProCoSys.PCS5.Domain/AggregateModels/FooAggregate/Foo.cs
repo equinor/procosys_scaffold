@@ -46,8 +46,10 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
 
     public DateTime CreatedAtUtc { get; private set; }
     public int CreatedById { get; private set; }
+    public Guid CreatedByOid { get; private set; }
     public DateTime? ModifiedAtUtc { get; private set; }
     public int? ModifiedById { get; private set; }
+    public Guid? ModifiedByOid { get; private set; }
     public Guid Guid { get; private set; }
 
     public void Update(string title, string? text)
@@ -59,20 +61,14 @@ public class Foo : PlantEntityBase, IAggregateRoot, ICreationAuditable, IModific
     public void SetCreated(Person createdBy)
     {
         CreatedAtUtc = TimeService.UtcNow;
-        if (createdBy == null)
-        {
-            throw new ArgumentNullException(nameof(createdBy));
-        }
         CreatedById = createdBy.Id;
+        CreatedByOid = createdBy.Guid;
     }
 
     public void SetModified(Person modifiedBy)
     {
         ModifiedAtUtc = TimeService.UtcNow;
-        if (modifiedBy == null)
-        {
-            throw new ArgumentNullException(nameof(modifiedBy));
-        }
         ModifiedById = modifiedBy.Id;
+        ModifiedByOid = modifiedBy.Guid;
     }
 }

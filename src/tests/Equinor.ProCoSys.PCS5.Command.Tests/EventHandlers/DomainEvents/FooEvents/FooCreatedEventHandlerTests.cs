@@ -6,7 +6,7 @@ using Equinor.ProCoSys.PCS5.Domain.AggregateModels.ProjectAggregate;
 using Equinor.ProCoSys.PCS5.Domain.Events.DomainEvents.FooEvents;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers.DomainEvents;
+namespace Equinor.ProCoSys.PCS5.Command.Tests.EventHandlers.DomainEvents.FooEvents;
 
 [TestClass]
 public class FooCreatedEventHandlerTests
