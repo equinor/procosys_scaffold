@@ -20,20 +20,23 @@ public class CurrentPlantMiddleware
         IPlantSetter plantSetter,
         ILogger<CurrentPlantMiddleware> logger)
     {
-        logger.LogInformation($"----- {GetType().Name} start");
+        logger.LogDebug("----- {Name} start", GetType().Name);
         var headers = httpContextAccessor?.HttpContext?.Request.Headers;
         if (headers == null)
         {
             throw new Exception("Could not determine request headers");
         }
 
-        if (headers.Keys.Contains(PlantHeader))
+        if (headers.TryGetValue(PlantHeader, out var header))
         {
-            var plant = headers[PlantHeader].ToString().ToUpperInvariant();
+            var plant = header.ToString().ToUpperInvariant();
             plantSetter.SetPlant(plant);
+            logger.LogDebug("----- {Name} complete setting plant {Plant}", GetType().Name, plant);
         }
-
-        logger.LogInformation($"----- {GetType().Name} complete");
+        else
+        {
+            logger.LogDebug("----- {Name} complete. No plant header set", GetType().Name);
+        }
         // Call the next delegate/middleware in the pipeline
         await _next(context);
     }
